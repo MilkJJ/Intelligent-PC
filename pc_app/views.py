@@ -12,7 +12,7 @@ def SignupPage(request):
     if request.method=='POST':
         uname=request.POST.get('username')
         email=request.POST.get('email')
-        pass1=request.POST.get('password1')
+        pass1=request.POST.get('password12')
         pass2=request.POST.get('password2')
 
         if pass1!=pass2:
