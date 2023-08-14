@@ -1,12 +1,220 @@
-from django.shortcuts import render,HttpResponse,redirect
+import json
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render, HttpResponse, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.decorators import login_required
+from .models import CPU, GPU, FavouritedPC
+from .forms import CPUComparisonForm, GPUComparisonForm
+from .models import Profile
+from .forms import ProfileForm
+from django.contrib import messages
+from django.http import JsonResponse
+
+from django.views.generic import ListView
 
 # Create your views here.
+def upgrade(request):
+    import wmi
+
+    computer = wmi.WMI()
+    computer_info = computer.Win32_ComputerSystem()[0]
+    os_info = computer.Win32_OperatingSystem()[0]
+    proc_info = computer.Win32_Processor()[0]
+    gpu_info = computer.Win32_VideoController()[0]
+
+    os_name = os_info.Name.encode('utf-8').split(b'|')[0]
+    os_version = ' '.join([os_info.Version, os_info.BuildNumber])
+    system_ram = round(float(os_info.TotalVisibleMemorySize) / 1048576)  # KB to GB
+
+    context = {
+        'os_name': os_name,
+        'os_version': os_version,
+        'proc_info': proc_info,
+        'system_ram': system_ram,
+        'gpu_info': gpu_info,
+    }
+
+    return render(request, 'upgrade.html', context)
+
+@login_required(login_url='login')
+def profile(request):
+    try:
+        profile = request.user.profile
+    except Profile.DoesNotExist:
+        # If the user doesn't have a profile, create one
+        profile = Profile.objects.create(user=request.user)
+
+    if request.method == 'POST':
+        profile_form = ProfileForm(request.POST, request.FILES, instance=profile)
+
+        if profile_form.is_valid():
+            profile_form.save()
+            return redirect('profile')  # Redirect to the profile page after updating the profile
+
+    else:
+        profile_form = ProfileForm(instance=profile)
+
+    return render(request, 'profile.html', {'profile_form': profile_form})
+
+@login_required(login_url='login')
+def toggle_favorite(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        cpu_id = data.get('cpu_id')
+        gpu_id = data.get('gpu_id')
+        
+        if cpu_id and gpu_id:
+            cpu = CPU.objects.get(id=cpu_id)
+            gpu = GPU.objects.get(id=gpu_id)
+
+            total_price = cpu.price + gpu.price
+
+            pc_build, created = FavouritedPC.objects.get_or_create(
+                user=request.user, cpu=cpu, gpu=gpu, total_price=total_price,
+            )
+            
+            if created:
+                response_data = {'success': True}
+            else:
+                pc_build.delete()
+                response_data = {'success': False}
+            
+            return JsonResponse(response_data)
+            
+        return JsonResponse({'success': False})
+    
 @login_required(login_url='login')
 def HomePage(request):
-    return render (request,'home.html')
+    cpu_id = request.POST.get('cpu')
+    gpu_id = request.POST.get('gpu')
+
+    if request.method == 'POST':
+        pc_build = FavouritedPC.objects.filter(cpu_id=cpu_id, gpu_id=gpu_id, user=request.user).first()
+
+        if pc_build:
+            #Change the heart shape color based on if the build is already favorited
+            messages.info(request, 'This build is already in your favorites!')
+            #pc_build.delete()
+        else:
+            try:
+                #FavouritedPC.objects.create(cpu_id=cpu_id, gpu_id=gpu_id, user=request.user)
+                favourited_pc = FavouritedPC(cpu_id=cpu_id, gpu_id=gpu_id, user=request.user)
+                favourited_pc.save()
+            except Exception as e:
+                print(f"Error saving to database: {e}")
+                
+    cpu_list = CPU.objects.all()
+    gpu_list = GPU.objects.all()
+
+    context = {
+        'cpu_list': cpu_list,
+        'gpu_list': gpu_list,
+    }
+
+    return render(request, 'home.html', context)
+
+
+def get_cpu_info(request, cpu_id):
+    cpu = CPU.objects.get(id=cpu_id)
+    cpu_info = {
+        'name': cpu.name,
+        'price': cpu.price,
+        # Add more fields as needed
+    }
+
+    return JsonResponse(cpu_info)
+
+def get_gpu_info(request, gpu_id):
+    gpu = GPU.objects.get(id=gpu_id)
+    gpu_info = {
+        'name': gpu.name,
+        'price': gpu.price,
+        # Add more fields as needed
+    }
+    return JsonResponse(gpu_info)
+    
+def favorited_builds(request):
+    # Get the favorited PC Builds for the current user
+    favorited_builds = FavouritedPC.objects.filter(user=request.user)
+
+    context = {
+        'favorited_builds': favorited_builds,
+    }
+    return render(request, 'favorited_builds.html', context)
+
+def delete_favorited_build(request, build_id):
+    try:
+        # Get the favorited build to delete
+        favorited_build = FavouritedPC.objects.get(id=build_id, user=request.user)
+        favorited_build.delete()
+
+        # Display a success message that the build has been deleted
+        messages.success(request, 'The build has been removed from your favorites.')
+    except FavouritedPC.DoesNotExist:
+        # Display an error message if the build does not exist or does not belong to the current user
+        messages.error(request, 'The build does not exist or does not belong to you.')
+    except Exception as e:
+        # Display an error message if there was an issue deleting the build
+        messages.error(request, f'Error deleting the build: {e}')
+
+    # Redirect back to the favorited_builds page
+    return redirect('favorited_builds')
+    
+# CPU
+class CPUListView(ListView):
+    model = CPU
+    template_name = 'cpu_list.html'
+    context_object_name = 'cpus'
+
+def cpu_detail(request, pk):
+    cpu = CPU.objects.get(pk=pk)
+
+    if request.method == 'POST':
+        form = CPUComparisonForm(request.POST)
+        if form.is_valid():
+            selected_cpu = form.cleaned_data['cpu']
+            # Redirect to the comparison view with the selected CPUs
+            return HttpResponseRedirect(f'/cpu/{cpu.pk}/{selected_cpu.pk}')
+            #return HttpResponseRedirect(f'cpu/{cpu.pk}/{selected_cpu.pk}')
+    else:
+        form = CPUComparisonForm()
+
+    return render(request, 'cpu_detail.html', {'cpu': cpu, 'form': form})
+
+def cpu_comparison(request, pk1, pk2):
+    cpu1 = CPU.objects.get(pk=pk1)
+    cpu2 = CPU.objects.get(pk=pk2)
+
+    return render(request, 'cpu_comparison.html', {'cpu1': cpu1, 'cpu2': cpu2})
+
+
+# GPU
+class GPUListView(ListView):
+    model = GPU
+    template_name = 'gpu_list.html'
+    context_object_name = 'gpus'
+
+def gpu_detail(request, pk):
+    gpu = GPU.objects.get(pk=pk)
+
+    if request.method == 'POST':
+        form = GPUComparisonForm(request.POST)
+        if form.is_valid():
+            selected_gpu = form.cleaned_data['gpu']
+            # Redirect to the comparison view with the selected GPUs
+            return HttpResponseRedirect(f'{selected_gpu.pk}')
+    else:
+        form = GPUComparisonForm()
+
+    return render(request, 'gpu_detail.html', {'gpu': gpu, 'form': form})
+
+
+def gpu_comparison(request, pk1, pk2):
+    gpu1 = GPU.objects.get(pk=pk1)
+    gpu2 = GPU.objects.get(pk=pk2)
+
+    return render(request, 'gpu_comparison.html', {'gpu1': gpu1, 'gpu2': gpu2})
 
 def SignupPage(request):
     if request.method=='POST':
@@ -23,10 +231,8 @@ def SignupPage(request):
             my_user.save()
             return redirect('login')
         
-
-
-
     return render (request,'signup.html')
+
 
 def LoginPage(request):
     if request.method=='POST':
@@ -40,6 +246,7 @@ def LoginPage(request):
             return HttpResponse ("Username or Password is incorrect!!!")
 
     return render (request,'login.html')
+
 
 def LogoutPage(request):
     logout(request)

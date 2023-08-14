@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ proc_info.Name }} - {{ gpu_info.Name }}{% endblock %}
+
+{% block content %}
+
+    <h2>Current Build Specification</h2>
+    <p>Operating System: {{ os_name }}</p>
+    <p>OS Version: {{ os_version }}</p>
+    <p>CPU: {{ proc_info.Name }}</p>
+    <p>RAM Capacity: {{ system_ram }}</p>
+    <p>Graphics Card: {{ gpu_info.Name }}</p>
+
+    <button>Suggest Upgrades</button>
+
+{% endblock %}

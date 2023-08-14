@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+    .profile-picture-container {
+      width: 200px; /* Set the desired width */
+      height: 200px; /* Set the desired height */
+      overflow: hidden; /* Hide overflow to maintain the round shape */
+      border-radius: 50%; /* Make it round */
+    }
+
+    .profile-picture {
+      width: 100%; /* Set the image width to fill the container */
+      height: 100%; /* Set the image height to fill the container */
+      object-fit: cover; /* Maintain the image aspect ratio */
+    }
+  </style>
+
+<h1>Profile</h1>
+
+<!-- Display the profile picture -->
+{% if user.profile.profile_picture %}
+<div class="profile-picture-container">
+<img class="profile-picture" src="{{ user.profile.profile_picture.url }}" alt="Profile Picture">
+</div>
+{% else %}
+<p>No profile picture available</p>
+{% endif %}
+
+<p>Username: {{ user.username }}</p>
+<p>Email: {{ user.email }}</p>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ profile_form.as_p }}
+
+    <button type="submit">Update Profile</button>
+</form>
+
+{% endblock %}

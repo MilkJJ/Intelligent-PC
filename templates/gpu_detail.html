@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ gpu.name }} - {{ gpu.chipset }}{% endblock %}
+
+{% block content %}
+
+{% load custom_filters %}
+
+<h1>GPU Details</h1>
+<p>GPU: {{ gpu.name }}</p>
+<p>Chipset: {{ gpu.chipset }}</p>
+<p>VRAM: {{ gpu.memory }}</p>
+<p>Core Clock: {{ gpu.core_clock }}</p>
+<p>Boost Clock: {{ gpu.boost_clock }}</p>
+<p>Price: {{ gpu.price|convert_to_myr }}</p>
+<p>Color: {{ gpu.color }}</p>
+<p>Length: {{ gpu.length }}</p>
+
+<h2>Select another GPU for comparison:</h2>
+<form method="post" action="{% url 'gpu_detail' gpu.pk %}">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Compare</button>
+</form>
+
+{% endblock %}

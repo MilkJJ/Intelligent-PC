@@ -1,0 +1,203 @@
+<!-- base.html -->
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Intelligent PC Builder</title>
+    {% load static %}
+    <script src="https://code.jquery.com/jquery-2.2.0.min.js" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/font-awesome.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/responsive.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/slick.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/slick-theme.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/skdslider.css' %}">
+</head>
+
+<body>
+    <div class="pre_loader gray_bg text-center">
+        <div class="loader">
+            <div>
+                <div>
+                    <div>
+                        <div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% include 'bin/header.html' %}
+
+    {% block headermenu %} {% endblock %}
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-2">
+                {% include 'bin/sidebar.html' %}
+            </div>
+            <div class="col-sm-10">
+                {% block container %}{% endblock %}
+            </div>
+
+        </div>
+    </div>
+    <div id="snackbar"></div>
+
+    <div>
+        <!-- Add this inside your base.html template -->
+        <div id="selectedComponents">
+            <h3>Customize:</h3>
+            <button onclick="clearSelections()">Clear</button>
+            <button onclick="toggleFavorite()">Save <i class="fa fa-heart"></i></button>
+            <p><a href="{% url 'cpu_list' %}">CPU: </a> <span id="selectedCPU"></span></p>
+            <p><a href="{% url 'gpu_list' %}">GPU: </a> <span id="selectedGPU"></span></p>
+            <!-- Add more component display lines as needed -->
+            <p>Total Price: <span id="totalPrice"></span></p>
+        </div>
+
+        {% block content %}
+
+        {% endblock %}
+    </div>
+
+    {% include 'bin/footer.html' %}
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"
+        type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-touchspin/4.2.5/jquery.bootstrap-touchspin.js"
+        type="text/javascript"></script>
+    <script src="{% static 'js/skdslider.min.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"
+        type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Readmore.js/2.2.1/readmore.js" type="text/javascript"></script>
+    <script src="https://www.google-analytics.com/analytics.js" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/3.0.1/js.cookie.min.js"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+
+</html>
+
+<!-- Add this inside your base.html template, within a <script> tag -->
+<script>
+
+    // Get the CSRF token from the cookie
+    const csrftoken = Cookies.get('csrftoken');
+
+    function selectComponent(componentType, componentId) {
+    if (componentType === 'cpu') {
+        // Fetch CPU information using AJAX
+        var cpuXhr = new XMLHttpRequest();
+        cpuXhr.open("GET", `/get_cpu_info/${componentId}`);
+        cpuXhr.onreadystatechange = function () {
+            if (cpuXhr.readyState === XMLHttpRequest.DONE && cpuXhr.status === 200) {
+                var cpuInfo = JSON.parse(cpuXhr.responseText);
+                localStorage.setItem('selectedCPUID', componentId);
+                localStorage.setItem('selectedCPU', `${cpuInfo.name} - RM ${cpuInfo.price}`);
+                document.getElementById('selectedCPU').innerText = `${cpuInfo.name} - RM ${cpuInfo.price}`;
+                
+                getComponentPrice('selectedCPU');
+            }
+        };
+        cpuXhr.send();
+    } else if (componentType === 'gpu') {
+        // Fetch GPU information using AJAX
+        var gpuXhr = new XMLHttpRequest();
+        gpuXhr.open("GET", `/get_gpu_info/${componentId}`);
+        gpuXhr.onreadystatechange = function () {
+            if (gpuXhr.readyState === XMLHttpRequest.DONE && gpuXhr.status === 200) {
+                var gpuInfo = JSON.parse(gpuXhr.responseText);
+                localStorage.setItem('selectedGPUID', componentId);
+                localStorage.setItem('selectedGPU', `${gpuInfo.chipset} - RM ${gpuInfo.price}`);
+                document.getElementById('selectedGPU').innerText = `${gpuInfo.chipset} - RM ${gpuInfo.price}`;
+                
+                // Calculate total price
+                getComponentPrice('selectedGPU');
+            }
+        };
+        gpuXhr.send();
+    }
+    // Add more else-if conditions for other components if needed
+}
+
+function getComponentPrice(componentKey) {
+    var componentInfo = localStorage.getItem(componentKey);
+    if (componentInfo !== null) {
+        // Split the string into an array using ' - RM ' as the separator
+        var parts = componentInfo.split(' - RM ');
+        if (parts.length === 2) {
+            // Parse the price portion and return it
+            return parseFloat(parts[1]);
+        }
+    }
+    return null;
+}
+
+function calculateTotalPrice() {
+    var cpuPrice = getComponentPrice('selectedCPU');
+    var gpuPrice = getComponentPrice('selectedGPU');
+    // Add more variables for other components if needed
+    
+    var totalPrice = 0;
+    if (cpuPrice !== null) {
+        totalPrice += cpuPrice;
+    }
+    if (gpuPrice !== null) {
+        totalPrice += gpuPrice;
+    }
+    // Add more conditions for other components if needed
+    
+    localStorage.setItem('totalPrice', `Total Price: RM ${totalPrice.toFixed(2)}`);
+    document.getElementById('totalPrice').innerText = `Total Price: RM ${totalPrice.toFixed(2)}`;
+}
+
+
+    // Retrieve and display previously selected components on page load
+    window.onload = function () {
+        const storedCPU = localStorage.getItem('selectedCPU');
+        const storedGPU = localStorage.getItem('selectedGPU');
+        document.getElementById('selectedCPU').innerText = storedCPU || '';
+        document.getElementById('selectedGPU').innerText = storedGPU || '';
+
+    };
+
+    function clearSelections() {
+        localStorage.removeItem('selectedCPU');
+        localStorage.removeItem('selectedGPU');
+        localStorage.removeItem('selectedCPUID');
+        localStorage.removeItem('selectedGPUID');
+        // Add similar lines for other components if needed
+        document.getElementById('selectedCPU').innerText = '';
+        document.getElementById('selectedGPU').innerText = '';
+        document.getElementById('selectedCPUID').innerText = '';
+        document.getElementById('selectedGPUID').innerText = '';
+    }
+
+    //Storing to database
+    function toggleFavorite() {
+        const selectedCPU = localStorage.getItem('selectedCPUID');
+        const selectedGPU = localStorage.getItem('selectedGPUID');
+
+        if (selectedCPU && selectedGPU) {
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '/toggle_favorite/', true);
+            xhr.setRequestHeader('X-CSRFToken', csrftoken); // Set the CSRF token in the request header
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                    const response = JSON.parse(xhr.responseText);
+                    if (response.success) {
+                        alert('PC build saved successfully!');
+                    } else {
+                        alert('Failed to save PC build.');
+                    }
+                }
+            };
+            xhr.send(JSON.stringify({ cpu_id: selectedCPU, gpu_id: selectedGPU }));
+        } else {
+            alert('Please select all components before saving!');
+        }
+    }
+
+</script>

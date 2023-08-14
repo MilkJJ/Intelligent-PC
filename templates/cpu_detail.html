@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ cpu.brand }} - {{ cpu.model }}{% endblock %}
+
+{% block content %}
+
+{% load custom_filters %}
+
+<h1>CPU Details</h1>
+<p>CPU: {{ cpu.name }}</p>
+<p>Cores: {{ cpu.core_count }}</p>
+<p>Core Clock: {{ cpu.core_clock }}</p>
+<p>Boost Clock: {{ cpu.boost_clock }}</p>
+<p>Integrated_Graphics: {{ cpu.graphics }}</p>
+<p>TDP: {{ cpu.tdp }}</p>
+<p>Multithreading: {% if cpu.smt %}Yes{% else %}No{% endif %}</p>
+<p>Price: {{ cpu.price|convert_to_myr }}</p>
+
+<h2>Select another CPU for comparison:</h2>
+<form method="post" action="{% url 'cpu_detail' cpu.pk %}">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Compare</button>
+</form>
+
+{% endblock %}

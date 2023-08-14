@@ -1,0 +1,21 @@
+<!-- favorited_builds.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+  {% if favorited_builds %}
+    <h3>Favorited Builds:</h3>
+    <ul>
+      {% for build in favorited_builds %}
+        <li>
+          {{ build.cpu.name }} + {{ build.gpu.chipset }} | Total: RM {{ build.total_price }}
+          <form method="POST" action="{% url 'delete_favorited_build' build.id %}">
+            {% csrf_token %}
+            <button type="submit">Unfav</button>
+          </form>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>You have no favorited builds.</p>
+  {% endif %}
+{% endblock %}
