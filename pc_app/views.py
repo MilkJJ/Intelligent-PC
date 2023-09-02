@@ -1,17 +1,17 @@
-import json
+import json, uuid
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render, HttpResponse, redirect
+from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.decorators import login_required
-from .models import CPU, GPU, FavouritedPC
-from .forms import CPUComparisonForm, GPUComparisonForm
-from .models import Profile
-from .forms import ProfileForm
+from .models import CPU, GPU, FavouritedPC, Profile
+from .forms import CPUComparisonForm, GPUComparisonForm, PasswordChangeForm
 from django.contrib import messages
 from django.http import JsonResponse
-
+from .helpers import send_forget_password_mail
 from django.views.generic import ListView
+from pc_app.templatetags.custom_filters import convert_to_myr
+
 
 # Create your views here.
 def upgrade(request):
@@ -26,6 +26,7 @@ def upgrade(request):
     os_name = os_info.Name.encode('utf-8').split(b'|')[0]
     os_version = ' '.join([os_info.Version, os_info.BuildNumber])
     system_ram = round(float(os_info.TotalVisibleMemorySize) / 1048576)  # KB to GB
+    system_ram1 = int(computer_info.TotalPhysicalMemory)
 
     context = {
         'os_name': os_name,
@@ -37,25 +38,27 @@ def upgrade(request):
 
     return render(request, 'upgrade.html', context)
 
+def update_profile_picture(request):
+    if request.method == "POST":
+        profile = request.user.profile
+        profile.profile_picture = request.FILES.get("profile_picture")
+        profile.save()
+        return JsonResponse({"message": "Profile picture updated successfully."})
+    return JsonResponse({"error": "Invalid request method."}, status=400)
+
 @login_required(login_url='login')
 def profile(request):
-    try:
-        profile = request.user.profile
-    except Profile.DoesNotExist:
-        # If the user doesn't have a profile, create one
-        profile = Profile.objects.create(user=request.user)
-
     if request.method == 'POST':
-        profile_form = ProfileForm(request.POST, request.FILES, instance=profile)
+        password_change_form = PasswordChangeForm(user=request.user, data=request.POST)
+        if password_change_form.is_valid():
+            password_change_form.save()
+            messages.success(request, 'Password changed successfully!')
+        else:
+            messages.error(request, 'Password change failed! Please correct the errors below!')
 
-        if profile_form.is_valid():
-            profile_form.save()
-            return redirect('profile')  # Redirect to the profile page after updating the profile
+    password_change_form = PasswordChangeForm(user=request.user)
+    return render(request, 'profile.html', {'password_change_form': password_change_form})
 
-    else:
-        profile_form = ProfileForm(instance=profile)
-
-    return render(request, 'profile.html', {'profile_form': profile_form})
 
 @login_required(login_url='login')
 def toggle_favorite(request):
@@ -117,9 +120,10 @@ def HomePage(request):
 
 def get_cpu_info(request, cpu_id):
     cpu = CPU.objects.get(id=cpu_id)
+
     cpu_info = {
         'name': cpu.name,
-        'price': cpu.price,
+        'price': convert_to_myr(cpu.price),
         # Add more fields as needed
     }
 
@@ -129,7 +133,8 @@ def get_gpu_info(request, gpu_id):
     gpu = GPU.objects.get(id=gpu_id)
     gpu_info = {
         'name': gpu.name,
-        'price': gpu.price,
+        'chipset': gpu.chipset,
+        'price': convert_to_myr(gpu.price)
         # Add more fields as needed
     }
     return JsonResponse(gpu_info)
@@ -142,6 +147,7 @@ def favorited_builds(request):
         'favorited_builds': favorited_builds,
     }
     return render(request, 'favorited_builds.html', context)
+
 
 def delete_favorited_build(request, build_id):
     try:
@@ -169,6 +175,7 @@ class CPUListView(ListView):
 
 def cpu_detail(request, pk):
     cpu = CPU.objects.get(pk=pk)
+    other_cpus = CPU.objects.exclude(pk=pk)
 
     if request.method == 'POST':
         form = CPUComparisonForm(request.POST)
@@ -180,13 +187,15 @@ def cpu_detail(request, pk):
     else:
         form = CPUComparisonForm()
 
-    return render(request, 'cpu_detail.html', {'cpu': cpu, 'form': form})
+    return render(request, 'cpu_detail.html', {'cpu': cpu, 'other_cpus': other_cpus, 'form': form})
 
 def cpu_comparison(request, pk1, pk2):
     cpu1 = CPU.objects.get(pk=pk1)
     cpu2 = CPU.objects.get(pk=pk2)
+    all_cpus = CPU.objects.exclude(pk__in=[pk1, pk2])
 
-    return render(request, 'cpu_comparison.html', {'cpu1': cpu1, 'cpu2': cpu2})
+    return render(request, 'cpu_comparison.html', {'cpu1': cpu1, 'cpu2': cpu2, 'all_cpus': all_cpus})
+
 
 
 # GPU
@@ -216,6 +225,7 @@ def gpu_comparison(request, pk1, pk2):
 
     return render(request, 'gpu_comparison.html', {'gpu1': gpu1, 'gpu2': gpu2})
 
+
 def SignupPage(request):
     if request.method=='POST':
         uname=request.POST.get('username')
@@ -223,31 +233,86 @@ def SignupPage(request):
         pass1=request.POST.get('password1')
         pass2=request.POST.get('password2')
 
-        if pass1!=pass2:
-            return HttpResponse("Your password and confrom password are not Same!!")
+        if not uname  or not email or not pass1 or not pass2:
+            messages.error(request, "Please fill in all the fields!")
         else:
-
-            my_user=User.objects.create_user(uname,email,pass1)
-            my_user.save()
-            return redirect('login')
+            if pass1!=pass2:
+                messages.error(request, "Password does not match!")
+            else:
+                my_user=User.objects.create_user(uname,email,pass1)
+                my_user.save()
+                return redirect('login')
         
     return render (request,'signup.html')
 
 
 def LoginPage(request):
-    if request.method=='POST':
-        username=request.POST.get('username')
-        pass1=request.POST.get('pass')
-        user=authenticate(request,username=username,password=pass1)
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('pass')
+        user = authenticate(request, username=username, password=password)
         if user is not None:
-            login(request,user)
+            login(request, user)
             return redirect('home')
         else:
-            return HttpResponse ("Username or Password is incorrect!!!")
+            messages.error(request, "Username/Password Incorrect!")
+    
+    return render(request, 'login.html')
 
-    return render (request,'login.html')
 
 
 def LogoutPage(request):
     logout(request)
     return redirect('login')
+
+
+def ChangePassword(request, token):
+    context = {}
+    try:
+        profile_obj = Profile.objects.filter(forgot_password_token = token).first()
+        context = {'user_id': profile_obj.user.id}
+        
+        if request.method == 'POST':
+            new_password = request.POST.get('new_password')
+            confirm_password = request.POST.get('confirm_password')
+            user_id = request.POST.get('user_id')
+            
+            if user_id is None:
+                messages.success(request, 'No user id found!')
+                return redirect(f'/change-password/{token}/')
+
+            if new_password != confirm_password:
+                messages.success(request, 'Password does not match!')
+                return redirect(f'/change-password/{token}/')
+            
+            user_obj = User.objects.get(id = user_id)
+            user_obj.set_password(new_password)
+            user_obj.save()
+            return redirect('/login/')
+
+    except Exception as e:
+        print(e)
+    return render(request, 'change-password.html', context)
+
+
+def ForgotPassword(request):
+    try:
+        if request.method == 'POST':
+            username = request.POST.get('username')
+
+            if not User.objects.filter(username=username).first():
+                messages.success(request, 'No user found with this username!')
+                return redirect('/forgot-password/')
+
+            user_obj = User.objects.get(username = username)
+            token = str(uuid.uuid4())
+            profile_obj = Profile.objects.get(user = user_obj)
+            profile_obj.forgot_password_token = token
+            profile_obj.save()
+            send_forget_password_mail(user_obj, token)
+            messages.success(request, 'An email is sent!')
+            return redirect('/forgot-password/')
+
+    except Exception as e:
+        print(e)
+    return render(request, 'forgot-password.html')

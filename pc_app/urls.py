@@ -9,7 +9,6 @@ urlpatterns = [
     path('login/', views.LoginPage, name='login'),
     path('logout/', views.LogoutPage, name='logout'),
     path('home/', views.HomePage, name='home'),
-    path('profile/', views.profile, name='profile'),
 
     path('cpu/', CPUListView.as_view(), name='cpu_list'),
     path('cpu/<int:pk>/', views.cpu_detail, name='cpu_detail'),
@@ -21,14 +20,24 @@ urlpatterns = [
 
     path('upgrade/', views.upgrade, name='upgrade'),
 
+    #To display favourited build
     path('favorited_builds/', views.favorited_builds, name='favorited_builds'),
 
+    #To favourite build
     path('toggle_favorite/', views.toggle_favorite, name='toggle_favorite'),
     
     path('delete_favorited_build/<int:build_id>/', views.delete_favorited_build, name='delete_favorited_build'),
     
     path('get_cpu_info/<int:cpu_id>/', views.get_cpu_info, name='get_cpu_info'),
     path('get_gpu_info/<int:gpu_id>/', views.get_gpu_info, name='get_gpu_info'),
+
+    path('update-profile-picture/', views.update_profile_picture, name='update_profile_picture'),
+    path('profile/', views.profile, name='change_password'),
+
+    path('forgot-password/', views.ForgotPassword, name='forgot_password'),
+    path('change-password/<token>/', views.ChangePassword, name='change_password'),
+
+
 ]
 
 if settings.DEBUG:

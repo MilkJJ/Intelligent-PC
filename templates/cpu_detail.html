@@ -17,10 +17,24 @@
 <p>Price: {{ cpu.price|convert_to_myr }}</p>
 
 <h2>Select another CPU for comparison:</h2>
-<form method="post" action="{% url 'cpu_detail' cpu.pk %}">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Compare</button>
-</form>
+<button id="chooseButton">Choose</button>
+
+<div id="cpuList" style="display: none;">
+  <h3>List of CPUs for Comparison:</h3>
+  <ul>
+    {% for other_cpu in other_cpus %}
+      <li>
+        <a href="{% url 'cpu_comparison' cpu.pk other_cpu.pk %}">{{ other_cpu.name }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+</div>
+
+<script>
+  document.getElementById('chooseButton').addEventListener('click', function () {
+    var cpuList = document.getElementById('cpuList');
+    cpuList.style.display = (cpuList.style.display === 'none') ? 'block' : 'none';
+  });
+</script>
 
 {% endblock %}
