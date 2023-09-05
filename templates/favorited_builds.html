@@ -12,6 +12,11 @@
             {% csrf_token %}
             <button type="submit">Unfav</button>
           </form>
+
+          <form method="POST" action="{% url 'add_to_cart' build.id %}">
+            {% csrf_token %}
+            <button type="submit">Add to Cart</button>
+          </form>
         </li>
       {% endfor %}
     </ul>

@@ -86,6 +86,7 @@
             <h4>Customization</h4>
             <button onclick="clearSelections()">Clear</button>
             <button onclick="toggleFavorite()">Save <i class="fa fa-heart"></i></button>
+            <button onclick="addToCart()">Add to Cart</button>
             <p><a href="{% url 'cpu_list' %}">CPU: </a> <span id="selectedCPU"></span></p>
             <p><a href="{% url 'gpu_list' %}">GPU: </a> <span id="selectedGPU"></span></p>
             <!-- Add more component display lines as needed -->
@@ -95,8 +96,9 @@
     
     <button id="slideToggleButton" class="slide-button" onclick="toggleSlideMenu()">Customize</button>
     
-    {% block content %}
     
+
+    {% block content %}
     {% endblock %}
 
     {% include 'bin/footer.html' %}
@@ -160,7 +162,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 localStorage.setItem('selectedCPU', `${cpuInfo.name} - ${cpuInfo.price}`);
                 document.getElementById('selectedCPU').innerText = `${cpuInfo.name} - ${cpuInfo.price}`;
                 
-                getComponentPrice('selectedCPU');
                 alert(`CPU: ${cpuInfo.name} selected for customization!`);
             }
         };
@@ -176,8 +177,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 localStorage.setItem('selectedGPU', `${gpuInfo.chipset} - ${gpuInfo.price}`);
                 document.getElementById('selectedGPU').innerText = `${gpuInfo.chipset} - ${gpuInfo.price}`;
                 
-                // Calculate total price
-                getComponentPrice('selectedGPU');
                 alert(`GPU: ${gpuInfo.chipset} selected for customization!`);
             }
         };
@@ -241,10 +240,10 @@ function calculateTotalPrice() {
 
     //Storing to database
     function toggleFavorite() {
-        const selectedCPU = localStorage.getItem('selectedCPUID');
-        const selectedGPU = localStorage.getItem('selectedGPUID');
+        const selectedCPUID = localStorage.getItem('selectedCPUID');
+        const selectedGPUID = localStorage.getItem('selectedGPUID');
 
-        if (selectedCPU && selectedGPU) {
+        if (selectedCPUID && selectedGPUID) {
             const xhr = new XMLHttpRequest();
             xhr.open('POST', '/toggle_favorite/', true);
             xhr.setRequestHeader('X-CSRFToken', csrftoken); // Set the CSRF token in the request header
@@ -260,10 +259,48 @@ function calculateTotalPrice() {
                     }
                 }
             };
-            xhr.send(JSON.stringify({ cpu_id: selectedCPU, gpu_id: selectedGPU }));
+            xhr.send(JSON.stringify({ cpu_id: selectedCPUID, gpu_id: selectedGPUID }));
         } else {
             alert('Please select all components before saving!');
         }
     }
+
+    function addToCart() {
+    var selectedCPUID = localStorage.getItem('selectedCPUID');
+    var selectedGPUID = localStorage.getItem('selectedGPUID');
+
+    if (selectedCPUID && selectedGPUID) {
+        // Send selected component IDs to Django view
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/add_to_cart/', true);
+        xhr.setRequestHeader('X-CSRFToken', csrftoken);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    var response = JSON.parse(xhr.responseText);
+                    if (response.success) {
+                        alert('Components added to cart successfully!');
+                        window.location.href = '/cart_items/';
+                    } else {
+                        alert('Failed to add components to cart.');
+                    }
+                } else {
+                    alert('Failed to communicate with the server.');
+                }
+            }
+        };
+        xhr.send(JSON.stringify({ cpu_id: selectedCPUID, gpu_id: selectedGPUID }));
+    } else {
+        alert('Please select all components before saving!');
+    }
+    
+    // Send the selected component IDs to the server
+    var formData = new FormData();
+    formData.append('selectedCPUID', selectedCPUID);
+    formData.append('selectedGPUID', selectedGPUID);
+    xhr.send(formData);
+}
+
 
 </script>

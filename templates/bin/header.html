@@ -3,43 +3,43 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm-3">
+                <!-- Logo -->
                 <div class="pull-left">
-                    <a href="/home/"><img src="{% static 'images/logo/logo.png' %}" alt="No Pic" width="150" height="100"/></a>
+                    <a href="{% url 'home' %}">
+                        <img src="{% static 'images/logo/logo.png' %}" alt="Logo" width="150" height="100" />
+                    </a>
                 </div>
             </div>
 
-            <div class="col-sm-2">
-                <ul class="navbar-nav">
-                    <li class="dropdown profile">
-                        <a href="{% url 'upgrade' %}">Upgrade</a>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="col-sm-5">
-                <form action="" method="GET">
-                    <div class="input-group search_box">
-                        <input type="text" class="form-control" placeholder="Search Components" name="q" value="{{ search }}">
-                        <button class="btn btn-primary" type="submit"><i class="fa fa-search"></i></button>
-                    </div>
-                </form>
-            </div>
-
             <div class="col-sm-3">
+                <!-- User Navigation -->
                 <div class="pull-right">
                     <ul class="navbar-nav">
                         {% if request.user.is_authenticated %}
                         <li class="dropdown profile">
-                            <a href="#">{{ request.user.username }} <i class="fa fa-angle-down"></i></a>
+                            <a href="#">Welcome, {{ request.user.username }} <i class="fa fa-angle-down"></i></a>
                             <ul role="menu" class="sub-menu">
                                 <li><a href="/profile/"><i class="fa fa-user"></i> Profile</a></li>
                                 <li><a href="{% url 'logout' %}"><i class="fa fa-sign-out"></i> Sign Out</a></li>
                             </ul>
                         </li>
+
+                        <li class="dropdown profile">
+                            <a href="{% url 'upgrade' %}">Upgrade</a>
+                        </li>
+
                         <li class="cart">
                             <a href="{% url 'favorited_builds' %}">Favorited Builds <i class="fa fa-heart"></i>
                                 <span class="totalcart" id="gettotalcart">{{ favorited_builds|length }}</span>
                             </a>
+                        </li>
+
+                        <li class="cart">
+                            <a href="{% url 'cart_items' %}">Cart</a>
+                        </li>
+
+                        <li class="cart">
+                            <a href="{% url 'purchase_history' %}">History</a>
                         </li>
                         {% else %}
                         <li class="profile">
@@ -47,6 +47,21 @@
                         </li>
                         {% endif %}
                     </ul>
+                    
+                    <!-- Search Box -->
+                    <!-- <div class="col-sm-6">
+                        
+                        <div class="pull-right">
+                            <form action="" method="GET">
+                                <div class="input-group search_box">
+                                    <input type="text" class="form-control" placeholder="Search" name="q"
+                                        value="{{ search }}">
+                                    <button class="btn btn-primary" type="submit"><i class="fa fa-search"></i></button>
+                                </div>
+                            </form>
+                        </div>
+                    </div> -->
+                    
                 </div>
             </div>
         </div>

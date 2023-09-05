@@ -22,11 +22,20 @@ urlpatterns = [
 
     #To display favourited build
     path('favorited_builds/', views.favorited_builds, name='favorited_builds'),
+    path('cart_items/', views.cart_items, name='cart_items'),
+    path('purchase_history/', views.purchase_history_view, name='purchase_history'),
+
+    path('checkout/', views.checkout, name='checkout'),
+    path('place_order/', views.place_order, name='place_order'),
+
 
     #To favourite build
     path('toggle_favorite/', views.toggle_favorite, name='toggle_favorite'),
+    path('add_to_cart/', views.add_to_cart, name='add_to_cart'),
+    path('add_to_cart/<int:build_id>/', views.add_to_cart, name='add_to_cart'),
     
     path('delete_favorited_build/<int:build_id>/', views.delete_favorited_build, name='delete_favorited_build'),
+    path('remove_from_cart/<int:cart_item_id>/', views.remove_from_cart, name='remove_from_cart'),
     
     path('get_cpu_info/<int:cpu_id>/', views.get_cpu_info, name='get_cpu_info'),
     path('get_gpu_info/<int:gpu_id>/', views.get_gpu_info, name='get_gpu_info'),

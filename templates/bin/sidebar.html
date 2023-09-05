@@ -1,3 +1,4 @@
+<div class="container">
 <ul class="list-group list-group-flush">
 	<li class="list-group-item">
 		<h5>Components</h5>
@@ -9,5 +10,24 @@
 	<li class="list-group-item"><a href="">RAM</a></li>
 	<li class="list-group-item"><a href="">Power Supply</a></li>
 	<li class="list-group-item"><a href="">Storage</a></li>
-
 </ul>
+	<div class="new-content">test</div>
+</div>
+
+<style>
+	.container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start; /* Align items at the top */
+}
+
+.list-group {
+  flex: 1; /* Expand to fill available space */
+  margin-right: 20px; /* Add some spacing between the list and new content */
+}
+
+.new-content {
+  flex: 1; /* Expand to fill available space */
+}
+
+</style>
