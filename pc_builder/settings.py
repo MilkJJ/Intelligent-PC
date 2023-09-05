@@ -140,6 +140,6 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'p20012439@student.newinti.edu.my'
-EMAIL_HOST_PASSWORD = '$020620070105iicp'
+EMAIL_HOST_PASSWORD = '#'
 
 
