@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Include necessary CSS and JavaScript libraries -->
+    <title>Checkout</title>
+</head>
+<body>
+    <h1>Checkout</h1>
+    
+    <!-- Display cart items -->
+    <h2>Items in Your Cart:</h2>
+    <ul>
+        {% for cart_item in cart_items %}
+            <li>{{ cart_item.cpu.name }} - {{ cart_item.gpu.chipset }} - {{ cart_item.total_price }}</li>
+        {% endfor %}
+    </ul>
+    
+    <!-- Display delivery price -->
+    <p>Delivery Price: RM 5</p>
+    
+    <!-- Address input form -->
+    <form method="post" action="{% url 'place_order' %}">
+        {% csrf_token %}
+        <h2>Delivery Address</h2>
+        <!-- Add input fields for address, name, etc. -->
+        
+        <!-- Payment method selection -->
+        <h2>Payment Method</h2>
+        <label for="payment-method-cash">
+            <input type="radio" id="payment-method-cash" name="payment_method" value="cash">
+            Cash
+        </label>
+        <!-- Add more payment method options as needed -->
+        
+        <!-- Display total price -->
+        <p>Total Price: {{ total_price }}</p> <!-- Total price + fixed delivery price -->
+        
+        <!-- Place order button -->
+        <button type="submit">Place Order</button>
+    </form>
+</body>
+</html>

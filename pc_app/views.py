@@ -1,16 +1,20 @@
 import json, uuid
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.decorators import login_required
-from .models import CPU, GPU, FavouritedPC, Profile
+from .models import CPU, GPU, FavouritedPC, Profile, CartItem
 from .forms import CPUComparisonForm, GPUComparisonForm, PasswordChangeForm
 from django.contrib import messages
 from django.http import JsonResponse
 from .helpers import send_forget_password_mail
 from django.views.generic import ListView
 from pc_app.templatetags.custom_filters import convert_to_myr
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from django.core.mail import EmailMessage
+from io import BytesIO
 
 
 # Create your views here.
@@ -86,7 +90,49 @@ def toggle_favorite(request):
             return JsonResponse(response_data)
             
         return JsonResponse({'success': False})
+
+@login_required(login_url='login')
+def add_to_cart(request, build_id):
+    if request.method == 'POST' and build_id:
+        build = FavouritedPC.objects.get(id=build_id)  # Retrieve the selected build
+        # Check if the item is already in the cart
+        cpu_id = build.cpu.id
+        gpu_id = build.gpu.id
+
+        cpu = CPU.objects.get(id=cpu_id)
+        gpu = GPU.objects.get(id=gpu_id)
+
+        total_price = cpu.price + gpu.price
+        
+        cart_item, created = CartItem.objects.get_or_create(cpu_id=cpu_id, gpu_id=gpu_id, total_price=total_price, user=request.user)
+
+        if created:
+            messages.success(request, "Item added to cart successfully!")
+        else:
+            messages.info(request, "Item is already in your cart.")
+        
+        return redirect('cart_items')  # Redirect to the cart page or another relevant page
     
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        cpu_id = data.get('cpu_id')
+        gpu_id = data.get('gpu_id')
+        
+        if cpu_id and gpu_id:
+            cpu = CPU.objects.get(id=cpu_id)
+            gpu = GPU.objects.get(id=gpu_id)
+
+            total_price = cpu.price + gpu.price
+            
+            # Create a new CartItem and save it to the database
+            cart_item = CartItem(cpu_id=cpu_id, gpu_id=gpu_id, total_price=total_price, user=request.user)
+            cart_item.save()
+
+            return JsonResponse({'success': True})
+    else:
+        return JsonResponse({'success': False, 'message': 'Invalid request method'})
+
+
 @login_required(login_url='login')
 def HomePage(request):
     cpu_id = request.POST.get('cpu')
@@ -139,6 +185,68 @@ def get_gpu_info(request, gpu_id):
     }
     return JsonResponse(gpu_info)
     
+def cart_items(request):
+    # Get the favorited PC Builds for the current user
+    cart_items = CartItem.objects.filter(user=request.user, is_purchased=False)
+
+    context = {
+        'cart_items': cart_items,
+    }
+    return render(request, 'cart-items.html', context)
+
+
+def place_order(request):
+    if request.method == 'POST':
+        # Update the cart items to mark them as purchased
+        cart_items = CartItem.objects.filter(user=request.user, is_purchased=False)
+        cart_items.update(is_purchased=True)
+
+        # Additional order processing logic can go here
+
+        # Create an in-memory PDF purchase confirmation
+        buffer = BytesIO()
+        p = canvas.Canvas(buffer, pagesize=letter)
+        p.drawString(100, 750, 'Purchase Confirmation')
+        # Add more content to the PDF as needed
+
+        p.showPage()
+        p.save()
+        buffer.seek(0)  # Move the buffer's cursor to the beginning
+
+        # Send the PDF as an email attachment
+        subject = 'Purchase Confirmation'
+        message = 'Thank you for your purchase. Please find your purchase confirmation attached.'
+        from_email = 'your_email@example.com'  # Replace with your email
+        recipient_list = [request.user.email]  # Use the user's email
+
+        email = EmailMessage(subject, message, from_email, recipient_list)
+        email.attach('purchase_confirmation.pdf', buffer.read(), 'application/pdf')  # Attach the in-memory PDF
+        email.send()
+
+        return render(request, 'order_confirmation.html')  # Redirect to an order confirmation page
+
+
+def checkout(request):
+    # Get cart items for the user
+    cart_items = CartItem.objects.filter(user=request.user, is_purchased=False)
+    
+    # Calculate the total price
+    total_price = sum(item.total_price for item in cart_items)
+    
+    context = {
+        'cart_items': cart_items,
+        'total_price': total_price + 5,
+    }
+    
+    return render(request, 'checkout.html', context)
+
+
+def purchase_history_view(request):
+    purchased_items = CartItem.objects.filter(user=request.user, is_purchased=True)
+    # Render the purchased_items in the purchase history template
+    return render(request, 'purchase-history.html', {'purchased_items': purchased_items})
+
+
 def favorited_builds(request):
     # Get the favorited PC Builds for the current user
     favorited_builds = FavouritedPC.objects.filter(user=request.user)
@@ -149,6 +257,23 @@ def favorited_builds(request):
     return render(request, 'favorited_builds.html', context)
 
 
+def remove_from_cart(request, cart_item_id):
+    try:
+        cart_item = CartItem.objects.get(id=cart_item_id, user=request.user)
+        cart_item.delete()
+
+        # Display a success message that the build has been deleted
+        messages.success(request, 'The item has been removed from the cart.')
+    except FavouritedPC.DoesNotExist:
+        # Display an error message if the build does not exist or does not belong to the current user
+        messages.error(request, 'The item does not exist or does not belong to you.')
+    except Exception as e:
+        # Display an error message if there was an issue deleting the build
+        messages.error(request, f'Error deleting the item: {e}')
+
+    # Redirect back to the favorited_builds page
+    return redirect('cart_items')
+    
 def delete_favorited_build(request, build_id):
     try:
         # Get the favorited build to delete

@@ -4,7 +4,8 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
 
-# Create your models here.    
+# Create your models here.
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
@@ -128,8 +129,15 @@ class FavouritedPC(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     cpu = models.ForeignKey(CPU, on_delete=models.CASCADE)
     gpu = models.ForeignKey(GPU, on_delete=models.CASCADE)
-    total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    total_price = models.FloatField(default=0.0)
     # Add other fields as needed
 
     def __str__(self):
         return f"Favourited PC {self.id} - {self.user.username}"
+    
+class CartItem(models.Model):
+    cpu = models.ForeignKey(CPU, on_delete=models.CASCADE, null=True)
+    gpu = models.ForeignKey(GPU, on_delete=models.CASCADE, null=True)
+    total_price = models.FloatField(default=0.0)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    is_purchased = models.BooleanField(default=False)
