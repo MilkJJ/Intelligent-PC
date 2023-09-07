@@ -92,7 +92,7 @@ def toggle_favorite(request):
         return JsonResponse({'success': False})
 
 @login_required(login_url='login')
-def add_to_cart(request, build_id):
+def add_to_cart(request, build_id=None):
     if request.method == 'POST' and build_id:
         build = FavouritedPC.objects.get(id=build_id)  # Retrieve the selected build
         # Check if the item is already in the cart
@@ -380,7 +380,7 @@ def LoginPage(request):
             login(request, user)
             return redirect('home')
         else:
-            messages.error(request, "Username/Password Incorrect!")
+            messages.error(request, "Incorrect Username/Password!")
     
     return render(request, 'login.html')
 
