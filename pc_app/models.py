@@ -59,7 +59,7 @@ class GPU(models.Model):
 
 class Memory(models.Model):
     name = models.CharField(max_length=200)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    price = models.FloatField()
     ddr_type = models.CharField(max_length=10)  # For example, "DDR4"
     speed_mhz = models.PositiveIntegerField()  # MHz speed
     num_modules = models.PositiveIntegerField()  # Number of memory modules
@@ -75,7 +75,7 @@ class Memory(models.Model):
 
 class Motherboard(models.Model):
     name = models.CharField(max_length=255)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    price = models.FloatField()
     socket = models.CharField(max_length=50)
     form_factor = models.CharField(max_length=50)
     max_memory = models.IntegerField()
@@ -135,9 +135,11 @@ class FavouritedPC(models.Model):
     def __str__(self):
         return f"Favourited PC {self.id} - {self.user.username}"
     
+
 class CartItem(models.Model):
     cpu = models.ForeignKey(CPU, on_delete=models.CASCADE, null=True)
     gpu = models.ForeignKey(GPU, on_delete=models.CASCADE, null=True)
     total_price = models.FloatField(default=0.0)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     is_purchased = models.BooleanField(default=False)
+    isShipped = models.BooleanField(default=False)

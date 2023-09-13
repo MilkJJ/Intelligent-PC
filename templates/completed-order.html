@@ -6,6 +6,7 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -30,7 +31,8 @@
             background-color: #fff;
         }
 
-        th, td {
+        th,
+        td {
             padding: 12px 15px;
             text-align: left;
             border-bottom: 1px solid #ddd;
@@ -58,37 +60,45 @@
         }
     </style>
 </head>
-<body>
-    <h1>Purchased Build</h1>
 
-    {% if purchased_items %}
-        {% for item in purchased_items %}
-            <table>
-                <thead>
-                    <tr>
-                        <th>PC BUILD</th>
-                        <th>Price</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>{{ item.cpu.name }}</td>
-                        <td>{{ item.cpu.price|convert_to_myr }}</td>
-                    </tr>
-                    <tr>
-                        <td>{{ item.gpu.chipset }}</td>
-                        <td>{{ item.gpu.price|convert_to_myr }}</td>
-                    </tr>
-                    <tr>
-                        <td>Total Price:</td>
-                        <td>{{ item.total_price|convert_to_myr }}</td>
-                    </tr>
-                </tbody>
-            </table>
-        {% endfor %}
+<body>
+    <h1>Completed Orders</h1>
+
+    {% if shipped_items %}
+    {% for item in shipped_items %}
+    <table>
+        <thead>
+            <tr>
+                <th>PC BUILD</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ item.cpu.name }}</td>
+                <td>{{ item.cpu.price|convert_to_myr }}</td>
+            </tr>
+            <tr>
+                <td>{{ item.gpu.chipset }}</td>
+                <td>{{ item.gpu.price|convert_to_myr }}</td>
+            </tr>
+            <tr>
+                <td>Total Price:</td>
+                <td>{{ item.total_price|convert_to_myr }}</td>
+            </tr>
+
+            {% if item.isShipped %}
+            <tr>Order Status: Shipped</tr>
+            {% else %}
+            <tr>Order Status: NOT Shipped</tr>
+            {% endif %}
+        </tbody>
+    </table>
+    {% endfor %}
     {% else %}
-        <p class="empty-cart-message">Purchase History empty</p>
+    <p class="empty-cart-message">No Completed Order</p>
     {% endif %}
 </body>
+
 </html>
 {% endblock %}
