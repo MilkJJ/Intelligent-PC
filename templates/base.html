@@ -13,6 +13,7 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/slick.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/slick-theme.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/skdslider.css' %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
       
 </head>
 
@@ -21,8 +22,8 @@
     .slide-menu {
       position: fixed;
       top: 0;
-      right: -300px; /* Start off-screen */
-      width: 300px;
+      right: -400px; /* Start off-screen */
+      width: 400px;
       height: 100%;
       background-color: white;
       box-shadow: -5px 0px 5px rgba(0, 0, 0, 0.2);
@@ -82,16 +83,7 @@
     <div id="snackbar"></div>
 
     <div id="slideOutMenu" class="slide-menu">
-        <div id="selectedComponents">
-            <h4>Customization</h4>
-            <button onclick="clearSelections()">Clear</button>
-            <button onclick="toggleFavorite()">Save <i class="fa fa-heart"></i></button>
-            <button onclick="addToCart()">Add to Cart</button>
-            <p><a href="{% url 'cpu_list' %}">CPU: </a> <span id="selectedCPU"></span></p>
-            <p><a href="{% url 'gpu_list' %}">GPU: </a> <span id="selectedGPU"></span></p>
-            <!-- Add more component display lines as needed -->
-            <p>Total Price: <span id="totalPrice"></span></p>
-        </div>
+        {% include 'bin/customize.html' %}
     </div>
     
     <button id="slideToggleButton" class="slide-button" onclick="toggleSlideMenu()">Customize</button>

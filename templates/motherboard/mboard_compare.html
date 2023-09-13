@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ mboard1.name }} vs {{ mboard2.name }}{% endblock %}
+
+{% block content %}
+
+{% load custom_filters %}
+
+<h1>Comparison</h1>
+<h1>Motherboard 1</h1>
+<p>Motherboard: {{ mboard1.name }}</p>
+<p>Form Factor: {{ mboard1.form_factor }}</p>
+<p>Socket: {{ mboard1.socket }}</p>
+<p>Max Memory: {{ mboard1.max_memory }}</p>
+<p>Memory Slots: {{ mboard1.memory_slots }}</p>
+<p>Price: {{ mboard1.price|convert_to_myr }}</p>
+<p>Color: {{ mboard1.color }}</p>
+
+<h1>Motherboard 2</h1>
+<p>Motherboard: {{ mboard2.name }}</p>
+<p>Form Factor: {{ mboard2.form_factor }}</p>
+<p>Socket: {{ mboard2.socket }}</p>
+<p>Max Memory: {{ mboard2.max_memory }}</p>
+<p>Memory Slots: {{ mboard2.memory_slots }}</p>
+<p>Price: {{ mboard2.price|convert_to_myr }}</p>
+<p>Color: {{ mboard2.color }}</p>
+
+{% endblock %}

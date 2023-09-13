@@ -1,7 +1,7 @@
 # forms.py
 
 from django import forms
-from .models import CPU, GPU, Profile
+from .models import *
 from django.contrib.auth.forms import PasswordChangeForm
 
 class CPUComparisonForm(forms.Form):
@@ -9,6 +9,9 @@ class CPUComparisonForm(forms.Form):
 
 class GPUComparisonForm(forms.Form):
     gpu = forms.ModelChoiceField(queryset=GPU.objects.all(), label='Select a GPU for comparison', to_field_name='id')
+
+class MBoardComparisonForm(forms.Form):
+    mboard = forms.ModelChoiceField(queryset=Motherboard.objects.all(), label='Select a Motherboard for comparison', to_field_name='id')
 
 class ProfileForm(forms.ModelForm):
     class Meta:

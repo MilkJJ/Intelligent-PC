@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import CPUListView, GPUListView
+from .views import *
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -18,12 +18,19 @@ urlpatterns = [
     path('gpu/<int:pk>/', views.gpu_detail, name='gpu_detail'),
     path('gpu/<int:pk1>/<int:pk2>/', views.gpu_comparison, name='gpu_comparison'),
 
+    path('mboard/', MBoardListView.as_view(), name='mboard_list'),
+    path('mboard/<int:pk>/', views.mboard_detail, name='mboard_detail'),
+    path('mboard/<int:pk1>/<int:pk2>/', views.mboard_comparison, name='mboard_comparison'),
+
     path('upgrade/', views.upgrade, name='upgrade'),
 
     #To display favourited build
     path('favorited_builds/', views.favorited_builds, name='favorited_builds'),
     path('cart_items/', views.cart_items, name='cart_items'),
-    path('purchase_history/', views.purchase_history_view, name='purchase_history'),
+
+    # Order Build
+    path('completed_order/', views.completed_order_view, name='completed_order'),
+    path('ongoing_order/', views.ongoing_order_view, name='ongoing_order'),
 
     path('checkout/', views.checkout, name='checkout'),
     path('place_order/', views.place_order, name='place_order'),
