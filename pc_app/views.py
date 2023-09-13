@@ -218,7 +218,7 @@ def completed_order_view(request):
     return render(request, 'completed-order.html', {'shipped_items': shipped_items})
 
 def ongoing_order_view(request):
-    purchased_items = CartItem.objects.filter(user=request.user, is_purchased=True)
+    purchased_items = CartItem.objects.filter(user=request.user, is_purchased=True, isShipped=False)
     # Render the purchased_items in the purchase history template
     return render(request, 'ongoing-order.html', {'purchased_items': purchased_items})
 
