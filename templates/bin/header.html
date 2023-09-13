@@ -38,16 +38,24 @@
                             <a href="{% url 'cart_items' %}">Cart</a>
                         </li>
 
+                        {% if user.is_superuser %}
                         <li class="cart">
-                            <a href="{% url 'completed_order' %}">History</a>
+                            <a href="{% url 'vendor_order_list' %}">PC Orders</a>
                         </li>
+
+                        <li class="cart">
+                            <a href="{% url 'upload_csv' %}">Upload Component</a>
+                        </li>
+                        {% endif %}
+
                         {% else %}
                         <li class="profile">
                             <a href="{% url 'login' %}"><i class="fa fa-sign-in"></i> Sign In</a>
                         </li>
                         {% endif %}
                     </ul>
-                    
+
+
                     <!-- Search Box -->
                     <!-- <div class="col-sm-6">
                         
@@ -61,7 +69,7 @@
                             </form>
                         </div>
                     </div> -->
-                    
+
                 </div>
             </div>
         </div>

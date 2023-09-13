@@ -3,6 +3,12 @@
 {% block content %}
 
 <style>
+  .link-container {
+    display: inline-block;
+    margin-right: 20px;
+    /* Adjust the margin as needed for spacing */
+  }
+
   .profile-picture-container {
     width: 200px;
     /* Set the desired width */
@@ -27,14 +33,20 @@
 
 <h1>Profile</h1>
 
+<div class="link-container">
+  <p><a href="{% url 'completed_order' %}">Completed Orders</a></p>
+</div>
+<div class="link-container">
+  <p><a href="{% url 'ongoing_order' %}">Ongoing Orders</a></p>
+</div>
+
 <div class="profile-picture-container">
   <label for="profile-picture-input">
     {% if user.profile.profile_picture %}
     <img class="profile-picture" src="{{ user.profile.profile_picture.url }}" alt="PFP">
     {% else %}
     <img class="profile-picture"
-      src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
-      alt="Default PFP">
+      src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="Default PFP">
     {% endif %}
   </label>
   <input type="file" id="profile-picture-input" style="display: none;">
@@ -46,13 +58,13 @@
 <h2>Change Password</h2>
 
 <!-- Display message -->
-{% if messages %}
+<!-- {% if messages %}
 <div class="error-messages">
   {% for message in messages %}
   <p>{{ message }}</p>
   {% endfor %}
 </div>
-{% endif %}
+{% endif %} -->
 
 <form method="post" action="{% url 'change_password' %}">
   {% csrf_token %}

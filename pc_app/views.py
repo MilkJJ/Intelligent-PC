@@ -119,7 +119,7 @@ def add_to_cart(request, build_id=None):
 
         total_price = cpu.price + gpu.price
         
-        cart_item, created = CartItem.objects.get_or_create(cpu_id=cpu_id, gpu_id=gpu_id, total_price=total_price, user=request.user)
+        created = CartItem.objects.create(cpu_id=cpu_id, gpu_id=gpu_id, total_price=total_price, user=request.user)
 
         if created:
             messages.success(request, "Item added to cart successfully!")
@@ -128,7 +128,7 @@ def add_to_cart(request, build_id=None):
         
         return redirect('cart_items')  # Redirect to the cart page or another relevant page
     
-    if request.method == 'POST':
+    elif request.method == 'POST':
         data = json.loads(request.body)
         cpu_id = data.get('cpu_id')
         gpu_id = data.get('gpu_id')
@@ -242,10 +242,10 @@ def toggle_favorite(request):
             )
             
             if created:
-                response_data = {'success': True}
+                response_data = {'success': True, 'message': 'Build has been favorited.'}
             else:
                 pc_build.delete()
-                response_data = {'success': False}
+                response_data = {'success': False, 'message': 'Build has been unfavorited.'}
             
             return JsonResponse(response_data)
             

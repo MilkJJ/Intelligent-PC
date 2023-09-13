@@ -35,7 +35,6 @@ urlpatterns = [
     path('checkout/', views.checkout, name='checkout'),
     path('place_order/', views.place_order, name='place_order'),
 
-
     #To favourite build
     path('toggle_favorite/', views.toggle_favorite, name='toggle_favorite'),
     path('add_to_cart/', views.add_to_cart, name='add_to_cart'),

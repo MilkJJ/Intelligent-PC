@@ -12,6 +12,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cart</title>
     <style>
+        .link-container {
+            display: inline-block;
+            margin-right: 20px;
+            /* Adjust the margin as needed for spacing */
+        }
+
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -63,6 +69,13 @@
 
 <body>
     <h1>Completed Orders</h1>
+
+    <div class="link-container">
+        <p><a href="{% url 'completed_order' %}">Completed Orders</a></p>
+    </div>
+    <div class="link-container">
+        <p><a href="{% url 'ongoing_order' %}">Ongoing Orders</a></p>
+    </div>
 
     {% if shipped_items %}
     {% for item in shipped_items %}
