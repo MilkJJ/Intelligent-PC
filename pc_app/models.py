@@ -38,6 +38,7 @@ class CPU(models.Model):
     tdp = models.PositiveIntegerField(verbose_name='TDP')
     graphics = models.CharField(max_length=100, verbose_name='Integrated Graphics', default='None')
     smt = models.BooleanField(verbose_name='Multithreading', default='False')
+    socket = models.CharField(max_length=200, default='Unknown')
     
     def __str__(self):
         return f"{self.name} - {self.graphics}"
