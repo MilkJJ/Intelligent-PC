@@ -192,11 +192,18 @@ def place_order(request):
         # Create an in-memory PDF purchase confirmation
         buffer = BytesIO()
         p = canvas.Canvas(buffer, pagesize=letter)
-        p.drawString(100, 750, 'Purchase Confirmation')
+        p.drawString(100, 750, 'Purchase Confirmation!!')
+        for cart_item in cart_items:
+            p.drawString(100, 720, 'Order Summary')
+            p.drawString(100, 700, f'CPU: {cart_item.cpu.name}')
+            p.drawString(100, 650, f'GPU: {cart_item.gpu.name}')
+            p.drawString(100, 600, f'Total Price: {cart_item.total_price}')
+            p.drawString(100, 600, f'Buyer: {cart_item.user}')
+
         # Add more content to the PDF as needed
 
-        p.showPage()
-        p.save()
+        p.showPage() # Create the PDF
+        p.save() # Clean UP the library usage
         buffer.seek(0)  # Move the buffer's cursor to the beginning
 
         # Send the PDF as an email attachment
