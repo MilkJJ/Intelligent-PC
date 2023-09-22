@@ -14,7 +14,7 @@ class Profile(models.Model):
     # Add other profile-related fields here
 
     def __str__(self) -> str:
-        return self.user.username
+        return self.user.email
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
@@ -48,7 +48,7 @@ class GPU(models.Model):
     name = models.CharField(max_length=200, default='Unknown')
     price = models.FloatField()
     chipset = models.CharField(max_length=100)
-    memory = models.BigIntegerField()
+    memory = models.FloatField()
     core_clock = models.BigIntegerField(verbose_name='Core Clock')
     boost_clock = models.BigIntegerField( verbose_name='Boost Clock')
     color = models.CharField(max_length=100)
@@ -136,6 +136,15 @@ class FavouritedPC(models.Model):
     def __str__(self):
         return f"Favourited PC {self.id} - {self.user.username}"
     
+class OrderRating(models.Model):
+    order_item = models.ForeignKey('CartItem', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    rating = models.PositiveIntegerField(default=0, choices=[(1, '1 Star'), (2, '2 Stars'), (3, '3 Stars'), (4, '4 Stars'), (5, '5 Stars')])
+    comment = models.TextField(blank=True, null=True)
+    date_added = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Rating for Order Item: {self.order_item.id}"
 
 class CartItem(models.Model):
     cpu = models.ForeignKey(CPU, on_delete=models.CASCADE, null=True)
@@ -143,4 +152,15 @@ class CartItem(models.Model):
     total_price = models.FloatField(default=0.0)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     is_purchased = models.BooleanField(default=False)
-    isShipped = models.BooleanField(default=False)
+    is_completed = models.BooleanField(default=False)
+    order_date = models.DateTimeField(null=True, blank=True)  # Add this field
+    order_rating = models.OneToOneField(OrderRating, on_delete=models.SET_NULL, blank=True, null=True)
+
+    def __str__(self):
+        return f"Order {self.id}"  # You can customize the string representation
+
+class Feedback(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    rating = models.PositiveIntegerField()
+    comments = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)

@@ -139,7 +139,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('total_price', models.FloatField(default=0.0)),
                 ('is_purchased', models.BooleanField(default=False)),
-                ('isShipped', models.BooleanField(default=False)),
+                ('is_completed', models.BooleanField(default=False)),
                 ('cpu', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='pc_app.cpu')),
                 ('gpu', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='pc_app.gpu')),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),

@@ -4,12 +4,14 @@
 {% block content %}
 <h1>Order Detail</h1>
 <p>Order #: {{ order.id }}</p>
+<p>Order Placed: {{ order.order_date }}</p>
+<br>
 <p>CPU: {{ order.cpu }}</p>
 <p>GPU: {{ order.gpu }}</p>
 <p>Total Price: {{ order.total_price }}</p>
 <!-- Display more order details here -->
 
-{% if order.isShipped %}
+{% if order.is_completed %}
   <p>Status: Shipped</p>
 {% else %}
   <p>Status: Not Shipped</p>

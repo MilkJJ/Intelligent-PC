@@ -1,2 +1,7 @@
-<!-- success.html -->
-<p>CSV data has been successfully uploaded and added to the database.</p>
+{% if success_messages %}
+    <div class="alert alert-success">
+        {% for message in success_messages %}
+            {{ message }}
+        {% endfor %}
+    </div>
+{% endif %}

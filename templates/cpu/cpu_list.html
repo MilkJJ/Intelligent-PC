@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ cpu.brand }} - {{ cpu.model }}{% endblock %}
+{% block title %}{{ cpu.name }}{% endblock %}
 
 {% block content %}
 
@@ -14,6 +14,7 @@
   <div class="titleheader">
     <h3 class="h2header text-center">CPU</h3>
     <a href="#">See All</a>
+    <a href="#" id="sortToggle" onclick="toggleSorting()">Sort A to Z</a>
   </div>
 
   <div id="cpuList"> <!-- Add id="cpuList" to the container div -->
@@ -23,7 +24,7 @@
         {% if cpu.name|lower|slice:"0:3" == "amd" %}
         <img src="https://www.amd.com/system/files/2020-06/amd-default-social-image-1200x628.jpg" width="100"
           height="100"> <!-- Replace with the actual path to AMD image -->
-          {% elif cpu.name|lower|slice:"0:5" == "intel" %}
+        {% elif cpu.name|lower|slice:"0:5" == "intel" %}
         <img src="https://www.intel.com/content/dam/logos/logo-energyblue-1x1.png" width="100" height="100">
         <!-- Replace with the actual path to Intel image -->
         {% else %}
@@ -37,8 +38,19 @@
     {% endfor %}
   </div>
 
-
   <script>
+  
+  var ascending = true;
+
+    function toggleSorting() {
+      ascending = !ascending;
+      var sortDirection = ascending ? 'name' : '-name';
+      document.getElementById('sortToggle').innerText = ascending ? 'Sort A to Z' : 'Sort Z to A';
+      var url = window.location.href.split('?')[0] + '?sort_by=' + sortDirection;
+      window.location.href = url;
+    }
+
+
     function filterCpus() {
       var input, filter, ul, li, a, i, txtValue;
       input = document.getElementById('cpuSearch');

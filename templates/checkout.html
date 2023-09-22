@@ -11,18 +11,21 @@
     <h2>Items in Your Cart:</h2>
     <ul>
         {% for cart_item in cart_items %}
-            <li>{{ cart_item.cpu.name }} - {{ cart_item.gpu.chipset }} - {{ cart_item.total_price }}</li>
+            <li>{{ forloop.counter }} - {{ cart_item.cpu.name }} - {{ cart_item.gpu.chipset }} - {{ cart_item.total_price }}</li>
         {% endfor %}
     </ul>
     
     <!-- Display delivery price -->
-    <p>Delivery Price: RM 5</p>
+    <p>Service Charge (6%): RM 5</p>
     
     <!-- Address input form -->
     <form method="post" action="{% url 'place_order' %}">
         {% csrf_token %}
-        <h2>Delivery Address</h2>
-        <!-- Add input fields for address, name, etc. -->
+        <h2>Delivery Method</h2>
+        <label for="delivery-method-pickup">
+            <input type="radio" id="delivery-method-pickup" name="delivery-method" value="pickup">
+            Pickup
+        </label>
         
         <!-- Payment method selection -->
         <h2>Payment Method</h2>

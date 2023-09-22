@@ -6,11 +6,12 @@
 <ul>
   {% for order in purchased_items %}
     <li><a href="{% url 'vendor_order_detail' order.id %}">Order #{{ order.id }}</a></li>
-    {% if order.isShipped %}
+    {% if order.is_completed %}
       Order Status: Shipped
     {% else %}
       Order Status: NOT Shipped
     {% endif %}
+    <li>Order Placed: {{ order.order_date }}</li>
   {% endfor %}
 </ul>
 {% endblock %}

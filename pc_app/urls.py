@@ -50,9 +50,11 @@ urlpatterns = [
     path('profile/', views.profile, name='change_password'),
 
     path('forgot-password/', views.ForgotPassword, name='forgot_password'),
+    # path('password-reset/<str:token>/', views.PasswordReset, name='password-reset'),
     path('change-password/<token>/', views.ChangePassword, name='change_password'),
 
-
+    path('rate-order/<int:item_id>', views.rate_order, name='rate_order'),
+    path('item/<int:item_id>/', views.rating_detail, name='item_detail'),
 ]
 
 if settings.DEBUG:

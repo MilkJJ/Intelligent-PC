@@ -99,7 +99,7 @@
                 <td>Total Price:</td>
                 <td>{{ item.total_price|convert_to_myr }}</td>
             </tr>
-            {% if item.isShipped %}
+            {% if item.is_completed %}
             <tr>Order Status: Shipped</tr>
             {% else %}
             <tr>Order Status: NOT Shipped</tr>

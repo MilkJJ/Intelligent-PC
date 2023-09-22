@@ -100,11 +100,36 @@
                 <td>{{ item.total_price|convert_to_myr }}</td>
             </tr>
 
-            {% if item.isShipped %}
+            {% if item.is_completed %}
             <tr>Order Status: Shipped</tr>
             {% else %}
             <tr>Order Status: NOT Shipped</tr>
             {% endif %}
+
+            <tr>
+                <td>
+                    {% if not item.order_rating %}
+                    <form method="post" action="{% url 'rate_order' item.id %}">
+                        {% csrf_token %}
+                        <label for="rating">Rating:</label>
+                        <select name="rating" id="rating">
+                            <option value="1">1 Star</option>
+                            <option value="2">2 Stars</option>
+                            <option value="3">3 Stars</option>
+                            <option value="4">4 Stars</option>
+                            <option value="5">5 Stars</option>
+                        </select>
+                        <br>
+                        <label for="comment">Comment:</label>
+                        <textarea name="comment" id="comment"></textarea>
+                        <br>
+                        <input type="submit" value="Submit Rating">
+                    </form>
+                    {% else %}
+                        You have rated this build!
+                    {% endif %}
+                </td>
+            </tr>
         </tbody>
     </table>
     {% endfor %}

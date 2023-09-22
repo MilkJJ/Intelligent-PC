@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% load custom_filters %}
+
+<h1>Item Details</h1>
+
+<p><strong>Item Name:</strong> {{ item.cpu.name }} (CPU) / {{ item.gpu.chipset }} (GPU)</p>
+<p><strong>Total Price:</strong> {{ item.total_price|convert_to_myr }}</p>
+<!-- <p><strong>Average Rating:</strong> </p> -->
+<p><strong>Latest Rating:</strong> {{ order_rating.rating|default:"No ratings yet" }}</p>
+<p><strong>Latest Comment:</strong> {{ order_rating.comment|default:"No comments yet" }}</p>
+
+<a href="{% url 'home' %}">Back to Home</a>
+
+<button class="select-button" onclick="selectBothComponents('{{ item.cpu.id }}', '{{ item.gpu.id }}')">Copy Build</button>
+
+<script>
+    function selectBothComponents(cpuId, gpuId) {
+        selectComponent('cpu', cpuId);
+        selectComponent('gpu', gpuId);
+    }
+    </script>
+
+{% endblock %}

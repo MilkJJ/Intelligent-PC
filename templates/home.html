@@ -2,6 +2,8 @@
 
 {% block content %}
 
+{% load custom_filters %}
+
 {% if messages %}
     <ul class="messages">
       {% for message in messages %}
@@ -10,114 +12,31 @@
     </ul>
   {% endif %}
 
-<!-- id="pcBuilderForm"> -->
-<form method="post"> 
-  {% csrf_token %}
-  <div>
-    <label for="id_cpu">Select CPU:</label>
-    <input type="text" id="cpuSearch" onkeyup="filterOptions('id_cpu', 'cpuSearch')" placeholder="Search CPUs...">
-  </div>
-  <div>
-    <select id="id_cpu" name="cpu">
-      <option value="">-- Select CPU --</option>
-      {% for cpu in cpu_list %}
-        <option value="{{ cpu.id }}">{{ cpu.name }}</option>
-      {% endfor %}
-    </select>
-  </div>
-
-  <div>
-    <label for="id_gpu">Select GPU:</label>
-    <input type="text" id="gpuSearch" onkeyup="filterOptions('id_gpu', 'gpuSearch')" placeholder="Search GPUs...">
-  </div>
-  <div>
-  <select id="id_gpu" name="gpu">
-    <option value="">-- Select GPU --</option>
-    {% for gpu in gpu_list %}
-      <option value="{{ gpu.id }}">{{ gpu.chipset }}</option>
+{% if rated_items %}
+<h3>Ratings by other users!</h3>
+<ul>
+    {% for item in rated_items %}
+    <li>
+      <strong>User:</strong> {{ item.user.username }}<br>
+      <strong>Item Name:</strong> <a href="{% url 'item_detail' item.id %}">
+        {% if 'amd' in item.cpu.name|lower %}
+        AMD Build
+        {% elif 'intel' in item.cpu.name|lower %}
+        Intel Build
+        {% else %}
+        Other Build
+        {% endif %}
+      </a>
+      
+        <br>
+        <strong>Total Price:</strong> {{ item.total_price|convert_to_myr }}<br>
+        <strong>Latest Rating:</strong> {{ item.latest_rating|default:"No ratings yet" }}<br>
+        <strong>Latest Comment:</strong> {{ item.latest_comment|default:"No comments yet" }}
+    </li>
     {% endfor %}
-  </select>
-  </div>
-
-  <!-- CHANGE TO HEART SYMBOL -->
-  <button type="submit">
-    {% if is_favorited %}
-      Unfavourite
-    {% else %}
-      Favourite
-    {% endif %}
-  </button>
-</form>
-
-<div id="selectedComponents">
-  <!-- Display the summary of selected components here using JavaScript -->
-</div>
-
-<!-- Add the JavaScript section at the bottom -->
-<script>
-// Searching feature
-function filterOptions(selectId, searchInputId) {
-  var input, filter, select, options, option, i, txtValue;
-  input = document.getElementById(searchInputId);
-  filter = input.value.toUpperCase();
-  select = document.getElementById(selectId);
-  options = select.getElementsByTagName("option");
-
-  for (i = 0; i < options.length; i++) {
-    option = options[i];
-    txtValue = option.textContent || option.innerText;
-    if (txtValue.toUpperCase().indexOf(filter) > -1) {
-      option.style.display = "";
-    } else {
-      option.style.display = "none";
-    }
-  }
-}
-
-// Display current selected PC Build components
-  document.getElementById("pcBuilderForm").addEventListener("submit", function (event) {
-    event.preventDefault(); // Prevent the default form submission behavior
-  
-    // Get the selected CPU and GPU IDs from the form
-    var cpuSelect = document.getElementById("id_cpu");
-    var gpuSelect = document.getElementById("id_gpu");
-    var cpuId = cpuSelect.value;
-    var gpuId = gpuSelect.value;
-  
-    // Make an AJAX request to fetch the selected CPU and GPU information
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", `/get_cpu_info/${cpuId}`);
-    xhr.onreadystatechange = function () {
-      if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-        var cpuInfo = JSON.parse(xhr.responseText);
-        var selectedComponents = document.getElementById("selectedComponents");
-        selectedComponents.innerHTML = `
-          <h3>Selected Full Build:</h3>
-          <p>CPU: ${cpuInfo.brand} ${cpuInfo.model}</p>
-          <p>Cores: ${cpuInfo.cores}</p>
-          <!-- Add other CPU information here -->
-        `;
-      }
-    };
-    xhr.send();
-  
-    // Make an AJAX request to fetch the selected GPU information
-    var xhr2 = new XMLHttpRequest();
-    xhr2.open("GET", `/get_gpu_info/${gpuId}`);
-    xhr2.onreadystatechange = function () {
-      if (xhr2.readyState === XMLHttpRequest.DONE && xhr2.status === 200) {
-        var gpuInfo = JSON.parse(xhr2.responseText);
-        var selectedComponents = document.getElementById("selectedComponents");
-        selectedComponents.innerHTML += `
-          <p>GPU: ${gpuInfo.brand} ${gpuInfo.model}</p>
-          <p>VRAM: ${gpuInfo.vram}</p>
-          <!-- Add other GPU information here -->
-        `;
-      }
-    };
-    xhr2.send();
-  });
-  </script>
-  
+</ul>
+{% else %}
+<p>No rated items yet.</p>
+{% endif %}
 
 {% endblock %}
