@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 from .views import *
+from .context_processors import *
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -53,7 +54,7 @@ urlpatterns = [
     # path('password-reset/<str:token>/', views.PasswordReset, name='password-reset'),
     path('change-password/<token>/', views.ChangePassword, name='change_password'),
 
-    path('rate-order/<int:item_id>', views.rate_order, name='rate_order'),
+    path('rate-order/<int:item_id>/', views.rate_order, name='rate_order'),
     path('item/<int:item_id>/', views.rating_detail, name='item_detail'),
 ]
 

@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'pc_app/base.html' %}
 
 {% block content %}
 
@@ -12,6 +12,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cart</title>
     <style>
+        .fa-star.checked {
+            color: gold;
+            /* You can change the color to your preferred highlight color */
+        }
+
+        .rating-order-list li {
+            float: right;
+            color: #ddd;
+            padding: 10px 5px;
+        }
+
+        .rating-order-list li:hover,
+        .rating-order-list li:hover~li {
+            color: orange;
+        }
+
+        .rating-order-list {
+            display: inline-block;
+            list-style: none;
+        }
+
         .link-container {
             display: inline-block;
             margin-right: 20px;
@@ -111,22 +132,27 @@
                     {% if not item.order_rating %}
                     <form method="post" action="{% url 'rate_order' item.id %}">
                         {% csrf_token %}
-                        <label for="rating">Rating:</label>
-                        <select name="rating" id="rating">
-                            <option value="1">1 Star</option>
-                            <option value="2">2 Stars</option>
-                            <option value="3">3 Stars</option>
-                            <option value="4">4 Stars</option>
-                            <option value="5">5 Stars</option>
-                        </select>
+                        <label for="order_rating" style="color: black;">Rating:</label>
+                        <!-- Hidden input field to store the rating value -->
+                        <input type="hidden" name="order_rating" id="order_rating" />
+
+                        <!-- Display the star rating widget for the 'rating' field -->
+                        <ul class="btn btn-light list-inline rating-order-list">
+                            <li onclick="rating(1)" data-rating="1"><i class="fa fa-star" title="Rate 1"></i></li>
+                            <li onclick="rating(2)" data-rating="2"><i class="fa fa-star" title="Rate 2"></i></li>
+                            <li onclick="rating(3)" data-rating="3"><i class="fa fa-star" title="Rate 3"></i></li>
+                            <li onclick="rating(4)" data-rating="4"><i class="fa fa-star" title="Rate 4"></i></li>
+                            <li onclick="rating(5)" data-rating="5"><i class="fa fa-star" title="Rate 5"></i></li>
+                        </ul>
                         <br>
-                        <label for="comment">Comment:</label>
+
+                        <label for="comment" style="color: black;">Comment:</label>
                         <textarea name="comment" id="comment"></textarea>
                         <br>
                         <input type="submit" value="Submit Rating">
                     </form>
                     {% else %}
-                        You have rated this build!
+                    You have rated this build!
                     {% endif %}
                 </td>
             </tr>
@@ -140,3 +166,24 @@
 
 </html>
 {% endblock %}
+
+<script>
+    var selectedRating = 0; // Initialize with a default value of 0
+
+    function rating(rating) {
+        selectedRating = rating; // Assign the selected rating to the JavaScript variable
+        document.getElementById('order_rating').value = rating; // Also set the hidden input field value
+
+        // Get all the star elements
+        var stars = document.querySelectorAll('.rating-order-list li i');
+
+        // Loop through the stars and toggle the 'checked' class
+        for (var i = 0; i < stars.length; i++) {
+            if (i < rating) {
+                stars[i].classList.add('checked'); // Add 'checked' class to checked stars
+            } else {
+                stars[i].classList.remove('checked'); // Remove 'checked' class from unchecked stars
+            }
+        }
+    }
+</script>

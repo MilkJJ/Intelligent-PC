@@ -10,6 +10,8 @@ def feedback_form_context(request):
             # Add code to send data to Google Sheets/Google Form here
             feedback_instance = form.save(commit=False)
             feedback_instance.user = request.user
+
+            # Get only the user's name or ID to send to sheets
             #feedback_instance.save()
 
             # Send data to Google Sheets
@@ -20,7 +22,7 @@ def feedback_form_context(request):
             client = gspread.authorize(creds)
             sheet = client.open('Feedback').sheet1
             sheet.append_row(
-                [feedback_instance.rating, feedback_instance.comments])
+                [feedback_instance.rating, feedback_instance.feedbacks])
             # return redirect('thank_you') feedback_instance.user, 
     else:
         form = FeedbackForm()

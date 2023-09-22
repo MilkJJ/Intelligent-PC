@@ -21,7 +21,7 @@ from datetime import datetime
 def rating_detail(request, item_id):
     item = get_object_or_404(CartItem, id=item_id)
     order_rating = OrderRating.objects.filter(order_item=item).first()
-    return render(request, 'ratings_detail.html', {'item': item, 'order_rating': order_rating})
+    return render(request, 'pc_app/ratings_detail.html', {'item': item, 'order_rating': order_rating})
 
 @login_required(login_url='login')
 def HomePage(request):
@@ -38,7 +38,7 @@ def HomePage(request):
         'rated_items': rated_items
     }
 
-    return render(request, 'home.html', context)
+    return render(request, 'pc_app/home.html', context)
 
 # Create your views here.
 def upgrade(request):
@@ -64,7 +64,7 @@ def upgrade(request):
         'gpu_info': gpu_info,
     }
 
-    return render(request, 'upgrade.html', context)
+    return render(request, 'pc_app/upgrade.html', context)
 
 
 def get_cpu_info(request, cpu_id):
@@ -97,7 +97,7 @@ def cart_items(request):
     context = {
         'cart_items': cart_items,
     }
-    return render(request, 'cart-items.html', context)
+    return render(request, 'pc_app/cart-items.html', context)
 
 
 @login_required(login_url='login')
@@ -177,7 +177,7 @@ def checkout(request):
         'total_price': total_price + 5,
     }
 
-    return render(request, 'checkout.html', context)
+    return render(request, 'pc_app/checkout.html', context)
 
 
 def place_order(request):
@@ -223,28 +223,28 @@ def place_order(request):
         # email.send()
 
         # Redirect to an order confirmation page
-        return render(request, 'order_confirmation.html')
+        return render(request, 'pc_app/order_confirmation.html')
 
 
 def completed_order_view(request):
     shipped_items = CartItem.objects.filter(
         user=request.user, is_completed=True).order_by('-order_date')
     # Render the purchased_items in the purchase history template
-    return render(request, 'completed-order.html', {'shipped_items': shipped_items})
+    return render(request, 'pc_app/completed-order.html', {'shipped_items': shipped_items})
 
 
 def ongoing_order_view(request):
     purchased_items = CartItem.objects.filter(
         user=request.user, is_purchased=True, is_completed=False).order_by('-order_date')
     # Render the purchased_items in the purchase history template
-    return render(request, 'ongoing-order.html', {'purchased_items': purchased_items})
+    return render(request, 'pc_app/ongoing-order.html', {'purchased_items': purchased_items})
 
 
 def rate_order(request, item_id):
     item = CartItem.objects.get(id=item_id)
     
     if request.method == 'POST':
-        rating = request.POST.get('rating')
+        rating = request.POST.get('order_rating')
         comment = request.POST.get('comment')
         
         order_rating = OrderRating.objects.create(
@@ -297,7 +297,7 @@ def favorited_builds(request):
     context = {
         'favorited_builds': favorited_builds,
     }
-    return render(request, 'favorited_builds.html', context)
+    return render(request, 'pc_app/favorited_builds.html', context)
 
 
 def delete_favorited_build(request, build_id):
@@ -325,7 +325,7 @@ def delete_favorited_build(request, build_id):
 # CPU
 class CPUListView(ListView):
     model = CPU
-    template_name = 'cpu/cpu_list.html'
+    template_name = 'pc_app/cpu/cpu_list.html'
     context_object_name = 'cpus'
 
     def get_queryset(self):
@@ -349,7 +349,7 @@ def cpu_detail(request, pk):
     else:
         form = CPUComparisonForm()
 
-    return render(request, 'cpu/cpu_detail.html', {'cpu': cpu, 'other_cpus': other_cpus, 'form': form})
+    return render(request, 'pc_app/cpu/cpu_detail.html', {'cpu': cpu, 'other_cpus': other_cpus, 'form': form})
 
 
 def cpu_comparison(request, pk1, pk2):
@@ -357,13 +357,13 @@ def cpu_comparison(request, pk1, pk2):
     cpu2 = CPU.objects.get(pk=pk2)
     all_cpus = CPU.objects.exclude(pk__in=[pk1, pk2])
 
-    return render(request, 'cpu/cpu_comparison.html', {'cpu1': cpu1, 'cpu2': cpu2, 'all_cpus': all_cpus})
+    return render(request, 'pc_app/cpu/cpu_comparison.html', {'cpu1': cpu1, 'cpu2': cpu2, 'all_cpus': all_cpus})
 
 
 # GPU
 class GPUListView(ListView):
     model = GPU
-    template_name = 'gpu/gpu_list.html'
+    template_name = 'pc_app/gpu/gpu_list.html'
     context_object_name = 'gpus'
 
     def get_queryset(self):
@@ -385,20 +385,20 @@ def gpu_detail(request, pk):
     else:
         form = GPUComparisonForm()
 
-    return render(request, 'gpu/gpu_detail.html', {'gpu': gpu, 'form': form})
+    return render(request, 'pc_app/gpu/gpu_detail.html', {'gpu': gpu, 'form': form})
 
 
 def gpu_comparison(request, pk1, pk2):
     gpu1 = GPU.objects.get(pk=pk1)
     gpu2 = GPU.objects.get(pk=pk2)
 
-    return render(request, 'gpu/gpu_comparison.html', {'gpu1': gpu1, 'gpu2': gpu2})
+    return render(request, 'pc_app/gpu/gpu_comparison.html', {'gpu1': gpu1, 'gpu2': gpu2})
 
 
 # Motherboard
 class MBoardListView(ListView):
     model = Motherboard
-    template_name = 'motherboard/mboard_list.html'
+    template_name = 'pc_app/motherboard/mboard_list.html'
     context_object_name = 'mboards'
 
 
@@ -414,14 +414,14 @@ def mboard_detail(request, pk):
     else:
         form = MBoardComparisonForm()
 
-    return render(request, 'motherboard/mboard_detail.html', {'mboard': mboard, 'form': form})
+    return render(request, 'pc_app/motherboard/mboard_detail.html', {'mboard': mboard, 'form': form})
 
 
 def mboard_comparison(request, pk1, pk2):
     mboard1 = Motherboard.objects.get(pk=pk1)
     mboard2 = Motherboard.objects.get(pk=pk2)
 
-    return render(request, 'motherboard/mboard_compare.html', {'mboard1': mboard1, 'mboard2': mboard2})
+    return render(request, 'pc_app/motherboard/mboard_compare.html', {'mboard1': mboard1, 'mboard2': mboard2})
 
 
 # Authentication
@@ -442,7 +442,7 @@ def SignupPage(request):
                 my_user.save()
                 return redirect('login')
 
-    return render(request, 'signup.html')
+    return render(request, 'pc_app/signup.html')
 
 
 def LoginPage(request):
@@ -463,7 +463,7 @@ def LoginPage(request):
         else:
             messages.error(request, "Incorrect Username/Password!")
 
-    return render(request, 'login.html')
+    return render(request, 'pc_app/login.html')
 
 
 def LogoutPage(request):
@@ -493,7 +493,7 @@ def profile(request):
                 request, 'Password change failed! Please correct the errors below!')
 
     password_change_form = PasswordChangeForm(user=request.user)
-    return render(request, 'profile.html', {'password_change_form': password_change_form})
+    return render(request, 'pc_app/profile.html', {'password_change_form': password_change_form})
 
 
 def ChangePassword(request, token):
@@ -523,7 +523,7 @@ def ChangePassword(request, token):
 
     except Exception as e:
         print(e)
-    return render(request, 'change-password.html', context)
+    return render(request, 'pc_app/change-password.html', context)
 
 
 def ForgotPassword(request):
@@ -552,4 +552,4 @@ def ForgotPassword(request):
             request, 'An email has been sent with instructions to reset your password.')
         return redirect('/forgot-password/')
 
-    return render(request, 'forgot-password.html')
+    return render(request, 'pc_app/forgot-password.html')

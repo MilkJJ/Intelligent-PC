@@ -21,7 +21,6 @@ from django.urls import path, include  # Import the include function
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('ratings/', include('star_ratings.urls', namespace='ratings')),
     path('', include('pc_app.urls')),  # Include the app's URL patterns here
     path('vendor/', include('pc_vendor.urls')),
     # Other project-specific URL patterns

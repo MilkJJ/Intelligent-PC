@@ -39,7 +39,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'pc_app',
     'pc_vendor',
-    'star_ratings',
 ]
 
 MIDDLEWARE = [

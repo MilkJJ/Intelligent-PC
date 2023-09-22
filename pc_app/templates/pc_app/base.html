@@ -71,14 +71,14 @@
             </div>
         </div>
     </div>
-    {% include 'bin/header.html' %}
+    {% include 'pc_app/bin/header.html' %}
 
     {% block headermenu %} {% endblock %}
 
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm-2">
-                {% include 'bin/sidebar.html' %}
+                {% include 'pc_app/bin/sidebar.html' %}
             </div>
             <div class="col-sm-10">
                 {% block container %}{% endblock %}
@@ -89,7 +89,7 @@
     <div id="snackbar"></div>
 
     <div id="slideOutMenu" class="slide-menu">
-        {% include 'bin/customize.html' %}
+        {% include 'pc_app/bin/customize.html' %}
     </div>
 
     <button id="slideToggleButton" class="slide-button" onclick="toggleSlideMenu()">Customize</button>
@@ -98,7 +98,7 @@
 
     {% endblock %}
 
-    <footer>{% include 'bin/footer.html' %}</footer>
+    <footer>{% include 'pc_app/bin/footer.html' %}</footer>
     
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"

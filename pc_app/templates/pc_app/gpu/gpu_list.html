@@ -1,6 +1,6 @@
-{% extends 'base.html' %}
+{% extends 'pc_app/base.html' %}
 
-{% block title %}{{ mboard.name }}{% endblock %}
+{% block title %}{{ gpu.brand }} - {{ gpu.model }}{% endblock %}
 
 {% block content %}
 
@@ -8,25 +8,27 @@
 
 <div class="col-sm-12">
   <div class="titleheader">
-    <h3 class="h2header text-center">Motherboard ({{ mboards|length }})</h3>
+    <h3 class="h2header text-center">Graphics Card ({{ gpus|length }})</h3>
+    <a href="?sort_by=name">A to Z</a>
+    <a href="?sort_by=-name">Z to A</a>
   </div>
 
 <!-- <div id="testingcss"> -->
-<input type="text" id="mboardSearch" onkeyup="filterMboards()" placeholder="Search Motherboards...">
+<input type="text" id="gpuSearch" onkeyup="filterGpus()" placeholder="Search GPUs...">
 <input type="number" id="minPrice" placeholder="Min Price">
 <input type="number" id="maxPrice" placeholder="Max Price">
 <button onclick="toggleSort()">Price Sort</button>
 
 <!-- <div class="container"> -->
-<div id="mboardList">
-  {% for mboard in mboards %}
+<div id="gpuList">
+  {% for gpu in gpus %}
   <div class="book-wrapper text-center">
     <div class="coverpage">
-      <img src="https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6522/6522043_sd.jpg">
+      <img src="https://media.hswstatic.com/eyJidWNrZXQiOiJjb250ZW50Lmhzd3N0YXRpYy5jb20iLCJrZXkiOiJnaWZcL2dyYXBoaWNzLWNhcmQtdXBkYXRlMS5qcGciLCJlZGl0cyI6eyJyZXNpemUiOnsid2lkdGgiOjgyOH19fQ==">
     </div>
-    <a href="{% url 'mboard_detail' mboard.pk %}">{{ mboard.name }}</a>
-    <p>{{ mboard.price|convert_to_myr }}</p>
-    <button class="select-button" onclick="selectComponent('mboard', '{{ mboard.id }}')">Add</button>
+    <a href="{% url 'gpu_detail' gpu.pk %}">{{ gpu.name }} - {{ gpu.chipset }}</a>
+    <p>{{ gpu.price|convert_to_myr }}</p>
+    <button class="select-button" onclick="selectComponent('gpu', '{{ gpu.id }}')">Add</button>
   </div>
   {% endfor %}
 
@@ -39,21 +41,21 @@
     } else {
       sortDirection = 'asc';
     }
-    filterMboards(); // Reapply existing filters after sorting
+    filterGpus(); // Reapply existing filters after sorting
   }
 
-  function filterMboards() {
+  function filterGpus() {
     var input, filter, minPrice, maxPrice, ul, li, a, i, txtValue, price;
-    input = document.getElementById('mboardSearch');
+    input = document.getElementById('gpuSearch');
     filter = input.value.toUpperCase();
     minPrice = parseFloat(document.getElementById('minPrice').value) || 0;
     maxPrice = parseFloat(document.getElementById('maxPrice').value) || Infinity;
-    ul = document.getElementById('mboardList');
+    ul = document.getElementById('gpuList');
     li = ul.getElementsByClassName('book-wrapper');
 
-    var mboardArray = Array.from(li);
+    var gpuArray = Array.from(li);
 
-    mboardArray.sort(function(a, b) {
+    gpuArray.sort(function(a, b) {
       var priceA = parseFloat(a.querySelector('p').textContent.replace('RM ', ''));
       var priceB = parseFloat(b.querySelector('p').textContent.replace('RM ', ''));
 
@@ -66,22 +68,22 @@
       }
     });
 
-    for (i = 0; i < mboardArray.length; i++) {
-      a = mboardArray[i].getElementsByTagName('a')[0];
+    for (i = 0; i < gpuArray.length; i++) {
+      a = gpuArray[i].getElementsByTagName('a')[0];
       txtValue = a.textContent || a.innerText;
-      price = parseFloat(mboardArray[i].querySelector('p').textContent.replace('RM ', ''));
+      price = parseFloat(gpuArray[i].querySelector('p').textContent.replace('RM ', ''));
 
       if (
         txtValue.toUpperCase().indexOf(filter) > -1 &&
         price >= minPrice &&
         price <= maxPrice
       ) {
-        mboardArray[i].style.display = '';
+        gpuArray[i].style.display = '';
       } else {
-        mboardArray[i].style.display = 'none';
+        gpuArray[i].style.display = 'none';
       }
 
-      ul.appendChild(mboardArray[i]); // Reorder the elements in the DOM
+      ul.appendChild(gpuArray[i]); // Reorder the elements in the DOM
     }
   }
 </script>

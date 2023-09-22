@@ -139,7 +139,7 @@ class FavouritedPC(models.Model):
 class OrderRating(models.Model):
     order_item = models.ForeignKey('CartItem', on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    rating = models.PositiveIntegerField(default=0, choices=[(1, '1 Star'), (2, '2 Stars'), (3, '3 Stars'), (4, '4 Stars'), (5, '5 Stars')])
+    rating = models.PositiveIntegerField()
     comment = models.TextField(blank=True, null=True)
     date_added = models.DateTimeField(auto_now_add=True)
 
@@ -162,5 +162,5 @@ class CartItem(models.Model):
 class Feedback(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     rating = models.PositiveIntegerField()
-    comments = models.TextField()
+    feedbacks = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
