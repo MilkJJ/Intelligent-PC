@@ -1,16 +1,40 @@
 {% extends 'pc_app/base.html' %}
 
-{% block title %}{{ proc_info.Name }} - {{ gpu_info.Name }}{% endblock %}
+{% block title %}
+    {{ proc_info.Name }} - {{ gpu_info.Name }}
+{% endblock %}
 
 {% block content %}
+    <div>
+        <h2>Current Build Specification</h2>
+        <p>CPU: {{ proc_info }}</p>
+        <p>RAM Capacity: {{ system_ram }} GB</p>
+        <p>Graphics Card: {{ gpu_info }}</p>
 
-    <h2>Current Build Specification</h2>
-    <p>Operating System: {{ os_name }}</p>
-    <p>OS Version: {{ os_version }}</p>
-    <p>CPU: {{ proc_info.Name }}</p>
-    <p>RAM Capacity: {{ system_ram }}</p>
-    <p>Graphics Card: {{ gpu_info.Name }}</p>
+        <button hidden id="suggest-upgrades" >Suggest Upgrades</button>
+        <br>
 
-    <button>Suggest Upgrades</button>
+        <!-- Placeholder for CPU and GPU Upgrades -->
+        <div id="upgrade-suggestions">
+            <!-- CPU Upgrade -->
+            {% if suggested_cpu_upgrade %}
+                <h3>Suggested CPU Upgrade</h3>
+                <p>CPU: {{ suggested_cpu_upgrade }}</p>
+            {% endif %}
 
+            <!-- GPU Upgrade
+            {% if suggested_gpu_upgrade %}
+                <h3>Suggested GPU Upgrade</h3>
+                <p>GPU: {{ suggested_gpu_upgrade.name }}</p>
+                <p>Price: ${{ suggested_gpu_upgrade.price }}</p>
+                <p>Core Count: {{ suggested_gpu_upgrade.core_count }}</p>
+                <p>Core Clock: {{ suggested_gpu_upgrade.core_clock }} MHz</p>
+                <p>Boost Clock: {{ suggested_gpu_upgrade.boost_clock }} MHz</p>
+                <p>TDP: {{ suggested_gpu_upgrade.tdp }} W</p>
+                <p>Integrated Graphics: {{ suggested_gpu_upgrade.graphics }}</p>
+                <p>Multithreading: {% if suggested_gpu_upgrade.smt %}Yes{% else %}No{% endif %}</p>
+                <p>Socket: {{ suggested_gpu_upgrade.socket }}</p>
+            {% endif %} -->
+        </div>
+    </div>
 {% endblock %}

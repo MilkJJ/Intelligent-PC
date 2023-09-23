@@ -18,6 +18,7 @@ from django.core.mail import EmailMessage
 from io import BytesIO
 from datetime import datetime
 
+# Create your views here.
 def rating_detail(request, item_id):
     item = get_object_or_404(CartItem, id=item_id)
     order_rating = OrderRating.objects.filter(order_item=item).first()
@@ -40,7 +41,35 @@ def HomePage(request):
 
     return render(request, 'pc_app/home.html', context)
 
-# Create your views here.
+def find_compatible_cpu_upgrade(device_cpu_name, device_cpu_speed, device_socket):
+    try:
+        # Extract the brand and model name from the retrieved CPU name
+        # Split the string by whitespace
+        parts = device_cpu_name.split()
+
+        # Extract the desired portion (assuming it's always at index 2)
+        device_cpu_brand = ' '.join(parts[0:1]).strip('(R)')
+        device_cpu_speed = device_cpu_speed / 1000
+        # desired_cpu_core = ' '.join(parts[1:2]).strip('(TM)')
+        # desired_cpu_model = ' '.join(parts[2:3])
+
+        # cpu_model = desired_cpu_brand + ' ' + desired_cpu_core + ' ' + desired_cpu_model
+        # current_cpu = CPU.objects.get(name=cpu_model)
+
+        better_cpu_upgrades = CPU.objects.filter(
+            name__icontains=device_cpu_brand,  # Partial string matching
+            core_clock__gt=device_cpu_speed,
+            socket__icontains=device_socket,
+        ).order_by('-core_clock') 
+
+        if better_cpu_upgrades:
+            return better_cpu_upgrades.first() # Return the CPU with the highest core clock
+        else:
+            return None  # No compatible CPU upgrade found
+    except CPU.DoesNotExist:
+        return None  # CPU not found in the database
+    
+
 def upgrade(request):
     import wmi
 
@@ -56,12 +85,17 @@ def upgrade(request):
         float(os_info.TotalVisibleMemorySize) / 1048576)  # KB to GB
     system_ram1 = int(computer_info.TotalPhysicalMemory)
 
+    print(gpu_info)
+
+    suggested_cpu_upgrade = find_compatible_cpu_upgrade(proc_info.Name, proc_info.MaxClockSpeed, proc_info.SocketDesignation)
+
     context = {
         'os_name': os_name,
         'os_version': os_version,
-        'proc_info': proc_info,
+        'proc_info': proc_info.Name,
         'system_ram': system_ram,
-        'gpu_info': gpu_info,
+        'gpu_info': gpu_info.Name,
+        'suggested_cpu_upgrade': suggested_cpu_upgrade,
     }
 
     return render(request, 'pc_app/upgrade.html', context)
@@ -102,6 +136,7 @@ def cart_items(request):
 
 @login_required(login_url='login')
 def add_to_cart(request, build_id=None):
+    # Add to cart from Favourite Page
     if request.method == 'POST' and build_id:
         build = FavouritedPC.objects.get(
             id=build_id)  # Retrieve the selected build
@@ -125,6 +160,7 @@ def add_to_cart(request, build_id=None):
         # Redirect to the cart page or another relevant page
         return redirect('cart_items')
 
+    # Add to cart from Customization
     elif request.method == 'POST':
         data = json.loads(request.body)
         cpu_id = data.get('cpu_id')
