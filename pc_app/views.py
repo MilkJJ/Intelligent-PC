@@ -41,6 +41,7 @@ def HomePage(request):
 
     return render(request, 'pc_app/home.html', context)
 
+
 def find_compatible_cpu_upgrade(device_cpu_name, device_cpu_speed, device_socket):
     try:
         # Extract the brand and model name from the retrieved CPU name
