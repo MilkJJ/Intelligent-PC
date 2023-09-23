@@ -128,7 +128,7 @@ def add_to_cart(request, build_id=None):
         
         return redirect('cart_items')  # Redirect to the cart page or another relevant page
     
-    if request.method == 'POST':
+    elif request.method == 'POST':
         data = json.loads(request.body)
         cpu_id = data.get('cpu_id')
         gpu_id = data.get('gpu_id')
