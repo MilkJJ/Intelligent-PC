@@ -1,16 +1,17 @@
 <!-- vendor/templates/vendor/order_list.html -->
-{% extends 'base.html' %}
+{% extends 'pc_app/base.html' %}
 
 {% block content %}
 <h1>Vendor Order List</h1>
 <ul>
   {% for order in purchased_items %}
     <li><a href="{% url 'vendor_order_detail' order.id %}">Order #{{ order.id }}</a></li>
-    {% if order.isShipped %}
+    {% if order.is_completed %}
       Order Status: Shipped
     {% else %}
       Order Status: NOT Shipped
     {% endif %}
+    <li>Order Placed: {{ order.order_date }}</li>
   {% endfor %}
 </ul>
 {% endblock %}

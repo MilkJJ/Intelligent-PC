@@ -1,0 +1,106 @@
+{% extends 'pc_app/base.html' %}
+
+{% block content %}
+
+{% load custom_filters %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 80%;
+            margin: 0 auto;
+            border-collapse: collapse;
+            background-color: #fff;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #333;
+            color: #fff;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .empty-cart-message {
+            text-align: center;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+
+        .checkout-button {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Shopping Cart</h1>
+
+    {% if cart_items %}
+        {% for item in cart_items %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>PC BUILD</th>
+                        <th>Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ item.cpu.name }}</td>
+                        <td>{{ item.cpu.price|convert_to_myr }}</td>
+                    </tr>
+                    <tr>
+                        <td>{{ item.gpu.chipset }}</td>
+                        <td>{{ item.gpu.price|convert_to_myr }}</td>
+                    </tr>
+                    <tr>
+                        <td>Total Price:</td>
+                        <td>{{ item.total_price|convert_to_myr }}</td>
+                    </tr>
+                </tbody>
+                <tr>
+                    <td>
+                        <form method="POST" action="{% url 'remove_from_cart' item.id %}">
+                            {% csrf_token %}
+                            <button type="submit">Remove from cart</button>
+                          </form>
+                    </td>
+                    
+                </tr>
+                
+            </table>
+            
+        {% endfor %}
+        <a href="{% url 'checkout' %}" class="checkout-button">Proceed to Checkout</a>
+    {% else %}
+        <p class="empty-cart-message">Your cart is empty!</p>
+    {% endif %}
+</body>
+</html>
+{% endblock %}

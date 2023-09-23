@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 from .views import *
+from .context_processors import *
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -35,7 +36,6 @@ urlpatterns = [
     path('checkout/', views.checkout, name='checkout'),
     path('place_order/', views.place_order, name='place_order'),
 
-
     #To favourite build
     path('toggle_favorite/', views.toggle_favorite, name='toggle_favorite'),
     path('add_to_cart/', views.add_to_cart, name='add_to_cart'),
@@ -51,9 +51,11 @@ urlpatterns = [
     path('profile/', views.profile, name='change_password'),
 
     path('forgot-password/', views.ForgotPassword, name='forgot_password'),
+    # path('password-reset/<str:token>/', views.PasswordReset, name='password-reset'),
     path('change-password/<token>/', views.ChangePassword, name='change_password'),
 
-
+    path('rate-order/<int:item_id>/', views.rate_order, name='rate_order'),
+    path('item/<int:item_id>/', views.rating_detail, name='item_detail'),
 ]
 
 if settings.DEBUG:

@@ -1,0 +1,101 @@
+{% extends 'pc_app/base.html' %}
+
+{% block title %}{{ mboard.name }}{% endblock %}
+
+{% block content %}
+
+{% load custom_filters %}
+
+<div class="col-sm-12">
+  <div class="titleheader">
+    <h3 class="h2header text-center">Motherboard ({{ mboards|length }})</h3>
+  </div>
+
+<!-- <div id="testingcss"> -->
+<input type="text" id="mboardSearch" onkeyup="filterMboards()" placeholder="Search Motherboards...">
+<input type="number" id="minPrice" placeholder="Min Price">
+<input type="number" id="maxPrice" placeholder="Max Price">
+<button onclick="toggleSort()">Price Sort</button>
+
+<!-- <div class="container"> -->
+<div id="mboardList">
+  {% for mboard in mboards %}
+  <div class="book-wrapper text-center">
+    <div class="coverpage">
+      <img src="https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6522/6522043_sd.jpg">
+    </div>
+    <a href="{% url 'mboard_detail' mboard.pk %}">{{ mboard.name }}</a>
+    <p>{{ mboard.price|convert_to_myr }}</p>
+    <button class="select-button" onclick="selectComponent('mboard', '{{ mboard.id }}')">Add</button>
+  </div>
+  {% endfor %}
+
+<script>
+  let sortDirection = 'asc'; // Default sorting direction
+
+  function toggleSort() {
+    if (sortDirection === 'asc') {
+      sortDirection = 'desc';
+    } else {
+      sortDirection = 'asc';
+    }
+    filterMboards(); // Reapply existing filters after sorting
+  }
+
+  function filterMboards() {
+    var input, filter, minPrice, maxPrice, ul, li, a, i, txtValue, price;
+    input = document.getElementById('mboardSearch');
+    filter = input.value.toUpperCase();
+    minPrice = parseFloat(document.getElementById('minPrice').value) || 0;
+    maxPrice = parseFloat(document.getElementById('maxPrice').value) || Infinity;
+    ul = document.getElementById('mboardList');
+    li = ul.getElementsByClassName('book-wrapper');
+
+    var mboardArray = Array.from(li);
+
+    mboardArray.sort(function(a, b) {
+      var priceA = parseFloat(a.querySelector('p').textContent.replace('RM ', ''));
+      var priceB = parseFloat(b.querySelector('p').textContent.replace('RM ', ''));
+
+      if (sortDirection === 'asc') {
+        return priceA - priceB;
+      } else if (sortDirection === 'desc') {
+        return priceB - priceA;
+      } else {
+        return 0;
+      }
+    });
+
+    for (i = 0; i < mboardArray.length; i++) {
+      a = mboardArray[i].getElementsByTagName('a')[0];
+      txtValue = a.textContent || a.innerText;
+      price = parseFloat(mboardArray[i].querySelector('p').textContent.replace('RM ', ''));
+
+      if (
+        txtValue.toUpperCase().indexOf(filter) > -1 &&
+        price >= minPrice &&
+        price <= maxPrice
+      ) {
+        mboardArray[i].style.display = '';
+      } else {
+        mboardArray[i].style.display = 'none';
+      }
+
+      ul.appendChild(mboardArray[i]); // Reorder the elements in the DOM
+    }
+  }
+</script>
+
+<style>
+  #testingcss {
+  display: block;
+}
+
+#testingcss input,
+#testingcss button {
+  display: block;
+  margin-bottom: 10px; /* Add spacing between elements */
+}
+</style>
+
+{% endblock %}

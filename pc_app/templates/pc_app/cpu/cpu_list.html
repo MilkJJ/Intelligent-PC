@@ -1,0 +1,73 @@
+{% extends 'pc_app/base.html' %}
+
+{% block title %}{{ cpu.name }}{% endblock %}
+
+{% block content %}
+
+{% load custom_filters %}
+
+<h3>List of CPU ({{ cpus|length }})</h3>
+
+<input type="text" id="cpuSearch" onkeyup="filterCpus()" placeholder="Search CPUs...">
+
+<div class="col-sm-12">
+  <div class="titleheader">
+    <h3 class="h2header text-center">CPU</h3>
+    <a href="#">See All</a>
+    <a href="#" id="sortToggle" onclick="toggleSorting()">Sort A to Z</a>
+  </div>
+
+  <div id="cpuList"> <!-- Add id="cpuList" to the container div -->
+    {% for cpu in cpus %}
+    <div class="book-wrapper text-center">
+      <div class="coverpage">
+        {% if cpu.name|lower|slice:"0:3" == "amd" %}
+        <img src="https://www.amd.com/system/files/2020-06/amd-default-social-image-1200x628.jpg" width="100"
+          height="100"> <!-- Replace with the actual path to AMD image -->
+        {% elif cpu.name|lower|slice:"0:5" == "intel" %}
+        <img src="https://www.intel.com/content/dam/logos/logo-energyblue-1x1.png" width="100" height="100">
+        <!-- Replace with the actual path to Intel image -->
+        {% else %}
+        <img src="default-image.png"> <!-- Add a default image path if needed -->
+        {% endif %}
+      </div>
+      <a href="{% url 'cpu_detail' cpu.pk %}">{{ cpu.name }}</a>
+      <p>{{ cpu.price|convert_to_myr }}</p>
+      <button class="select-button" onclick="selectComponent('cpu', '{{ cpu.id }}')">Add</button>
+    </div>
+    {% endfor %}
+  </div>
+
+  <script>
+  
+  var ascending = true;
+
+    function toggleSorting() {
+      ascending = !ascending;
+      var sortDirection = ascending ? 'name' : '-name';
+      document.getElementById('sortToggle').innerText = ascending ? 'Sort A to Z' : 'Sort Z to A';
+      var url = window.location.href.split('?')[0] + '?sort_by=' + sortDirection;
+      window.location.href = url;
+    }
+
+
+    function filterCpus() {
+      var input, filter, ul, li, a, i, txtValue;
+      input = document.getElementById('cpuSearch');
+      filter = input.value.toUpperCase();
+      ul = document.getElementById('cpuList'); // Use the correct ID here
+      li = ul.getElementsByClassName('book-wrapper'); // Change to the correct class name
+
+      for (i = 0; i < li.length; i++) {
+        a = li[i].getElementsByTagName('a')[0];
+        txtValue = a.textContent || a.innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+          li[i].style.display = '';
+        } else {
+          li[i].style.display = 'none';
+        }
+      }
+    }
+  </script>
+
+  {% endblock %}

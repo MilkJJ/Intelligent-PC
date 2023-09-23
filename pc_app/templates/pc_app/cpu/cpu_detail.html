@@ -1,0 +1,40 @@
+{% extends 'pc_app/base.html' %}
+
+{% block title %}{{ cpu.brand }} - {{ cpu.model }}{% endblock %}
+
+{% block content %}
+
+{% load custom_filters %}
+
+<h1>CPU Details</h1>
+<p>CPU: {{ cpu.name }}</p>
+<p>Cores: {{ cpu.core_count }}</p>
+<p>Core Clock: {{ cpu.core_clock }}</p>
+<p>Boost Clock: {{ cpu.boost_clock }}</p>
+<p>Integrated_Graphics: {{ cpu.graphics }}</p>
+<p>TDP: {{ cpu.tdp }}</p>
+<p>Multithreading: {% if cpu.smt %}Yes{% else %}No{% endif %}</p>
+<p>Price: {{ cpu.price|convert_to_myr }}</p>
+
+<h2>Select another CPU for comparison:</h2>
+<button id="chooseButton">Choose</button>
+
+<div id="cpuList" style="display: none;">
+  <h3>List of CPUs for Comparison:</h3>
+  <ul>
+    {% for other_cpu in other_cpus %}
+      <li>
+        <a href="{% url 'cpu_comparison' cpu.pk other_cpu.pk %}">{{ other_cpu.name }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+</div>
+
+<script>
+  document.getElementById('chooseButton').addEventListener('click', function () {
+    var cpuList = document.getElementById('cpuList');
+    cpuList.style.display = (cpuList.style.display === 'none') ? 'block' : 'none';
+  });
+</script>
+
+{% endblock %}

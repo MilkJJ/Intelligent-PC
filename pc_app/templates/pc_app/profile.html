@@ -1,0 +1,119 @@
+{% extends 'pc_app/base.html' %}
+
+{% block content %}
+
+<style>
+  .link-container {
+    display: inline-block;
+    margin-right: 20px;
+    /* Adjust the margin as needed for spacing */
+  }
+
+  .profile-picture-container {
+    width: 200px;
+    /* Set the desired width */
+    height: 200px;
+    /* Set the desired height */
+    overflow: hidden;
+    /* Hide overflow to maintain the round shape */
+    border-radius: 50%;
+    /* Make it round */
+    cursor: pointer;
+  }
+
+  .profile-picture {
+    width: 100%;
+    /* Set the image width to fill the container */
+    height: 100%;
+    /* Set the image height to fill the container */
+    object-fit: cover;
+    /* Maintain the image aspect ratio */
+  }
+</style>
+
+<h1>Profile</h1>
+
+<div class="link-container">
+  <p><a href="{% url 'completed_order' %}">Completed Orders</a></p>
+</div>
+<div class="link-container">
+  <p><a href="{% url 'ongoing_order' %}">Ongoing Orders</a></p>
+</div>
+
+<div class="profile-picture-container">
+  <label for="profile-picture-input">
+    {% if user.profile.profile_picture %}
+    <img class="profile-picture" src="{{ user.profile.profile_picture.url }}" alt="PFP">
+    {% else %}
+    <img class="profile-picture"
+      src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="Default PFP">
+    {% endif %}
+  </label>
+  <input type="file" id="profile-picture-input" style="display: none;">
+</div>
+
+<p>Username: {{ user.username }}</p>
+<p>Email: {{ user.email }}</p>
+
+<h2>Change Password</h2>
+
+<!-- Display message -->
+<!-- {% if messages %}
+<div class="error-messages">
+  {% for message in messages %}
+  <p>{{ message }}</p>
+  {% endfor %}
+</div>
+{% endif %} -->
+
+<form method="post" action="{% url 'change_password' %}">
+  {% csrf_token %}
+  {{ password_change_form.as_p }}
+  <button type="submit">Change Password</button>
+</form>
+
+<script>
+  document.getElementById("profile-picture-input").addEventListener("change", function () {
+    const fileInput = this;
+    if (fileInput.files && fileInput.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const profilePicture = document.querySelector(".profile-picture");
+        profilePicture.src = e.target.result;
+
+        // Send the image to the server via AJAX
+        const formData = new FormData();
+        formData.append("profile_picture", fileInput.files[0]);
+        fetch("{% url 'update_profile_picture' %}", {
+          method: "POST",
+          body: formData,
+          headers: {
+            "X-CSRFToken": "{{ csrf_token }}"
+          },
+        })
+          .then(response => response.json())
+          .then(data => {
+            if (data.message) {
+              // Display the success message
+              const messageDiv = document.createElement("div");
+              messageDiv.classList.add("success-message");
+              messageDiv.textContent = data.message;
+              document.body.appendChild(messageDiv);
+
+              // Remove the message after a few seconds
+              setTimeout(() => {
+                document.body.removeChild(messageDiv);
+              }, 3000);
+            }
+          })
+          .catch(error => {
+            console.error("Error updating profile picture:", error);
+          });
+      };
+      reader.readAsDataURL(fileInput.files[0]);
+    }
+  });
+</script>
+
+
+{% endblock %}

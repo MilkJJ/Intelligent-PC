@@ -15,6 +15,17 @@ class GPUData(models.Model):
 
     def __str__(self):
         return self.name
+    
+class CPUData(models.Model):
+    name = models.CharField(max_length=200, default='Unknown')
+    price = models.FloatField()
+    core_count = models.PositiveIntegerField(verbose_name='Core Count', default=0)
+    core_clock = models.DecimalField(max_digits=12, decimal_places=2, verbose_name='Core Clock')
+    boost_clock = models.DecimalField(max_digits=12, decimal_places=2, verbose_name='Boost Clock')
+    tdp = models.PositiveIntegerField(verbose_name='TDP')
+    graphics = models.CharField(max_length=100, verbose_name='Integrated Graphics', default='None')
+    smt = models.BooleanField(verbose_name='Multithreading', default='False')
+    socket = models.CharField(max_length=200, default='Unknown')
     # Add more fields as needed
 # class Vendor(models.Model):
 #     user = models.OneToOneField(User, on_delete=models.CASCADE)

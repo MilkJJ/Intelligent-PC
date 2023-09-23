@@ -1,0 +1,167 @@
+
+{% load static %}
+
+<script src="{% static 'js/chatbot.js' %}"></script>
+
+<div class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-6 col-md-4 col-xs-12 footer_menu">
+                <h3>Contact</h3>
+                <ul>
+                    <li class="footer_contact">
+                        <i class="fa fa-phone"></i>
+                        <p> +6019 1235678 </p>
+                    </li>
+                    <li class="footer_contact">
+                        <i class="fa fa-envelope"></i>
+                        <p> jjong@gmail.com </p>
+                    </li>
+                    <li class="footer_contact">
+                        <i class="fa fa-map-marker"></i>
+                        <p>Bayan Lepas Malaysia</p>
+                    </li>
+                </ul>
+            </div>
+
+            <div id="chatbot-container">
+                <button id="open-chatbot">Open Chat</button>
+                <div id="chatbot-frame" class="hidden">
+                    <iframe allow="microphone;" width="350" height="430"
+                        src="https://console.dialogflow.com/api-client/demo/embedded/108b725a-9f61-4dd3-b416-290cd6fdc27f">
+                    </iframe>
+                    <button id="close-chatbot">Close Chat</button>
+                </div>
+            </div>
+
+            <div class="col-sm-6 col-md-4 col-xs-12 footer_news">
+                <h3>2023 Intelligent PC Builder. All rights reserved.</h3>
+            </div>
+        </div>
+
+        <!-- Feedback Form -->
+        <form method="post">
+            {% csrf_token %}
+            
+            <!-- Hidden input field to store the rating value -->
+            <input type="hidden" name="rating" id="ratingInput" value="{{ feedback_form.rating.value }}" />
+              
+            {{ feedback_form.rating.label_tag }}
+          
+            <!-- Display the star rating widget for the 'rating' field -->
+            <ul class="btn btn-light list-inline rating-list">
+                <li onclick="rate(5)" data-rating="5">
+                    <i class="fa fa-star {% if feedback_form.rating.value >= 5 %}checked{% endif %}" title="Rate 5"></i>
+                </li>
+                <li onclick="rate(4)" data-rating="4">
+                    <i class="fa fa-star {% if feedback_form.rating.value >= 4 %}checked{% endif %}" title="Rate 4"></i>
+                </li>
+                <li onclick="rate(3)" data-rating="3">
+                    <i class="fa fa-star {% if feedback_form.rating.value >= 3 %}checked{% endif %}" title="Rate 3"></i>
+                </li>
+                <li onclick="rate(2)" data-rating="2">
+                    <i class="fa fa-star {% if feedback_form.rating.value >= 2 %}checked{% endif %}" title="Rate 2"></i>
+                </li>
+                <li onclick="rate(1)" data-rating="1">
+                    <i class="fa fa-star {% if feedback_form.rating.value >= 1 %}checked{% endif %}" title="Rate 1"></i>
+                </li>
+            </ul>
+            
+            {{ feedback_form.feedbacks.label_tag }}
+            {{ feedback_form.feedbacks }}
+            
+            <button type="submit">Submit Feedback</button>
+        </form>
+
+        </div>
+    </div>
+</div>
+
+<!-- Add the map iframe here with a fixed coordinate -->
+<div class="map-container">
+    <iframe width="100%" height="300" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"
+        src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d15911766.139582864!2d-99.9892223075809!3d38.95325188864877!3m2!1i1024!2i768!4f13.1!3m3!1m2!1i380!2i240!5e0!3m2!1sen!2sus!4v1583692304910!5m2!1sen!2sus&center=5.32100800,100.29013490&zoom=21"
+        width="600" height="450" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false"
+        tabindex="0"></iframe>
+
+</div>
+
+<script>
+    function clearRatingInput() {
+        // Reset the value of the hidden input field
+        document.getElementById('ratingInput').value = '';
+    }
+
+    function rate(rating) {
+        // Update the hidden input field with the selected rating
+        document.getElementById('ratingInput').value = rating;
+    
+        // Remove the 'checked' class from all stars
+        const stars = document.querySelectorAll('.rating-list i');
+        for (let i = 0; i < stars.length; i++) {
+            stars[i].classList.remove('checked');
+        }
+    
+        // Add the 'checked' class to the selected stars
+        for (let i = 1; i <= rating; i++) {
+            const star = document.querySelector(`.rating-list [data-rating="${i}"] i`);
+            if (star) {
+                star.classList.add('checked');
+            }
+        }
+    }
+    </script>
+  
+  <style>
+    .rating-list li {
+      float: right;
+      color: #ddd;
+      padding: 10px 5px;
+    }
+  
+    .rating-list li:hover,
+    .rating-list li:hover~li {
+      color: orange;
+    }
+  
+    .rating-list {
+      display: inline-block;
+      list-style: none;
+    }
+  
+    .checked {
+      color: orange;
+    }
+
+    label {
+        color: white;
+    }
+
+    #chatbot-container {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 9999;
+    }
+
+    #open-chatbot {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        cursor: pointer;
+    }
+
+    #chatbot-frame {
+        display: none;
+    }
+
+    #close-chatbot {
+        background-color: #dc3545;
+        color: #fff;
+        border: none;
+        padding: 5px 10px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+  </style>

@@ -1,0 +1,189 @@
+{% extends 'pc_app/base.html' %}
+
+{% block content %}
+
+{% load custom_filters %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart</title>
+    <style>
+        .fa-star.checked {
+            color: gold;
+            /* You can change the color to your preferred highlight color */
+        }
+
+        .rating-order-list li {
+            float: right;
+            color: #ddd;
+            padding: 10px 5px;
+        }
+
+        .rating-order-list li:hover,
+        .rating-order-list li:hover~li {
+            color: orange;
+        }
+
+        .rating-order-list {
+            display: inline-block;
+            list-style: none;
+        }
+
+        .link-container {
+            display: inline-block;
+            margin-right: 20px;
+            /* Adjust the margin as needed for spacing */
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 80%;
+            margin: 0 auto;
+            border-collapse: collapse;
+            background-color: #fff;
+        }
+
+        th,
+        td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #333;
+            color: #fff;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .empty-cart-message {
+            text-align: center;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+
+        .checkout-button {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Completed Orders</h1>
+
+    <div class="link-container">
+        <p><a href="{% url 'completed_order' %}">Completed Orders</a></p>
+    </div>
+    <div class="link-container">
+        <p><a href="{% url 'ongoing_order' %}">Ongoing Orders</a></p>
+    </div>
+
+    {% if shipped_items %}
+    {% for item in shipped_items %}
+    <table>
+        <thead>
+            <tr>
+                <th>PC BUILD</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ item.cpu.name }}</td>
+                <td>{{ item.cpu.price|convert_to_myr }}</td>
+            </tr>
+            <tr>
+                <td>{{ item.gpu.chipset }}</td>
+                <td>{{ item.gpu.price|convert_to_myr }}</td>
+            </tr>
+            <tr>
+                <td>Total Price:</td>
+                <td>{{ item.total_price|convert_to_myr }}</td>
+            </tr>
+
+            {% if item.is_completed %}
+            <tr>Order Status: Shipped</tr>
+            {% else %}
+            <tr>Order Status: NOT Shipped</tr>
+            {% endif %}
+
+            <tr>
+                <td>
+                    {% if not item.order_rating %}
+                    <form method="post" action="{% url 'rate_order' item.id %}">
+                        {% csrf_token %}
+                        <label for="order_rating" style="color: black;">Rating:</label>
+                        <!-- Hidden input field to store the rating value -->
+                        <input type="hidden" name="order_rating" id="order_rating" />
+
+                        <!-- Display the star rating widget for the 'rating' field -->
+                        <ul class="btn btn-light list-inline rating-order-list">
+                            <li onclick="rating(1)" data-rating="1"><i class="fa fa-star" title="Rate 1"></i></li>
+                            <li onclick="rating(2)" data-rating="2"><i class="fa fa-star" title="Rate 2"></i></li>
+                            <li onclick="rating(3)" data-rating="3"><i class="fa fa-star" title="Rate 3"></i></li>
+                            <li onclick="rating(4)" data-rating="4"><i class="fa fa-star" title="Rate 4"></i></li>
+                            <li onclick="rating(5)" data-rating="5"><i class="fa fa-star" title="Rate 5"></i></li>
+                        </ul>
+                        <br>
+
+                        <label for="comment" style="color: black;">Comment:</label>
+                        <textarea name="comment" id="comment"></textarea>
+                        <br>
+                        <input type="submit" value="Submit Rating">
+                    </form>
+                    {% else %}
+                    You have rated this build!
+                    {% endif %}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    {% endfor %}
+    {% else %}
+    <p class="empty-cart-message">No Completed Order</p>
+    {% endif %}
+</body>
+
+</html>
+{% endblock %}
+
+<script>
+    var selectedRating = 0; // Initialize with a default value of 0
+
+    function rating(rating) {
+        selectedRating = rating; // Assign the selected rating to the JavaScript variable
+        document.getElementById('order_rating').value = rating; // Also set the hidden input field value
+
+        // Get all the star elements
+        var stars = document.querySelectorAll('.rating-order-list li i');
+
+        // Loop through the stars and toggle the 'checked' class
+        for (var i = 0; i < stars.length; i++) {
+            if (i < rating) {
+                stars[i].classList.add('checked'); // Add 'checked' class to checked stars
+            } else {
+                stars[i].classList.remove('checked'); // Remove 'checked' class from unchecked stars
+            }
+        }
+    }
+</script>

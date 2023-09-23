@@ -1,0 +1,30 @@
+{% extends 'pc_app/base.html' %}
+
+{% block title %}{{ cpu.name }} - {{ cpu.graphics }}{% endblock %}
+
+{% block content %}
+
+{% load custom_filters %}
+
+<h1>Comparison</h1>
+<h2>CPU 1:</h2>
+<p>CPU: {{ cpu1.name }}</p>
+<p>Cores: {{ cpu1.core_count }}</p>
+<p>Core Clock: {{ cpu1.core_clock }}</p>
+<p>Boost Clock: {{ cpu1.boost_clock }}</p>
+<p>Integrated_Graphics: {{ cpu1.graphics }}</p>
+<p>TDP: {{ cpu1.tdp }}</p>
+<p>Multithreading: {% if cpu1.smt %}Yes{% else %}No{% endif %}</p>
+<p>Price: {{ cpu1.price|convert_to_myr }}</p>
+
+<h2>CPU 2:</h2>
+<p>CPU: {{ cpu2.name }}</p>
+<p>Cores: {{ cpu2.core_count }}</p>
+<p>Core Clock: {{ cpu2.core_clock }}</p>
+<p>Boost Clock: {{ cpu2.boost_clock }}</p>
+<p>Integrated_Graphics: {{ cpu2.graphics }}</p>
+<p>TDP: {{ cpu2.tdp }}</p>
+<p>Multithreading: {% if cpu2.smt %}Yes{% else %}No{% endif %}</p>
+<p>Price: {{ cpu2.price|convert_to_myr }}</p>
+
+{% endblock %}
