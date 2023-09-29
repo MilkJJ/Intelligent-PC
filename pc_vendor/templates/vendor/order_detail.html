@@ -5,10 +5,11 @@
 <h1>Order Detail</h1>
 <p>Order #: {{ order.id }}</p>
 <p>Order Placed: {{ order.order_date }}</p>
-<br>
+<h4>Item Ordered</h4>
 <p>CPU: {{ order.cpu }}</p>
 <p>GPU: {{ order.gpu }}</p>
 <p>Total Price: {{ order.total_price }}</p>
+<p>Order by: {{ order.user.username }}</p>
 <!-- Display more order details here -->
 
 {% if order.is_completed %}

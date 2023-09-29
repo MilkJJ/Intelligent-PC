@@ -8,18 +8,30 @@
     <div>
         <h2>Current Build Specification</h2>
         <p>CPU: {{ proc_info }}</p>
-        <p>RAM Capacity: {{ system_ram }} GB</p>
+        <p>RAM Size and Speed(Mhz): {{ system_ram }}</p>
         <p>Graphics Card: {{ gpu_info }}</p>
 
         <button hidden id="suggest-upgrades" >Suggest Upgrades</button>
         <br>
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-info">
+            {{message}}
+        </div>
+        {% endfor %}
+        {% endif %}
 
         <!-- Placeholder for CPU and GPU Upgrades -->
         <div id="upgrade-suggestions">
             <!-- CPU Upgrade -->
-            {% if suggested_cpu_upgrade %}
+            {% if cpu_upgrade %}
                 <h3>Suggested CPU Upgrade</h3>
-                <p>CPU: {{ suggested_cpu_upgrade }}</p>
+                <p>CPU: {{ cpu_upgrade }}</p>
+            {% endif %}
+            
+            {% if ram_upgrade %}
+                <h3>Suggested RAM Upgrade</h3>
+                <p>RAM: {{ ram_upgrade }}</p>
             {% endif %}
 
             <!-- GPU Upgrade

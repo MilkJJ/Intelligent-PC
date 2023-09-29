@@ -58,13 +58,13 @@
 <h2>Change Password</h2>
 
 <!-- Display message -->
-<!-- {% if messages %}
+{% if messages %}
 <div class="error-messages">
   {% for message in messages %}
   <p>{{ message }}</p>
   {% endfor %}
 </div>
-{% endif %} -->
+{% endif %}
 
 <form method="post" action="{% url 'change_password' %}">
   {% csrf_token %}

@@ -42,15 +42,31 @@ def HomePage(request):
     return render(request, 'pc_app/home.html', context)
 
 
-def find_compatible_cpu_upgrade(device_cpu_name, device_cpu_speed, device_socket):
+def find_cpu_upgrade(request, proc_info):
+    device_cpu_name = proc_info.Name
+    device_cpu_speed = proc_info.MaxClockSpeed
+    device_socket = proc_info.SocketDesignation
+
+    if device_socket.startswith("LGA") or device_socket.startswith("AM"):
+        # Variable starts with "LGA" or "AM"
+        messages.success(request, "Desktop CPU")
+    else:
+        # Variable does not start with either "LGA" or "AM"
+        messages.error(request, "You are using laptop, it may not recommend accurate upgrades!")
+
     try:
         # Extract the brand and model name from the retrieved CPU name
         # Split the string by whitespace
-        parts = device_cpu_name.split()
+        if 'Intel' in device_cpu_name:
+            device_cpu_brand = 'Intel'
+        elif 'AMD' in device_cpu_name:
+            device_cpu_brand = 'AMD'
+        # parts = device_cpu_name.split()
 
-        # Extract the desired portion (assuming it's always at index 2)
-        device_cpu_brand = ' '.join(parts[0:1]).strip('(R)')
-        device_cpu_speed = device_cpu_speed / 1000
+        # # Extract the desired portion (assuming it's always at index 2)
+        # device_cpu_brand = ' '.join(parts[0:1]).strip('(R)')
+        # device_cpu_speed = device_cpu_speed / 1000
+
         # desired_cpu_core = ' '.join(parts[1:2]).strip('(TM)')
         # desired_cpu_model = ' '.join(parts[2:3])
 
@@ -59,9 +75,9 @@ def find_compatible_cpu_upgrade(device_cpu_name, device_cpu_speed, device_socket
 
         better_cpu_upgrades = CPU.objects.filter(
             name__icontains=device_cpu_brand,  # Partial string matching
-            core_clock__gt=device_cpu_speed,
-            socket__icontains=device_socket,
-        ).order_by('-core_clock') 
+            core_clock__gt=device_cpu_speed / 1000,
+            #socket__icontains=device_socket,
+        )#.order_by('-core_clock') 
 
         if better_cpu_upgrades:
             return better_cpu_upgrades.first() # Return the CPU with the highest core clock
@@ -69,9 +85,31 @@ def find_compatible_cpu_upgrade(device_cpu_name, device_cpu_speed, device_socket
             return None  # No compatible CPU upgrade found
     except CPU.DoesNotExist:
         return None  # CPU not found in the database
+
+
+def find_ram_upgrade(ram_info):
     
+    device_ram_size = int(ram_info.Capacity) / 1048576 / 1000
+    device_ram_speed = ram_info.Speed
+    device_ram_ddr = ram_info.MemoryType
+
+    try:
+        better_ram_upgrades = Memory.objects.filter(
+            memory_size__icontains = int(device_ram_size),
+            #ddr_type__icontains = device_ram_ddr,
+            speed_mhz__gt=device_ram_speed,
+        )#.order_by('-speed_mhz')
+
+        if better_ram_upgrades:
+            return better_ram_upgrades.first() # Return the CPU with the highest core clock
+        else:
+            return None  # No compatible RAM upgrade found
+    except Memory.DoesNotExist:
+        return None  # RAM not found in the database
+
 
 def upgrade(request):
+    # Check if it is laptop, if it is notify user about laptop incompatible
     import wmi
 
     computer = wmi.WMI()
@@ -79,6 +117,7 @@ def upgrade(request):
     os_info = computer.Win32_OperatingSystem()[0]
     proc_info = computer.Win32_Processor()[0]
     gpu_info = computer.Win32_VideoController()[0]
+    ram_info = computer.Win32_PhysicalMemory()
 
     os_name = os_info.Name.encode('utf-8').split(b'|')[0]
     os_version = ' '.join([os_info.Version, os_info.BuildNumber])
@@ -86,18 +125,25 @@ def upgrade(request):
         float(os_info.TotalVisibleMemorySize) / 1048576)  # KB to GB
     system_ram1 = int(computer_info.TotalPhysicalMemory)
 
-    print(gpu_info)
+    cpu_upgrade = find_cpu_upgrade(request, proc_info)
 
-    suggested_cpu_upgrade = find_compatible_cpu_upgrade(proc_info.Name, proc_info.MaxClockSpeed, proc_info.SocketDesignation)
+    ram_count = 0
 
-    context = {
-        'os_name': os_name,
-        'os_version': os_version,
-        'proc_info': proc_info.Name,
-        'system_ram': system_ram,
-        'gpu_info': gpu_info.Name,
-        'suggested_cpu_upgrade': suggested_cpu_upgrade,
-    }
+    for ram in ram_info:
+        ram_upgrade = find_ram_upgrade(ram) #ram_info.Speed
+        ram_count += 1
+
+        ram_capacity = int(ram.Capacity) / 1048576 / 1000
+
+        context = {
+            'os_name': os_name,
+            'os_version': os_version,
+            'proc_info': proc_info.Name,
+            'system_ram': f"{int(ram_capacity)}GB + {ram.Speed}Mhz x{ram_count}",
+            'gpu_info': gpu_info.Name,
+            'cpu_upgrade': cpu_upgrade,
+            'ram_upgrade': f"{ram_upgrade} x{ram_count}",
+        }
 
     return render(request, 'pc_app/upgrade.html', context)
 

@@ -41,7 +41,7 @@ class CPU(models.Model):
     socket = models.CharField(max_length=200, default='Unknown')
     
     def __str__(self):
-        return f"{self.name} - {self.graphics}"
+        return f"{self.name} - {self.graphics} @ {self.core_clock}GHz"
 
 
 class GPU(models.Model):
@@ -71,8 +71,7 @@ class Memory(models.Model):
     cas_latency = models.PositiveIntegerField()
 
     def __str__(self):
-        return self.name
-    
+        return f"{self.name} ({self.memory_size}GB + {self.speed_mhz}Mhz)"
 
 class Motherboard(models.Model):
     name = models.CharField(max_length=255)
