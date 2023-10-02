@@ -17,6 +17,8 @@
 <p>Multithreading: {% if cpu1.smt %}Yes{% else %}No{% endif %}</p>
 <p>Price: {{ cpu1.price|convert_to_myr }}</p>
 
+<button class="select-button" onclick="selectComponent('cpu', '{{ cpu1.id }}')">Add</button>
+
 <h2>CPU 2:</h2>
 <p>CPU: {{ cpu2.name }}</p>
 <p>Cores: {{ cpu2.core_count }}</p>
@@ -26,5 +28,7 @@
 <p>TDP: {{ cpu2.tdp }}</p>
 <p>Multithreading: {% if cpu2.smt %}Yes{% else %}No{% endif %}</p>
 <p>Price: {{ cpu2.price|convert_to_myr }}</p>
+
+<button class="select-button" onclick="selectComponent('cpu', '{{ cpu2.id }}')">Add</button>
 
 {% endblock %}

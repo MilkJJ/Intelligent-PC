@@ -99,7 +99,7 @@
     {% endblock %}
 
     <footer>{% include 'pc_app/bin/footer.html' %}</footer>
-    
+
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"
         type="text/javascript"></script>
@@ -128,7 +128,7 @@
         totalPrice = selectedCPUPrice + selectedGPUPrice;
         document.getElementById('totalPrice').innerText = `Total Price: RM${totalPrice.toFixed(2)}`;
         localStorage.setItem('totalPrice', totalPrice);
-    
+
     }
 
 
@@ -221,8 +221,7 @@
         const storedtotalPrice = localStorage.getItem('totalPrice');
         document.getElementById('selectedCPU').innerText = storedCPU || '';
         document.getElementById('selectedGPU').innerText = storedGPU || '';
-        document.getElementById('totalPrice').innerText = storedtotalPrice || '';
-
+        document.getElementById('totalPrice').innerText = `Total Price: RM${storedtotalPrice}`;
     };
 
     function clearSelections() {
@@ -230,11 +229,13 @@
         localStorage.removeItem('selectedGPU');
         localStorage.removeItem('selectedCPUID');
         localStorage.removeItem('selectedGPUID');
+        localStorage.removeItem('totalPrice');
         // Add similar lines for other components if needed
         document.getElementById('selectedCPU').innerText = '';
         document.getElementById('selectedGPU').innerText = '';
         document.getElementById('selectedCPUID').innerText = '';
         document.getElementById('selectedGPUID').innerText = '';
+        document.getElementById('totalPrice').innerText = '';
     }
 
     //Storing to database
@@ -291,7 +292,7 @@
             };
             xhr.send(JSON.stringify({ cpu_id: selectedCPUID, gpu_id: selectedGPUID }));
         } else {
-            alert('Please select all components before saving!');
+            alert('Please select all components before adding to cart!');
         }
 
         // Send the selected component IDs to the server

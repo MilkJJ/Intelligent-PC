@@ -17,6 +17,11 @@
             /* You can change the color to your preferred highlight color */
         }
 
+        .fa-star.unchecked {
+            color: white;
+            /* Unfilled star color */
+        }
+
         .rating-order-list li {
             float: right;
             color: #ddd;
@@ -122,9 +127,7 @@
             </tr>
 
             {% if item.is_completed %}
-            <tr>Order Status: Shipped</tr>
-            {% else %}
-            <tr>Order Status: NOT Shipped</tr>
+            <tr>Order #{{ item.id }} Completed</tr>
             {% endif %}
 
             <tr>

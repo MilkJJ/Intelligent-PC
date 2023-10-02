@@ -18,6 +18,9 @@ class ProfileForm(forms.ModelForm):
         model = Profile
         fields = ['profile_picture']
 
+class PhoneNumberForm(forms.Form):
+    phone_number = forms.CharField(max_length=20, required=False)
+
 class FeedbackForm(forms.ModelForm):
     class Meta:
         model = Feedback

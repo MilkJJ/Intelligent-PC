@@ -23,6 +23,14 @@
                                 <li><a href="{% url 'logout' %}"><i class="fa fa-sign-out"></i> Sign Out</a></li>
                             </ul>
                         </li>
+                        
+                        <li class="dropdown profile">
+                            <a href="#">Your Orders<i class="fa fa-angle-down"></i></a>
+                            <ul role="menu" class="sub-menu">
+                                <li><a href="{% url 'ongoing_order' %}"></i>Ongoing</a></li>
+                                <li><a href="{% url 'completed_order' %}"></i>Completed</a></li>
+                            </ul>
+                        </li>
 
                         <li class="dropdown profile">
                             <a href="{% url 'upgrade' %}">Upgrade</a>

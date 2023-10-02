@@ -2,6 +2,8 @@
 
 {% block content %}
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
 <style>
   .link-container {
     display: inline-block;
@@ -54,23 +56,45 @@
 
 <p>Username: {{ user.username }}</p>
 <p>Email: {{ user.email }}</p>
+<p>Phone num: <span id="phone-number">{{ user.profile.phone_number }}</span>
+  <a id="edit-phone-number" style="text-decoration: underline;"><i class="fas fa-edit"></i></a>
+</p>
 
-<h2>Change Password</h2>
+<form method="post" id="phone-number-update-form" style="display: none;">
+  <h4>Update Phone No.</h4>
+  {% csrf_token %}
+  {{ phone_number_form.as_p }}
+  <button type="submit">Update</button>
+</form>
 
-<!-- Display message -->
+
+<h4>Change Password</h4>
+<a id="edit-password" style="text-decoration: underline;">
+  <i class="fas fa-edit"></i></a>
+<!-- Display success and error messages -->
 {% if messages %}
-<div class="error-messages">
+<ul class="messages">
   {% for message in messages %}
-  <p>{{ message }}</p>
-  {% endfor %}
-</div>
+  <li{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
 {% endif %}
 
-<form method="post" action="{% url 'change_password' %}">
+<form method="post" id="password-change-form" style="display: none;"> <!-- action="{% url 'change_password' %}" -->
   {% csrf_token %}
   {{ password_change_form.as_p }}
   <button type="submit">Change Password</button>
 </form>
+
+<style>
+  #edit-phone-number:hover {
+    color: rgb(57, 108, 203);
+  }
+
+  #edit-password:hover {
+    color: rgb(57, 108, 203);
+  }
+</style>
 
 <script>
   document.getElementById("profile-picture-input").addEventListener("change", function () {
@@ -111,6 +135,42 @@
           });
       };
       reader.readAsDataURL(fileInput.files[0]);
+    }
+  });
+
+
+  //Phone number update
+  // JavaScript to toggle the visibility of password change and phone number update forms
+  const passwordChangeForm = document.getElementById('password-change-form');
+  const phoneNumberUpdateForm = document.getElementById('phone-number-update-form');
+  const phoneNumberDisplay = document.getElementById('phone-number');
+  const editPhoneNumberButton = document.getElementById('edit-phone-number');
+  const editPasswordButton = document.getElementById('edit-password');
+
+  // // Initially, hide both forms
+  // passwordChangeForm.style.display = 'none';
+  // phoneNumberUpdateForm.style.display = 'none';
+
+  // Show the password change form when it's requested
+  function showPasswordChangeForm() {
+    passwordChangeForm.style.display = 'block';
+    phoneNumberUpdateForm.style.display = 'none';
+  }
+
+  // Show the phone number update form when it's requested
+  function showPhoneNumberUpdateForm() {
+    phoneNumberUpdateForm.style.display = 'block';
+    passwordChangeForm.style.display = 'none';
+  }
+
+  // Attach click event listeners to the Edit button
+  editPhoneNumberButton.addEventListener('click', showPhoneNumberUpdateForm);
+  editPasswordButton.addEventListener('click', showPasswordChangeForm);
+
+  window.addEventListener("message", function (event) {
+    if (event.data === "chatbot-closed") {
+      chatbotFrame.style.display = "none";
+      openChatbotButton.style.display = "block";
     }
   });
 </script>

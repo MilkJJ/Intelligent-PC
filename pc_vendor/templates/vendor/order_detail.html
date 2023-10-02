@@ -10,15 +10,29 @@
 <p>GPU: {{ order.gpu }}</p>
 <p>Total Price: {{ order.total_price }}</p>
 <p>Order by: {{ order.user.username }}</p>
+<p>Order by: {{ order.user.profile.phone_number }}</p>
 <!-- Display more order details here -->
 
+{% if order.ready_pickup %}
+<p>Status: Ready to pick up</p>
+
 {% if order.is_completed %}
-  <p>Status: Shipped</p>
+<p>Status: Completed</p>
+
 {% else %}
-  <p>Status: Not Shipped</p>
-  <form method="POST" action="{% url 'mark_shipped' order.id %}">
-    {% csrf_token %}
-    <button type="submit">Mark as Shipped</button>
-  </form>
-  {% endif %}
+<form method="POST" action="{% url 'mark_completed' order.id %}">
+  {% csrf_token %}
+  <button type="submit">Mark as Completed</button>
+</form>
+{% endif %}
+
+
+{% else %}
+<p>Status: Not ready to pick up</p>
+<form method="POST" action="{% url 'mark_ready_pickup' order.id %}">
+  {% csrf_token %}
+  <button type="submit">Ready to Pick up</button>
+</form>
+
+{% endif %}
 {% endblock %}

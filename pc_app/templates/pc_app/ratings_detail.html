@@ -6,11 +6,20 @@
 
 <h1>Item Details</h1>
 
-<p><strong>Item Name:</strong> {{ item.cpu.name }} (CPU) / {{ item.gpu.chipset }} (GPU)</p>
-<p><strong>Total Price:</strong> {{ item.total_price|convert_to_myr }}</p>
+<p><strong>PC Build:</strong> {{ item.cpu.name }} (CPU) / {{ item.gpu.chipset }} (GPU)</p>
 <!-- <p><strong>Average Rating:</strong> </p> -->
-<p><strong>Latest Rating:</strong> {{ order_rating.rating|default:"No ratings yet" }}</p>
-<p><strong>Latest Comment:</strong> {{ order_rating.comment|default:"No comments yet" }}</p>
+<p><strong>Rating:</strong> {{ order_rating.rating|default:"No ratings yet" }}
+
+<div class="star-rating">
+    <span class="fa fa-star {% if order_rating.rating >= 1 %}checked{% endif %}"></span>
+    <span class="fa fa-star {% if order_rating.rating >= 2 %}checked{% endif %}"></span>
+    <span class="fa fa-star {% if order_rating.rating >= 3 %}checked{% endif %}"></span>
+    <span class="fa fa-star {% if order_rating.rating >= 4 %}checked{% endif %}"></span>
+    <span class="fa fa-star {% if order_rating.rating >= 5 %}checked{% endif %}"></span>
+</div></p>
+
+<p><strong>Comment:</strong> {{ order_rating.comment|default:"No comments yet" }}</p>
+<p><strong>Total Price:</strong> {{ item.total_price|convert_to_myr }}</p>
 
 <a href="{% url 'home' %}">Back to Home</a>
 

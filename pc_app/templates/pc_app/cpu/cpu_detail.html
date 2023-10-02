@@ -16,6 +16,8 @@
 <p>Multithreading: {% if cpu.smt %}Yes{% else %}No{% endif %}</p>
 <p>Price: {{ cpu.price|convert_to_myr }}</p>
 
+<button class="select-button" onclick="selectComponent('cpu', '{{ cpu.id }}')">Add</button>
+
 <h2>Select another CPU for comparison:</h2>
 <button id="chooseButton">Choose</button>
 

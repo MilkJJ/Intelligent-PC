@@ -15,10 +15,20 @@ def is_vendor(user):
 @user_passes_test(is_vendor, login_url='/login/')
 def vendor_order_list(request):
     # Retrieve all CartItem objects with is_purchased=True
-    purchased_items = CartItem.objects.filter(is_purchased=1)
+    order_id = request.GET.get('order_id')
+    purchased_items = []
+
+    if order_id:
+        purchased_items = CartItem.objects.filter(is_purchased=1, id=order_id)
+        if not purchased_items:
+            purchased_items = None
+    else:
+        purchased_items = CartItem.objects.filter(is_purchased=1)
 
     # You can now use 'purchased_items' in your template to display the purchased items
-    context = {'purchased_items': purchased_items}
+    context = {'purchased_items': purchased_items,
+               'order_id': order_id}
+
     return render(request, 'vendor/order_list.html', context)
 
     # vendor = Vendor.objects.get(user=request.user)
@@ -33,13 +43,28 @@ def vendor_order_detail(request, order_id):
     return render(request, 'vendor/order_detail.html', {'order': order})
 
 @user_passes_test(is_vendor, login_url='/login/')
-def mark_shipped(request, order_id):
+def mark_completed(request, order_id):
     try:
         order = CartItem.objects.get(id=order_id)
         order.is_completed = True  # Mark the order as completed
         order.save()
 
         # Send Email to user for completed confirmation
+        
+    except CartItem.DoesNotExist:
+        # Handle the case where the order is not found
+        pass
+
+    return redirect('vendor_order_list') 
+
+@user_passes_test(is_vendor, login_url='/login/')
+def mark_ready_pickup(request, order_id):
+    try:
+        order = CartItem.objects.get(id=order_id)
+        order.ready_pickup = True  # Mark the order as completed
+        order.save()
+
+        # Inform user order is ready to be picked up through Email
         
     except CartItem.DoesNotExist:
         # Handle the case where the order is not found

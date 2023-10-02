@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate, login
 import json, uuid
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
@@ -49,7 +49,7 @@ def find_cpu_upgrade(request, proc_info):
 
     if device_socket.startswith("LGA") or device_socket.startswith("AM"):
         # Variable starts with "LGA" or "AM"
-        messages.success(request, "Desktop CPU")
+        messages.success(request, "You're on Desktop!")
     else:
         # Variable does not start with either "LGA" or "AM"
         messages.error(request, "You are using laptop, it may not recommend accurate upgrades!")
@@ -108,12 +108,38 @@ def find_ram_upgrade(ram_info):
         return None  # RAM not found in the database
 
 
+def find_gpu_upgrade(request, gpu_info):
+    #device_gpu_name = gpu_info.VideoProcessor
+    device_gpu_vram = gpu_info.AdapterRAM
+    device_gpu_vram = int((device_gpu_vram * -4095) / 1073479680)
+
+    try:
+        # Extract the brand and model name from the retrieved GPU name
+        # Split the string by whitespace
+        if 'GeForce' in gpu_info.VideoProcessor:
+            device_gpu_brand = 'GeForce'
+        elif 'Radeon' in gpu_info.VideoProcessor:
+            device_gpu_brand = 'Radeon'
+
+        better_gpu_upgrades = GPU.objects.filter(
+            chipset__icontains=device_gpu_brand,  # Partial string matching
+            memory__gt=device_gpu_vram,
+        ).order_by('-core_clock')
+
+        if better_gpu_upgrades:
+            return better_gpu_upgrades.first() # Return the GPU with the highest core clock
+        else:
+            return None  # No compatible GPU upgrade found
+    except GPU.DoesNotExist:
+        return None  # GPU not found in the database
+
+
 def upgrade(request):
     # Check if it is laptop, if it is notify user about laptop incompatible
     import wmi
 
     computer = wmi.WMI()
-    computer_info = computer.Win32_ComputerSystem()[0]
+    #computer_info = computer.Win32_ComputerSystem()[0]
     os_info = computer.Win32_OperatingSystem()[0]
     proc_info = computer.Win32_Processor()[0]
     gpu_info = computer.Win32_VideoController()[0]
@@ -121,9 +147,11 @@ def upgrade(request):
 
     os_name = os_info.Name.encode('utf-8').split(b'|')[0]
     os_version = ' '.join([os_info.Version, os_info.BuildNumber])
-    system_ram = round(
-        float(os_info.TotalVisibleMemorySize) / 1048576)  # KB to GB
-    system_ram1 = int(computer_info.TotalPhysicalMemory)
+    # system_ram = round(
+    #     float(os_info.TotalVisibleMemorySize) / 1048576)  # KB to GB
+    # system_ram1 = int(computer_info.TotalPhysicalMemory)
+
+    gpu_upgrade = find_gpu_upgrade(request, gpu_info)
 
     cpu_upgrade = find_cpu_upgrade(request, proc_info)
 
@@ -142,6 +170,7 @@ def upgrade(request):
             'system_ram': f"{int(ram_capacity)}GB + {ram.Speed}Mhz x{ram_count}",
             'gpu_info': gpu_info.Name,
             'cpu_upgrade': cpu_upgrade,
+            'gpu_upgrade': gpu_upgrade,
             'ram_upgrade': f"{ram_upgrade} x{ram_count}",
         }
 
@@ -251,7 +280,7 @@ def remove_from_cart(request, cart_item_id):
 def checkout(request):
     # Get cart items for the user
     cart_items = CartItem.objects.filter(user=request.user, is_purchased=False)
-
+    
     # Calculate the total price
     total_price = sum(item.total_price for item in cart_items)
 
@@ -263,6 +292,13 @@ def checkout(request):
     return render(request, 'pc_app/checkout.html', context)
 
 
+from io import BytesIO
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib import colors
+from django.http import FileResponse
+
 def place_order(request):
     if request.method == 'POST':
         # Update the cart items to mark them as purchased
@@ -270,42 +306,76 @@ def place_order(request):
             user=request.user, is_purchased=False)
         order_datetime = datetime.now()  # Get the current date and time
 
-        for cart_item in cart_items:
-            cart_item.is_purchased = True
-            cart_item.order_date = order_datetime  # Assign the order date and time
-            cart_item.save()
+        # for cart_item in cart_items:
+        #     cart_item.is_purchased = True
+        #     cart_item.order_date = order_datetime  # Assign the order date and time
+        #     cart_item.save()
 
         # Additional order processing logic can go here
 
         # Create an in-memory PDF purchase confirmation
         buffer = BytesIO()
-        p = canvas.Canvas(buffer, pagesize=letter)
-        p.drawString(100, 750, 'Purchase Confirmation!!')
+        doc = SimpleDocTemplate(buffer, pagesize=letter)
+
+        # Create a list to store the content of the PDF
+        elements = []
+
+        # Add a title
+        title_style = getSampleStyleSheet()['Title']
+        elements.append(Paragraph('Order Confirmation', title_style))
+
+        # Add a spacer
+        elements.append(Spacer(1, 12))
+
+        # Create a table for order summary
         for cart_item in cart_items:
-            p.drawString(100, 720, 'Order Summary')
-            p.drawString(100, 700, f'CPU: {cart_item.cpu.name}')
-            p.drawString(100, 650, f'GPU: {cart_item.gpu.name}')
-            p.drawString(100, 600, f'Total Price: {cart_item.total_price}')
-            p.drawString(100, 600, f'Buyer: {cart_item.user}')
+            data = [[f"Order #{cart_item.id}", 'Build' ],
+                    ['CPU', cart_item.cpu.name],
+                    ['GPU', cart_item.gpu.name],
+                    ['Total Price', cart_item.total_price]]
 
-        # Add more content to the PDF as needed
+            # Create the table style
+            table_style = [('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+                        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+                        ('GRID', (0, 0), (-1, -1), 1, colors.black)]
 
-        p.showPage()  # Create the PDF
-        p.save()  # Clean UP the library usage
-        buffer.seek(0)  # Move the buffer's cursor to the beginning
+            # Create the table and add it to elements
+            order_summary_table = Table(data, colWidths=[150, 200, 150])
+            order_summary_table.setStyle(TableStyle(table_style))
+            elements.append(order_summary_table)
 
-        # Send the PDF as an email attachment
-        subject = 'Purchase Confirmation'
-        message = 'Thank you for your purchase. Please find your purchase confirmation attached.'
-        from_email = 'your_email@example.com'  # Replace with your email
-        recipient_list = [request.user.email]  # Use the user's email
+            elements.append(Spacer(1, 20))
 
-        email = EmailMessage(subject, message, from_email, recipient_list)
-        email.attach('purchase_confirmation.pdf', buffer.read(),
-                     'application/pdf')  # Attach the in-memory PDF
+        # Build the PDF document
+        doc.build(elements)
+
+        # Close the buffer and return the PDF as a response
+        buffer.seek(0)
+
+        # Create an HttpResponse with the PDF content
+        response = HttpResponse(buffer.read(), content_type='application/pdf')
+        
+        # Set the content-disposition header to prompt for download
+        response['Content-Disposition'] = 'attachment; filename="purchase_confirmation.pdf"'
+
+        return response
+
+        # # Send the PDF as an email attachment
+        # subject = 'Purchase Confirmation'
+        # message = 'Thank you for your purchase. Please find your purchase confirmation attached.'
+        # from_email = 'your_email@example.com'  # Replace with your email
+        # recipient_list = [request.user.email]  # Use the user's email
+
+        # email = EmailMessage(subject, message, from_email, recipient_list)
+        # email.attach('purchase_confirmation.pdf', buffer.read(),
+        #              'application/pdf')  # Attach the in-memory PDF
         # email.send()
 
-        # Redirect to an order confirmation page
+        # # Redirect to an order confirmation page
         return render(request, 'pc_app/order_confirmation.html')
 
 
@@ -564,19 +634,51 @@ def update_profile_picture(request):
 
 
 @login_required(login_url='login')
+
 def profile(request):
+    user = request.user
+    profile = user.profile
+
+    # Password Change
     if request.method == 'POST':
         password_change_form = PasswordChangeForm(
-            user=request.user, data=request.POST)
+            user=user, data=request.POST)
         if password_change_form.is_valid():
             password_change_form.save()
             messages.success(request, 'Password changed successfully!')
         else:
             messages.error(
                 request, 'Password change failed! Please correct the errors below!')
+    else:
+        password_change_form = PasswordChangeForm(user=user)
 
-    password_change_form = PasswordChangeForm(user=request.user)
-    return render(request, 'pc_app/profile.html', {'password_change_form': password_change_form})
+    # Phone Number Update
+    if request.method == 'POST' and not password_change_form.is_valid():
+        phone_number_form = PhoneNumberForm(request.POST)
+
+        if phone_number_form.is_valid():
+            phone_number = phone_number_form.cleaned_data['phone_number']
+
+            # Check if the phone number is in the +60 format
+            if not phone_number.startswith('+60'):
+                phone_number = '+60' + phone_number
+
+            # Update or create the phone number in the profile
+            profile.phone_number = phone_number
+            profile.save()
+
+            messages.success(request, 'Phone number updated successfully!')
+        else:
+            messages.error(
+                request, 'Phone number update failed! Please correct the errors below.')
+
+    else:
+        phone_number_form = PhoneNumberForm(initial={'phone_number': profile.phone_number})
+
+    return render(request, 'pc_app/profile.html', {
+        'password_change_form': password_change_form,
+        'phone_number_form': phone_number_form,
+    })
 
 
 def ChangePassword(request, token):

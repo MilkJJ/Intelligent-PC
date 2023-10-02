@@ -99,12 +99,18 @@
                 <td>Total Price:</td>
                 <td>{{ item.total_price|convert_to_myr }}</td>
             </tr>
-            {% if item.is_completed %}
-            <tr>Order Status: Shipped</tr>
-            {% else %}
-            <tr>Order Status: NOT Shipped</tr>
-            {% endif %}
-
+            <tr>
+                {% if item.ready_pickup %}
+                <td>Order #{{ item.id }} Status: Ready to Pick up</td>
+                <td><a href="https://maps.app.goo.gl/NGa7twqsRdXr4RbC7" target="_blank">
+                        <img src="https://t3.ftcdn.net/jpg/03/89/41/20/360_F_389412076_Q7PfDcEUUNdxe4r6OMS9DTzAv9xNiThz.jpg"
+                            width="80" height="80" /></a>
+                <p>Pick Up Point</p>
+                </td>
+                {% else %}
+                <td>Order #{{ item.id }} Status: Reviewing</td>
+                {% endif %}
+            </tr>
         </tbody>
     </table>
     {% endfor %}

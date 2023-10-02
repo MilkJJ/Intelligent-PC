@@ -28,11 +28,18 @@
       {% endif %}
     </a>
 
-    <br>
+    <div class="star-rating">
+      <span class="fa fa-star {% if item.latest_rating >= 1 %}checked{% endif %}"></span>
+      <span class="fa fa-star {% if item.latest_rating >= 2 %}checked{% endif %}"></span>
+      <span class="fa fa-star {% if item.latest_rating >= 3 %}checked{% endif %}"></span>
+      <span class="fa fa-star {% if item.latest_rating >= 4 %}checked{% endif %}"></span>
+      <span class="fa fa-star {% if item.latest_rating >= 5 %}checked{% endif %}"></span>
+  </div>
     <strong>Total Price:</strong> {{ item.total_price|convert_to_myr }}<br>
-    <strong>Latest Rating:</strong> {{ item.latest_rating|default:"No ratings yet" }}<br>
-    <strong>Latest Comment:</strong> {{ item.latest_comment|default:"No comments yet" }}
+    <strong>Rating:</strong> {{ item.latest_rating|default:"No ratings yet" }}<br>
+    <strong>Comment:</strong> {{ item.latest_comment|default:"No comments yet" }}
   </li>
+  <br>
   {% endfor %}
 </ul>
 {% else %}

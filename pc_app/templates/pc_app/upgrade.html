@@ -6,7 +6,7 @@
 
 {% block content %}
     <div>
-        <h2>Current Build Specification</h2>
+        <h3>Your Current Build</h3>
         <p>CPU: {{ proc_info }}</p>
         <p>RAM Size and Speed(Mhz): {{ system_ram }}</p>
         <p>Graphics Card: {{ gpu_info }}</p>
@@ -25,13 +25,18 @@
         <div id="upgrade-suggestions">
             <!-- CPU Upgrade -->
             {% if cpu_upgrade %}
-                <h3>Suggested CPU Upgrade</h3>
+                <h4>CPU Upgrade</h4>
                 <p>CPU: {{ cpu_upgrade }}</p>
             {% endif %}
             
             {% if ram_upgrade %}
-                <h3>Suggested RAM Upgrade</h3>
+                <h4>RAM Upgrade</h4>
                 <p>RAM: {{ ram_upgrade }}</p>
+            {% endif %}
+
+            {% if gpu_upgrade %}
+                <h4>GPU Upgrade</h4>
+                <p>GPU: {{ gpu_upgrade }}</p>
             {% endif %}
 
             <!-- GPU Upgrade

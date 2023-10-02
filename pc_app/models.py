@@ -9,6 +9,7 @@ from django.utils import timezone
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
+    phone_number = models.CharField(max_length=20, blank=True, null=True)
     forgot_password_token = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
     # Add other profile-related fields here
@@ -55,7 +56,7 @@ class GPU(models.Model):
     length = models.DecimalField(decimal_places=2, max_digits=5)
 
     def __str__(self):
-        return f"{self.name} - {self.chipset}"
+        return f"{self.name} - {self.chipset} - {self.memory}GB"
 
 
 class Memory(models.Model):
@@ -151,6 +152,7 @@ class CartItem(models.Model):
     total_price = models.FloatField(default=0.0)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     is_purchased = models.BooleanField(default=False)
+    ready_pickup = models.BooleanField(default=False)
     is_completed = models.BooleanField(default=False)
     order_date = models.DateTimeField(null=True, blank=True)  # Add this field
     order_rating = models.OneToOneField(OrderRating, on_delete=models.SET_NULL, blank=True, null=True)
