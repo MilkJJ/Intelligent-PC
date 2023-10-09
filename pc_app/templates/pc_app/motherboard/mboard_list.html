@@ -26,7 +26,7 @@
     </div>
     <a href="{% url 'mboard_detail' mboard.pk %}">{{ mboard.name }}</a>
     <p>{{ mboard.price|convert_to_myr }}</p>
-    <button class="select-button" onclick="selectComponent('mboard', '{{ mboard.id }}')">Add</button>
+    <button class="select-button" onclick="selectComponent('motherboard', '{{ mboard.id }}')">Add</button>
   </div>
   {% endfor %}
 

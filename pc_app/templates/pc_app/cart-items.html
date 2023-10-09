@@ -76,8 +76,12 @@
                         <td>{{ item.cpu.price|convert_to_myr }}</td>
                     </tr>
                     <tr>
-                        <td>{{ item.gpu.chipset }}</td>
+                        <td>{{ item.gpu.name }} - {{ item.gpu.chipset }}</td>
                         <td>{{ item.gpu.price|convert_to_myr }}</td>
+                    </tr>
+                    <tr>
+                        <td>{{ item.mboard.name }}</td>
+                        <td>{{ item.mboard.price|convert_to_myr }}</td>
                     </tr>
                     <tr>
                         <td>Total Price:</td>

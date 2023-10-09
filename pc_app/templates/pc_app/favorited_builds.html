@@ -7,15 +7,18 @@
     <ul>
       {% for build in favorited_builds %}
         <li>
-          {{ build.cpu.name }} + {{ build.gpu.chipset }} | Total: RM {{ build.total_price }}
-          <form method="POST" action="{% url 'delete_favorited_build' build.id %}">
-            {% csrf_token %}
-            <button type="submit">Unfav</button>
-          </form>
-
+          <li>CPU: {{ build.cpu.name }}</li>
+          <li>GPU: {{ build.gpu.name }} + {{ build.gpu.chipset }}</li> 
+          <li>Motherboard: {{ build.mboard.name }}</li>
+          <li>Total: RM {{ build.total_price }}</li>
           <form method="POST" action="{% url 'add_to_cart' build.id %}">
             {% csrf_token %}
             <button type="submit">Add to Cart</button>
+          </form>
+
+          <form method="POST" action="{% url 'delete_favorited_build' build.id %}">
+            {% csrf_token %}
+            <button type="submit">Delete <i class="fas fa-heart-broken"></i></button>
           </form>
         </li>
       {% endfor %}

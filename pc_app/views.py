@@ -1,9 +1,12 @@
-from django.contrib.auth import authenticate, login
-import json, uuid
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from django.contrib.auth import authenticate, login, logout
+import json
+import uuid
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from .models import *
 from .forms import *
@@ -13,8 +16,6 @@ from .helpers import send_forget_password_mail
 from django.views.generic import ListView
 from pc_app.templatetags.custom_filters import convert_to_myr
 from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
-from django.core.mail import EmailMessage
 from io import BytesIO
 from datetime import datetime
 
@@ -23,158 +24,6 @@ def rating_detail(request, item_id):
     item = get_object_or_404(CartItem, id=item_id)
     order_rating = OrderRating.objects.filter(order_item=item).first()
     return render(request, 'pc_app/ratings_detail.html', {'item': item, 'order_rating': order_rating})
-
-@login_required(login_url='login')
-def HomePage(request):
-    rated_items = CartItem.objects.filter(is_purchased=True, orderrating__isnull=False).annotate(
-        latest_rating=models.Subquery(
-            OrderRating.objects.filter(order_item=models.OuterRef('pk')).order_by('-date_added').values('rating')[:1]
-        ),
-        latest_comment=models.Subquery(
-            OrderRating.objects.filter(order_item=models.OuterRef('pk')).order_by('-date_added').values('comment')[:1]
-        )
-    )
-
-    context = {
-        'rated_items': rated_items
-    }
-
-    return render(request, 'pc_app/home.html', context)
-
-
-def find_cpu_upgrade(request, proc_info):
-    device_cpu_name = proc_info.Name
-    device_cpu_speed = proc_info.MaxClockSpeed
-    device_socket = proc_info.SocketDesignation
-
-    if device_socket.startswith("LGA") or device_socket.startswith("AM"):
-        # Variable starts with "LGA" or "AM"
-        messages.success(request, "You're on Desktop!")
-    else:
-        # Variable does not start with either "LGA" or "AM"
-        messages.error(request, "You are using laptop, it may not recommend accurate upgrades!")
-
-    try:
-        # Extract the brand and model name from the retrieved CPU name
-        # Split the string by whitespace
-        if 'Intel' in device_cpu_name:
-            device_cpu_brand = 'Intel'
-        elif 'AMD' in device_cpu_name:
-            device_cpu_brand = 'AMD'
-        # parts = device_cpu_name.split()
-
-        # # Extract the desired portion (assuming it's always at index 2)
-        # device_cpu_brand = ' '.join(parts[0:1]).strip('(R)')
-        # device_cpu_speed = device_cpu_speed / 1000
-
-        # desired_cpu_core = ' '.join(parts[1:2]).strip('(TM)')
-        # desired_cpu_model = ' '.join(parts[2:3])
-
-        # cpu_model = desired_cpu_brand + ' ' + desired_cpu_core + ' ' + desired_cpu_model
-        # current_cpu = CPU.objects.get(name=cpu_model)
-
-        better_cpu_upgrades = CPU.objects.filter(
-            name__icontains=device_cpu_brand,  # Partial string matching
-            core_clock__gt=device_cpu_speed / 1000,
-            #socket__icontains=device_socket,
-        )#.order_by('-core_clock') 
-
-        if better_cpu_upgrades:
-            return better_cpu_upgrades.first() # Return the CPU with the highest core clock
-        else:
-            return None  # No compatible CPU upgrade found
-    except CPU.DoesNotExist:
-        return None  # CPU not found in the database
-
-
-def find_ram_upgrade(ram_info):
-    
-    device_ram_size = int(ram_info.Capacity) / 1048576 / 1000
-    device_ram_speed = ram_info.Speed
-    device_ram_ddr = ram_info.MemoryType
-
-    try:
-        better_ram_upgrades = Memory.objects.filter(
-            memory_size__icontains = int(device_ram_size),
-            #ddr_type__icontains = device_ram_ddr,
-            speed_mhz__gt=device_ram_speed,
-        )#.order_by('-speed_mhz')
-
-        if better_ram_upgrades:
-            return better_ram_upgrades.first() # Return the CPU with the highest core clock
-        else:
-            return None  # No compatible RAM upgrade found
-    except Memory.DoesNotExist:
-        return None  # RAM not found in the database
-
-
-def find_gpu_upgrade(request, gpu_info):
-    #device_gpu_name = gpu_info.VideoProcessor
-    device_gpu_vram = gpu_info.AdapterRAM
-    device_gpu_vram = int((device_gpu_vram * -4095) / 1073479680)
-
-    try:
-        # Extract the brand and model name from the retrieved GPU name
-        # Split the string by whitespace
-        if 'GeForce' in gpu_info.VideoProcessor:
-            device_gpu_brand = 'GeForce'
-        elif 'Radeon' in gpu_info.VideoProcessor:
-            device_gpu_brand = 'Radeon'
-
-        better_gpu_upgrades = GPU.objects.filter(
-            chipset__icontains=device_gpu_brand,  # Partial string matching
-            memory__gt=device_gpu_vram,
-        ).order_by('-core_clock')
-
-        if better_gpu_upgrades:
-            return better_gpu_upgrades.first() # Return the GPU with the highest core clock
-        else:
-            return None  # No compatible GPU upgrade found
-    except GPU.DoesNotExist:
-        return None  # GPU not found in the database
-
-
-def upgrade(request):
-    # Check if it is laptop, if it is notify user about laptop incompatible
-    import wmi
-
-    computer = wmi.WMI()
-    #computer_info = computer.Win32_ComputerSystem()[0]
-    os_info = computer.Win32_OperatingSystem()[0]
-    proc_info = computer.Win32_Processor()[0]
-    gpu_info = computer.Win32_VideoController()[0]
-    ram_info = computer.Win32_PhysicalMemory()
-
-    os_name = os_info.Name.encode('utf-8').split(b'|')[0]
-    os_version = ' '.join([os_info.Version, os_info.BuildNumber])
-    # system_ram = round(
-    #     float(os_info.TotalVisibleMemorySize) / 1048576)  # KB to GB
-    # system_ram1 = int(computer_info.TotalPhysicalMemory)
-
-    gpu_upgrade = find_gpu_upgrade(request, gpu_info)
-
-    cpu_upgrade = find_cpu_upgrade(request, proc_info)
-
-    ram_count = 0
-
-    for ram in ram_info:
-        ram_upgrade = find_ram_upgrade(ram) #ram_info.Speed
-        ram_count += 1
-
-        ram_capacity = int(ram.Capacity) / 1048576 / 1000
-
-        context = {
-            'os_name': os_name,
-            'os_version': os_version,
-            'proc_info': proc_info.Name,
-            'system_ram': f"{int(ram_capacity)}GB + {ram.Speed}Mhz x{ram_count}",
-            'gpu_info': gpu_info.Name,
-            'cpu_upgrade': cpu_upgrade,
-            'gpu_upgrade': gpu_upgrade,
-            'ram_upgrade': f"{ram_upgrade} x{ram_count}",
-        }
-
-    return render(request, 'pc_app/upgrade.html', context)
 
 
 def get_cpu_info(request, cpu_id):
@@ -200,6 +49,16 @@ def get_gpu_info(request, gpu_id):
     return JsonResponse(gpu_info)
 
 
+def get_mboard_info(request, mboard_id):
+    mboard = Motherboard.objects.get(id=mboard_id)
+    mboard_info = {
+        'name': mboard.name,
+        'price': convert_to_myr(mboard.price)
+        # Add more fields as needed
+    }
+    return JsonResponse(mboard_info)
+
+
 def cart_items(request):
     # Get the favorited PC Builds for the current user
     cart_items = CartItem.objects.filter(user=request.user, is_purchased=False)
@@ -214,19 +73,28 @@ def cart_items(request):
 def add_to_cart(request, build_id=None):
     # Add to cart from Favourite Page
     if request.method == 'POST' and build_id:
-        build = FavouritedPC.objects.get(
-            id=build_id)  # Retrieve the selected build
+        repurchase = request.POST.get('re-purchase-button')
+
+        if repurchase == 'completed':
+            build = CartItem.objects.get(
+                id=build_id)  # Retrieve the selected build from cart
+        elif repurchase is None:
+            build = FavouritedPC.objects.get(
+                id=build_id)  # Retrieve the selected build from favourite
+
         # Check if the item is already in the cart
         cpu_id = build.cpu.id
         gpu_id = build.gpu.id
+        mboard_id = build.mboard.id
 
         cpu = CPU.objects.get(id=cpu_id)
         gpu = GPU.objects.get(id=gpu_id)
+        mboard = Motherboard.objects.get(id=mboard_id)
 
-        total_price = cpu.price + gpu.price
+        total_price = cpu.price + gpu.price + mboard.price
 
         created = CartItem.objects.create(
-            cpu_id=cpu_id, gpu_id=gpu_id, total_price=total_price, user=request.user)
+            cpu_id=cpu_id, gpu_id=gpu_id, mboard_id=mboard_id, total_price=total_price, user=request.user)
 
         if created:
             messages.success(request, "Item added to cart successfully!")
@@ -241,15 +109,17 @@ def add_to_cart(request, build_id=None):
         data = json.loads(request.body)
         cpu_id = data.get('cpu_id')
         gpu_id = data.get('gpu_id')
+        mboard_id = data.get('mboard_id')
 
-        if cpu_id and gpu_id:
+        if cpu_id and gpu_id and mboard_id:
             cpu = CPU.objects.get(id=cpu_id)
             gpu = GPU.objects.get(id=gpu_id)
+            mboard = Motherboard.objects.get(id=mboard_id)
 
-            total_price = cpu.price + gpu.price
+            total_price = cpu.price + gpu.price + mboard.price
 
             # Create a new CartItem and save it to the database
-            cart_item = CartItem(cpu_id=cpu_id, gpu_id=gpu_id,
+            cart_item = CartItem(cpu_id=cpu_id, gpu_id=gpu_id, mboard_id=mboard_id, 
                                  total_price=total_price, user=request.user)
             cart_item.save()
 
@@ -280,7 +150,7 @@ def remove_from_cart(request, cart_item_id):
 def checkout(request):
     # Get cart items for the user
     cart_items = CartItem.objects.filter(user=request.user, is_purchased=False)
-    
+
     # Calculate the total price
     total_price = sum(item.total_price for item in cart_items)
 
@@ -291,13 +161,7 @@ def checkout(request):
 
     return render(request, 'pc_app/checkout.html', context)
 
-
-from io import BytesIO
-from reportlab.lib.pagesizes import letter
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
-from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.lib import colors
-from django.http import FileResponse
+from django.conf import settings
 
 def place_order(request):
     if request.method == 'POST':
@@ -329,19 +193,19 @@ def place_order(request):
 
         # Create a table for order summary
         for cart_item in cart_items:
-            data = [[f"Order #{cart_item.id}", 'Build' ],
+            data = [[f"Order #{cart_item.id}", 'Build'],
                     ['CPU', cart_item.cpu.name],
                     ['GPU', cart_item.gpu.name],
                     ['Total Price', cart_item.total_price]]
 
             # Create the table style
             table_style = [('BACKGROUND', (0, 0), (-1, 0), colors.grey),
-                        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-                        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-                        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-                        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
-                        ('GRID', (0, 0), (-1, -1), 1, colors.black)]
+                           ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                           ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                           ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                           ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                           ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+                           ('GRID', (0, 0), (-1, -1), 1, colors.black)]
 
             # Create the table and add it to elements
             order_summary_table = Table(data, colWidths=[150, 200, 150])
@@ -356,18 +220,19 @@ def place_order(request):
         # Close the buffer and return the PDF as a response
         buffer.seek(0)
 
+        #Remove below: 
         # Create an HttpResponse with the PDF content
         response = HttpResponse(buffer.read(), content_type='application/pdf')
-        
+
         # Set the content-disposition header to prompt for download
         response['Content-Disposition'] = 'attachment; filename="purchase_confirmation.pdf"'
 
         return response
 
-        # # Send the PDF as an email attachment
+        # Send the PDF as an email attachment
         # subject = 'Purchase Confirmation'
         # message = 'Thank you for your purchase. Please find your purchase confirmation attached.'
-        # from_email = 'your_email@example.com'  # Replace with your email
+        # from_email = settings.EMAIL_HOST_USER #'your_email@example.com' Replace with your email
         # recipient_list = [request.user.email]  # Use the user's email
 
         # email = EmailMessage(subject, message, from_email, recipient_list)
@@ -375,7 +240,7 @@ def place_order(request):
         #              'application/pdf')  # Attach the in-memory PDF
         # email.send()
 
-        # # Redirect to an order confirmation page
+        # Redirect to an order confirmation page
         return render(request, 'pc_app/order_confirmation.html')
 
 
@@ -385,32 +250,44 @@ def completed_order_view(request):
     # Render the purchased_items in the purchase history template
     return render(request, 'pc_app/completed-order.html', {'shipped_items': shipped_items})
 
+from win10toast import ToastNotifier
 
 def ongoing_order_view(request):
     purchased_items = CartItem.objects.filter(
         user=request.user, is_purchased=True, is_completed=False).order_by('-order_date')
-    # Render the purchased_items in the purchase history template
+    
+    send_notification = any(item.ready_pickup for item in purchased_items)
+
+    # If 'ready_pickup' is True, send a Windows notification
+    if send_notification:
+        notification_message = "One or more of your order(s) is ready for pickup!"
+        
+        # Create a ToastNotifier instance and send the notification
+        toaster = ToastNotifier()
+        toaster.show_toast("ORDER READY TO PICK UP", notification_message, duration=5)
+
     return render(request, 'pc_app/ongoing-order.html', {'purchased_items': purchased_items})
 
 
 def rate_order(request, item_id):
     item = CartItem.objects.get(id=item_id)
-    
+
     if request.method == 'POST':
-        rating = request.POST.get('order_rating')
+        rating = request.POST.get('orderRating')
         comment = request.POST.get('comment')
-        
+
         order_rating = OrderRating.objects.create(
             order_item=item,
             user=request.user,
             rating=rating,
             comment=comment
         )
-        
+
         item.order_rating = order_rating
         item.save()
-        
+
     return redirect('completed_order')
+
 
 # Favourite Build
 @login_required(login_url='login')
@@ -419,15 +296,17 @@ def toggle_favorite(request):
         data = json.loads(request.body)
         cpu_id = data.get('cpu_id')
         gpu_id = data.get('gpu_id')
+        mboard_id = data.get('mboard_id')
 
-        if cpu_id and gpu_id:
+        if cpu_id and gpu_id and mboard_id:
             cpu = CPU.objects.get(id=cpu_id)
             gpu = GPU.objects.get(id=gpu_id)
+            mboard = Motherboard.objects.get(id=mboard_id)
 
-            total_price = cpu.price + gpu.price
+            total_price = cpu.price + gpu.price + mboard.price
 
             pc_build, created = FavouritedPC.objects.get_or_create(
-                user=request.user, cpu=cpu, gpu=gpu, total_price=total_price,
+                user=request.user, cpu=cpu, gpu=gpu, mboard=mboard, total_price=total_price,
             )
 
             if created:
@@ -475,17 +354,48 @@ def delete_favorited_build(request, build_id):
     return redirect('favorited_builds')
 
 
+from django.db.models import ExpressionWrapper, F, FloatField, Value
+
 # CPU
 class CPUListView(ListView):
     model = CPU
     template_name = 'pc_app/cpu/cpu_list.html'
     context_object_name = 'cpus'
+    paginate_by = 30  # Adjust the number of CPUs displayed per page as needed
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        sort_by = self.request.GET.get(
-            'sort_by', 'name')  # Default sorting by name
-        return queryset.order_by(sort_by)
+        search_query = self.request.GET.get('search_query')
+        min_clock_speed = self.request.GET.get('min_clock_speed')
+        min_core_count = self.request.GET.get('min_core_count')
+        min_price = self.request.GET.get('min_price')
+        max_price = self.request.GET.get('max_price')
+
+        if search_query:
+            # Filter CPUs by name containing the search query (case-insensitive)
+            queryset = queryset.filter(name__icontains=search_query)
+
+        # Filter CPUs by minimum clock speed
+        if min_clock_speed:
+            queryset = queryset.filter(core_clock__gte=float(min_clock_speed))
+
+        if min_price:
+            min_price = float(min_price)
+            min_price /= 4.55  # Divide by 4.55 as in your original code
+            queryset = queryset.filter(price__gte=min_price)
+
+        if max_price:
+            max_price = float(max_price)
+            max_price /= 4.55  # Divide by 4.55 as in your original code
+            queryset = queryset.filter(price__lte=max_price)
+
+        # Filter CPUs by minimum core count
+        if min_core_count:
+            queryset = queryset.filter(core_count__gte=int(min_core_count))
+
+        return queryset
+
+        return queryset
 
 
 def cpu_detail(request, pk):
@@ -518,12 +428,21 @@ class GPUListView(ListView):
     model = GPU
     template_name = 'pc_app/gpu/gpu_list.html'
     context_object_name = 'gpus'
+    paginate_by = 30  # Adjust the number of CPUs displayed per page as needed
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        sort_by = self.request.GET.get(
-            'sort_by', 'name')  # Default sorting by name
-        return queryset.order_by(sort_by)
+        # sort_by = self.request.GET.get(
+        #     'sort_by', 'name')  # Default sorting by name
+        # return queryset.order_by(sort_by)
+        search_query = self.request.GET.get('search_query')
+
+        # Check if a search query is provided
+        if search_query:
+            # Filter GPUs by name containing the search query (case-insensitive)
+            queryset = queryset.filter(name__icontains=search_query)
+
+        return queryset
 
 
 def gpu_detail(request, pk):
@@ -553,6 +472,19 @@ class MBoardListView(ListView):
     model = Motherboard
     template_name = 'pc_app/motherboard/mboard_list.html'
     context_object_name = 'mboards'
+    # paginate_by = 30  # Adjust the number of Motherboard displayed per page as needed
+
+    # def get_queryset(self):
+    #     queryset = super().get_queryset()
+    #     # sort_by = self.request.GET.get(
+    #     #     'sort_by', 'name')  # Default sorting by name
+    #     # return queryset.order_by(sort_by)
+    #     search_query = self.request.GET.get('search_query')
+
+    #     # Check if a search query is provided
+    #     if search_query:
+    #         # Filter Motherboard by name containing the search query (case-insensitive)
+    #         queryset = queryset.filter(name__icontains=search_query)
 
 
 def mboard_detail(request, pk):
@@ -602,21 +534,42 @@ def LoginPage(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('pass')
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
 
-            # Check if the user is a superuser
-            if user.is_superuser:
-                # Redirect to the vendor dashboard for superusers
-                return redirect('vendor_order_list')
-            else:
-                # Redirect to the home page for non-superusers
-                return redirect('home')
+        if not username or not password:
+            # Check if either username or password is empty
+            messages.error(request, "Both username and password are required.")
         else:
-            messages.error(request, "Incorrect Username/Password!")
+            user = authenticate(request, username=username, password=password)
 
-    return render(request, 'pc_app/login.html')
+            if user is not None:
+                login(request, user)
+
+                # Clear browser history using JavaScript
+                clear_history_script = """
+                <script>
+                    if (window.history.replaceState) {
+                        window.history.replaceState(null, null, window.location.href);
+                    }
+                </script>
+                """
+                response = HttpResponse(clear_history_script)
+                
+                # Check if the user is a superuser
+                if user.is_superuser:
+                    # Redirect to the vendor dashboard for superusers
+                    return redirect('vendor_order_list')
+                else:
+                    # Redirect to the home page for non-superusers
+                    return redirect('home')
+            else:
+                messages.error(request, "Incorrect Username or Password!")
+
+    # Set cache-control headers to prevent caching
+    response = render(request, 'pc_app/login.html')
+    response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response['Pragma'] = 'no-cache'
+    response['Expires'] = '0'
+    return response
 
 
 def LogoutPage(request):
@@ -634,7 +587,6 @@ def update_profile_picture(request):
 
 
 @login_required(login_url='login')
-
 def profile(request):
     user = request.user
     profile = user.profile
@@ -673,7 +625,8 @@ def profile(request):
                 request, 'Phone number update failed! Please correct the errors below.')
 
     else:
-        phone_number_form = PhoneNumberForm(initial={'phone_number': profile.phone_number})
+        phone_number_form = PhoneNumberForm(
+            initial={'phone_number': profile.phone_number})
 
     return render(request, 'pc_app/profile.html', {
         'password_change_form': password_change_form,
@@ -681,12 +634,20 @@ def profile(request):
     })
 
 
-def ChangePassword(request, token):
+def reset_password(request, token):
     context = {}
     try:
         profile_obj = Profile.objects.filter(
             forgot_password_token=token).first()
-        context = {'user_id': profile_obj.user.id}
+
+        if not profile_obj:
+            messages.error(request, 'Invalid or expired password reset link.')
+            return redirect('/forgot-password/')
+
+        if profile_obj.is_password_reset_token_used:
+            messages.error(
+                request, 'This password reset link has already been used.')
+            return redirect('/forgot-password/')
 
         if request.method == 'POST':
             new_password = request.POST.get('new_password')
@@ -695,20 +656,29 @@ def ChangePassword(request, token):
 
             if user_id is None:
                 messages.success(request, 'No user id found!')
-                return redirect(f'/change-password/{token}/')
+                return redirect(f'/reset-password/{token}/')
 
             if new_password != confirm_password:
                 messages.success(request, 'Password does not match!')
-                return redirect(f'/change-password/{token}/')
+                return redirect(f'/reset-password/{token}/')
 
-            user_obj = User.objects.get(id=user_id)
+            user_obj = profile_obj.user
             user_obj.set_password(new_password)
             user_obj.save()
+
+            # Mark the token as used
+            profile_obj.is_password_reset_token_used = True
+            profile_obj.save()
+
+            messages.success(
+                request, 'Password reset successful. You can now log in with your new password.')
             return redirect('/login/')
+
+        context = {'user_id': profile_obj.user.id}
 
     except Exception as e:
         print(e)
-    return render(request, 'pc_app/change-password.html', context)
+    return render(request, 'pc_app/reset-password.html', context)
 
 
 def ForgotPassword(request):
@@ -728,6 +698,9 @@ def ForgotPassword(request):
         # Update the user's profile with the token
         profile_obj, created = Profile.objects.get_or_create(user=user_obj)
         profile_obj.forgot_password_token = token
+
+        # Set is_password_reset_token_used to False for the new token
+        profile_obj.is_password_reset_token_used = False
         profile_obj.save()
 
         # Send an email with the password reset link

@@ -1,45 +1,63 @@
 {% extends 'pc_app/base.html' %}
-
-{% block title %}
-    {{ proc_info.Name }} - {{ gpu_info.Name }}
-{% endblock %}
-
 {% block content %}
-    <div>
-        <h3>Your Current Build</h3>
-        <p>CPU: {{ proc_info }}</p>
-        <p>RAM Size and Speed(Mhz): {{ system_ram }}</p>
-        <p>Graphics Card: {{ gpu_info }}</p>
+{% load custom_filters %}
 
-        <button hidden id="suggest-upgrades" >Suggest Upgrades</button>
+<div>
+    <h4>Your Current Build</h4>
+    <p>CPU: {{ proc_info }}</p>
+    {% if ram_count > 1 %}
+    <p>RAM: {{ ram_gb|multiply:ram_count }} GB ({{ ram_gb }}GB + {{ ram_speed}}Mhz) x{{ram_count}}</p>
+    {% else %}
+    <p>RAM: {{ ram_gb }} GB + {{ ram_speed }}Mhz x{{ram_count}}</p>
+    {% endif %}
+
+    <p>Graphics Card: {{ gpu_info }}</p>
+
+    <br>
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-info">
+        {{message}}
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <!-- Placeholder for CPU and GPU Upgrades -->
+    <div id="upgrade-suggestions">
+        <h4>PC Build Upgrade</h4>
+        <form method="post">
+            {% csrf_token %}
+            <input type="number" name="budget" placeholder="Input Budget" style="width: 130px;">
+            <button type="submit">Search</button>
+        </form>
         <br>
-        {% if messages %}
-        {% for message in messages %}
-        <div class="alert alert-info">
-            {{message}}
-        </div>
-        {% endfor %}
+        <!-- CPU Upgrade -->
+        {% if cpu_upgrade %}
+        <a href="{% url 'cpu_detail' cpu_upgrade.pk %}">
+            <p>CPU: {{ cpu_upgrade }}</p>
+        </a>
+        {% else %}
+            No CPU found with the set budget!
+        {% endif %}
+        <br>
+        {% if ram_upgrade %}
+        <a href="">
+            <p>RAM: {{ ram_upgrade.name }} ({{ram_upgrade.memory_size }}GB + {{ram_upgrade.speed_mhz}}Mhz)
+                x{{ram_upgrade.num_modules }}</p>
+        </a>
+        {% else %}
+            No RAM found with the set budget!
+        {% endif %}
+        <br>
+        {% if gpu_upgrade %}
+        <a href="{% url 'gpu_detail' gpu_upgrade.pk %}">
+            <p>GPU: {{ gpu_upgrade }}</p>
+        </a>
+        {% else %}
+            No GPU found with the set budget!
         {% endif %}
 
-        <!-- Placeholder for CPU and GPU Upgrades -->
-        <div id="upgrade-suggestions">
-            <!-- CPU Upgrade -->
-            {% if cpu_upgrade %}
-                <h4>CPU Upgrade</h4>
-                <p>CPU: {{ cpu_upgrade }}</p>
-            {% endif %}
-            
-            {% if ram_upgrade %}
-                <h4>RAM Upgrade</h4>
-                <p>RAM: {{ ram_upgrade }}</p>
-            {% endif %}
-
-            {% if gpu_upgrade %}
-                <h4>GPU Upgrade</h4>
-                <p>GPU: {{ gpu_upgrade }}</p>
-            {% endif %}
-
-            <!-- GPU Upgrade
+        <!-- GPU Upgrade
             {% if suggested_gpu_upgrade %}
                 <h3>Suggested GPU Upgrade</h3>
                 <p>GPU: {{ suggested_gpu_upgrade.name }}</p>
@@ -52,6 +70,6 @@
                 <p>Multithreading: {% if suggested_gpu_upgrade.smt %}Yes{% else %}No{% endif %}</p>
                 <p>Socket: {{ suggested_gpu_upgrade.socket }}</p>
             {% endif %} -->
-        </div>
     </div>
+</div>
 {% endblock %}

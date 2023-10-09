@@ -12,7 +12,7 @@ class Profile(models.Model):
     phone_number = models.CharField(max_length=20, blank=True, null=True)
     forgot_password_token = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
-    # Add other profile-related fields here
+    is_password_reset_token_used = models.BooleanField(default='False')
 
     def __str__(self) -> str:
         return self.user.email
@@ -130,6 +130,7 @@ class FavouritedPC(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     cpu = models.ForeignKey(CPU, on_delete=models.CASCADE)
     gpu = models.ForeignKey(GPU, on_delete=models.CASCADE)
+    mboard = models.ForeignKey(Motherboard, on_delete=models.CASCADE, null=True)
     total_price = models.FloatField(default=0.0)
     # Add other fields as needed
 
@@ -149,6 +150,7 @@ class OrderRating(models.Model):
 class CartItem(models.Model):
     cpu = models.ForeignKey(CPU, on_delete=models.CASCADE, null=True)
     gpu = models.ForeignKey(GPU, on_delete=models.CASCADE, null=True)
+    mboard = models.ForeignKey(Motherboard, on_delete=models.CASCADE, null=True)
     total_price = models.FloatField(default=0.0)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     is_purchased = models.BooleanField(default=False)
@@ -165,3 +167,18 @@ class Feedback(models.Model):
     rating = models.PositiveIntegerField()
     feedbacks = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+class CPUPivotTable(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    cpu = models.ForeignKey(CPU, on_delete=models.CASCADE)
+    ratings = models.DecimalField(max_digits=5, decimal_places=0)
+
+    def __str__(self):
+        return f"{self.cpu.name} - {self.ratings}*"
+
+class RecommendedBuild(models.Model):
+    cpu = models.ForeignKey(CPU, on_delete=models.CASCADE)
+    gpu = models.ForeignKey(GPU, on_delete=models.CASCADE)
+    mboard = models.ForeignKey(Motherboard, on_delete=models.CASCADE)
+    total_price = models.FloatField(default=0.0)

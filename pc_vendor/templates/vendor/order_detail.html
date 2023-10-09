@@ -22,7 +22,7 @@
 {% else %}
 <form method="POST" action="{% url 'mark_completed' order.id %}">
   {% csrf_token %}
-  <button type="submit">Mark as Completed</button>
+  <button type="submit" id="complete-order-button">Mark as Completed</button>
 </form>
 {% endif %}
 
@@ -31,8 +31,32 @@
 <p>Status: Not ready to pick up</p>
 <form method="POST" action="{% url 'mark_ready_pickup' order.id %}">
   {% csrf_token %}
-  <button type="submit">Ready to Pick up</button>
+  <button type="submit" id="ready-pickup-button">Ready to Pick up</button>
 </form>
 
 {% endif %}
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var completeOrderButton = document.getElementById('complete-order-button');
+    
+    completeOrderButton.addEventListener('click', function (e) {
+      if (!confirm('Are you sure you want to mark this order as complete?')) {
+        e.preventDefault(); // Cancel the form submission
+      }
+    });
+  });
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var completeOrderButton = document.getElementById('ready-pickup-button');
+    
+    completeOrderButton.addEventListener('click', function (e) {
+      if (!confirm('Are you sure you want to mark this order as ready to pick up?')) {
+        e.preventDefault(); // Cancel the form submission
+      }
+    });
+  });
+  </script>
+
 {% endblock %}
+

@@ -1,6 +1,30 @@
+{% extends 'pc_app/base.html' %}
+{% block content %}
+
+{% if success_messages %}
+    <div class="alert alert-success">
+        {% for message in success_messages %}
+            {{ message }}
+        {% endfor %}
+    </div>
+{% endif %}
+
 <!-- upload.html -->
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">Upload CSV</button>
+    <button type="submit" id="upload-dataset">Upload CSV</button>
 </form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+    var completeOrderButton = document.getElementById('upload-dataset');
+    
+    completeOrderButton.addEventListener('click', function (e) {
+      if (!confirm('Are you sure you want to upload this dataset?')) {
+        e.preventDefault(); // Cancel the form submission
+      }
+    });
+  });
+</script>
+{% endblock %}
