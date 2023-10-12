@@ -11,61 +11,63 @@
                 </div>
             </div>
 
-            <div class="col-sm-3">
-                <!-- User Navigation -->
-                <div class="pull-right">
-                    <ul class="navbar-nav">
-                        {% if request.user.is_authenticated %}
-                        <li class="dropdown profile">
-                            <a href="#">Welcome, {{ request.user.username }} <i class="fa fa-angle-down"></i></a>
-                            <ul role="menu" class="sub-menu">
-                                <li><a href="/profile/"><i class="fa fa-user"></i> Profile</a></li>
-                                <li><a href="{% url 'logout' %}"><i class="fa fa-sign-out"></i> Sign Out</a></li>
-                            </ul>
-                        </li>
-                        
-                        <li class="dropdown profile">
-                            <a href="#">Your Orders<i class="fa fa-angle-down"></i></a>
-                            <ul role="menu" class="sub-menu">
-                                <li><a href="{% url 'ongoing_order' %}"></i>Ongoing</a></li>
-                                <li><a href="{% url 'completed_order' %}"></i>Completed</a></li>
-                            </ul>
-                        </li>
+            <!-- <div class="col-sm-3"> -->
+            <!-- User Navigation -->
+            <div class="pull-right">
+                <ul class="navbar-nav">
+                    {% if request.user.is_authenticated %}
+                    <li class="dropdown profile">
+                        <a href="#">Your Orders<i class="fa fa-angle-down"></i></a>
+                        <ul role="menu" class="sub-menu">
+                            <li><a href="{% url 'ongoing_order' %}"></i>Ongoing</a></li>
+                            <li><a href="{% url 'completed_order' %}"></i>Completed</a></li>
+                        </ul>
+                    </li>
 
-                        <li class="dropdown profile">
-                            <a href="{% url 'upgrade' %}">Upgrade</a>
-                        </li>
+                    <li class="dropdown profile">
+                        <a href="{% url 'upgrade' %}">Upgrade</a>
+                    </li>
 
-                        <li class="cart">
-                            <a href="{% url 'favorited_builds' %}">Favorited Builds <i class="fa fa-heart"></i>
-                                <span class="totalcart" id="gettotalcart">{{ favorited_builds|length }}</span>
-                            </a>
-                        </li>
+                    <li class="cart">
+                        <a href="{% url 'favorited_builds' %}">Favorited Builds <i class="fa fa-heart"></i>
+                            <span class="totalcart" id="gettotalcart">[{{ favorited_builds|length }}]</span>
+                        </a>
+                    </li>
 
-                        <li class="cart">
-                            <a href="{% url 'cart_items' %}">Cart</a>
-                        </li>
+                    <li class="cart">
+                        <a href="{% url 'cart_items' %}">Cart
+                            <span class="totalcart" id="gettotalcart">[{{ cart_items|length }}]</span>
+                        </a>
+                    </li>
 
-                        {% if user.is_superuser %}
-                        <li class="cart">
-                            <a href="{% url 'vendor_order_list' %}">PC Orders</a>
-                        </li>
+                    <li class="dropdown profile">
+                        <a href="#">Welcome, {{ request.user.username }} <i class="fa fa-angle-down"></i></a>
+                        <ul role="menu" class="sub-menu">
+                            <li><a href="/profile/"><i class="fa fa-user"></i> Profile</a></li>
+                            <li><a href="{% url 'logout' %}"><i class="fa fa-sign-out"></i> Sign Out</a></li>
+                        </ul>
+                    </li>
 
-                        <li class="cart">
-                            <a href="{% url 'upload_csv' %}">Upload Component</a>
-                        </li>
-                        {% endif %}
+                    {% if user.is_superuser %}
+                    <li class="cart">
+                        <a href="{% url 'vendor_order_list' %}">PC Orders</a>
+                    </li>
 
-                        {% else %}
-                        <li class="profile">
-                            <a href="{% url 'login' %}"><i class="fa fa-sign-in"></i> Sign In</a>
-                        </li>
-                        {% endif %}
-                    </ul>
+                    <li class="cart">
+                        <a href="{% url 'upload_csv' %}">Upload Component</a>
+                    </li>
+                    {% endif %}
+
+                    {% else %}
+                    <li class="profile">
+                        <a href="{% url 'login' %}"><i class="fa fa-sign-in"></i> Sign In</a>
+                    </li>
+                    {% endif %}
+                </ul>
 
 
-                    <!-- Search Box -->
-                    <!-- <div class="col-sm-6">
+                <!-- Search Box -->
+                <!-- <div class="col-sm-6">
                         
                         <div class="pull-right">
                             <form action="" method="GET">
@@ -78,7 +80,6 @@
                         </div>
                     </div> -->
 
-                </div>
             </div>
         </div>
     </div>

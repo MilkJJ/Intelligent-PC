@@ -18,6 +18,27 @@
 </head>
 
 <style>
+    .component-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        /* Add space between rows (adjust as needed) */
+    }
+
+    .component-box {
+        flex: 0 0 calc(20% - 10px);
+        /* Set the width of each CPU element (adjust as needed) */
+        margin-right: 10px;
+        /* Add spacing between CPU elements (adjust as needed) */
+        border: 1px solid #ccc;
+        padding: 10px;
+    }
+
+    .component-box:hover {
+        background-color: #f0f0f0;
+        /* Change the background color on hover (adjust as needed) */
+    }
+
     /* Slide-out bar */
     .slide-menu {
         position: fixed;
@@ -80,23 +101,24 @@
             <div class="col-sm-2">
                 {% include 'pc_app/bin/sidebar.html' %}
             </div>
+
             <div class="col-sm-10">
                 {% block container %}{% endblock %}
+                {% block content %}{% endblock %}
             </div>
 
         </div>
     </div>
+
     <div id="snackbar"></div>
 
+    <!-- Customize PC Build Button -->
     <div id="slideOutMenu" class="slide-menu">
         {% include 'pc_app/bin/customize.html' %}
     </div>
 
-    <button id="slideToggleButton" class="slide-button" onclick="toggleSlideMenu()">Customize</button>
+    <button id="slideToggleButton" class="slide-button" onclick="toggleSlideMenu()">&gt;</button>
 
-    {% block content %}
-
-    {% endblock %}
 
     <footer>{% include 'pc_app/bin/footer.html' %}</footer>
 
@@ -119,16 +141,23 @@
 
 
 <script>
-    var totalPrice = 0;
-    var selectedCPUPrice = 0;
-    var selectedGPUPrice = 0;
+    var totalPrice = 0.0;
+    var storedCPUPrice=0, storedGPUPrice=0, storedMotherboardPrice=0;
 
     // Function to calculate and display the total price
     function displayTotalPrice() {
-        totalPrice = selectedCPUPrice + selectedGPUPrice;
+        const storedCPUPrice = localStorage.getItem('selectedCPUPrice');
+        const storedGPUPrice = localStorage.getItem('selectedGPUPrice');
+        const storedMotherboardPrice = localStorage.getItem('selectedMotherboardPrice');
+
+        // Check if stored prices exist, otherwise set them to 0
+        const parsedCPUPrice = parseFloat(storedCPUPrice) || 0;
+        const parsedGPUPrice = parseFloat(storedGPUPrice) || 0;
+        const parsedMotherboardPrice = parseFloat(storedMotherboardPrice) || 0;
+        
+        totalPrice = 1 + parsedCPUPrice + parsedGPUPrice + parsedMotherboardPrice;
         document.getElementById('totalPrice').innerText = `Total Price: RM${totalPrice.toFixed(2)}`;
         localStorage.setItem('totalPrice', totalPrice);
-
     }
 
 
@@ -162,12 +191,7 @@
         menu.classList.add('open');
         button.classList.add('open');
 
-        var cpuPrice = 0;
-        var gpuPrice = 0;
-
         if (componentType === 'cpu') {
-
-            totalPrice -= selectedCPUPrice;
             // Fetch CPU information using AJAX
             var cpuXhr = new XMLHttpRequest();
             cpuXhr.open("GET", `/get_cpu_info/${componentId}`);
@@ -178,19 +202,16 @@
                     localStorage.setItem('selectedCPU', `${cpuInfo.name} - RM ${cpuInfo.price}`);
                     document.getElementById('selectedCPU').innerText = `${cpuInfo.name} - RM ${cpuInfo.price}`;
 
-                    alert(`CPU: ${cpuInfo.name} selected for customization!`);
-
-                    // Update CPU price
-                    selectedCPUPrice = parseFloat(`${cpuInfo.price}`)
+                    localStorage.setItem('selectedCPUPrice', parseFloat(`${cpuInfo.price}`));
                     //document.getElementById('totalPrice').innerText = `CPU Price: ${cpuPrice.toFixed(2)}`;
                     // Calculate and display total price
                     displayTotalPrice();
+
+                    alert(`CPU: ${cpuInfo.name} selected for customization!`);
                 }
             };
             cpuXhr.send();
         } else if (componentType === 'gpu') {
-
-            totalPrice -= selectedGPUPrice;
             // Fetch GPU information using AJAX
             var gpuXhr = new XMLHttpRequest();
             gpuXhr.open("GET", `/get_gpu_info/${componentId}`);
@@ -204,7 +225,29 @@
                     alert(`GPU: ${gpuInfo.chipset} selected for customization!`);
 
                     // Update GPU price
+                    localStorage.setItem('selectedGPUPrice', parseFloat(`${gpuInfo.price}`));
                     selectedGPUPrice = parseFloat(`${gpuInfo.price}`)
+                    // Calculate and display total price
+                    displayTotalPrice();
+                }
+            };
+            gpuXhr.send();
+        } else if (componentType === 'motherboard') {
+            // Fetch Motherboard information using AJAX
+            var gpuXhr = new XMLHttpRequest();
+            gpuXhr.open("GET", `/get_mboard_info/${componentId}`);
+            gpuXhr.onreadystatechange = function () {
+                if (gpuXhr.readyState === XMLHttpRequest.DONE && gpuXhr.status === 200) {
+                    var mboard_info = JSON.parse(gpuXhr.responseText);
+                    localStorage.setItem('selectedMotherboardID', componentId); //To favourite the GPU
+                    localStorage.setItem('selectedMotherboard', `${mboard_info.name} - RM ${mboard_info.price}`);
+                    document.getElementById('selectedMotherboard').innerText = `${mboard_info.name} - RM ${mboard_info.price}`;
+
+                    alert(`GPU: ${mboard_info.name} selected for customization!`);
+
+                    // Update Motherboard price
+                    localStorage.setItem('selectedMotherboardPrice', parseFloat(`${mboard_info.price}`));
+                    selectedMotherboardPrice = parseFloat(`${mboard_info.price}`)
                     // Calculate and display total price
                     displayTotalPrice();
                 }
@@ -218,9 +261,12 @@
     window.onload = function () {
         const storedCPU = localStorage.getItem('selectedCPU');
         const storedGPU = localStorage.getItem('selectedGPU');
+        const storedMotherboard = localStorage.getItem('selectedMotherboard');
         const storedtotalPrice = localStorage.getItem('totalPrice');
+
         document.getElementById('selectedCPU').innerText = storedCPU || '';
         document.getElementById('selectedGPU').innerText = storedGPU || '';
+        document.getElementById('selectedMotherboard').innerText = storedMotherboard || '';
         document.getElementById('totalPrice').innerText = `Total Price: RM${storedtotalPrice}`;
     };
 
@@ -242,8 +288,9 @@
     function toggleFavorite() {
         const selectedCPUID = localStorage.getItem('selectedCPUID');
         const selectedGPUID = localStorage.getItem('selectedGPUID');
+        const selectedMotherboardID = localStorage.getItem('selectedMotherboardID');
 
-        if (selectedCPUID && selectedGPUID) {
+        if (selectedCPUID && selectedGPUID && selectedMotherboardID) {
             const xhr = new XMLHttpRequest();
             xhr.open('POST', '/toggle_favorite/', true);
             xhr.setRequestHeader('X-CSRFToken', csrftoken); // Set the CSRF token in the request header
@@ -259,7 +306,7 @@
                     }
                 }
             };
-            xhr.send(JSON.stringify({ cpu_id: selectedCPUID, gpu_id: selectedGPUID }));
+            xhr.send(JSON.stringify({ cpu_id: selectedCPUID, gpu_id: selectedGPUID, mboard_id: selectedMotherboardID }));
         } else {
             alert('Please select all components before saving!');
         }
@@ -268,8 +315,9 @@
     function addToCart() {
         var selectedCPUID = localStorage.getItem('selectedCPUID');
         var selectedGPUID = localStorage.getItem('selectedGPUID');
+        var selectedMotherboardID = localStorage.getItem('selectedMotherboardID');
 
-        if (selectedCPUID && selectedGPUID) {
+        if (selectedCPUID && selectedGPUID && selectedMotherboardID) {
             // Send selected component IDs to Django view
             var xhr = new XMLHttpRequest();
             xhr.open('POST', '/add_to_cart/', true);
@@ -290,7 +338,7 @@
                     }
                 }
             };
-            xhr.send(JSON.stringify({ cpu_id: selectedCPUID, gpu_id: selectedGPUID }));
+            xhr.send(JSON.stringify({ cpu_id: selectedCPUID, gpu_id: selectedGPUID, mboard_id: selectedMotherboardID }));
         } else {
             alert('Please select all components before adding to cart!');
         }
@@ -299,6 +347,7 @@
         var formData = new FormData();
         formData.append('selectedCPUID', selectedCPUID);
         formData.append('selectedGPUID', selectedGPUID);
+        formData.append('selectedMotherboardID', selectedMotherboardID);
         xhr.send(formData);
     }
 

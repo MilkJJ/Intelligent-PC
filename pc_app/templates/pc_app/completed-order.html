@@ -8,14 +8,14 @@
 <html lang="en">
 
 <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cart</title>
     <style>
-        .fa-star.checked {
+        /* .fa-star.checked {
             color: gold;
-            /* You can change the color to your preferred highlight color */
-        }
+        } */
 
         .fa-star.unchecked {
             color: white;
@@ -118,7 +118,7 @@
                 <td>{{ item.cpu.price|convert_to_myr }}</td>
             </tr>
             <tr>
-                <td>{{ item.gpu.chipset }}</td>
+                <td>{{ item.gpu.name }} - {{ item.gpu.chipset }}</td>
                 <td>{{ item.gpu.price|convert_to_myr }}</td>
             </tr>
             <tr>
@@ -135,18 +135,26 @@
                     {% if not item.order_rating %}
                     <form method="post" action="{% url 'rate_order' item.id %}">
                         {% csrf_token %}
-                        <label for="order_rating" style="color: black;">Rating:</label>
+                        <label for="" style="color: black;">Rating:</label>
                         <!-- Hidden input field to store the rating value -->
-                        <input name="order_rating" id="order_rating" />
+                        <input type="hidden" name="orderRating" id="order_ratingInput" size="5"/>
+                        
+                        <select name="orderRating" id="order_ratingInput">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
 
                         <!-- Display the star rating widget for the 'rating' field -->
-                        <ul class="btn btn-light list-inline rating-order-list">
-                            <li onclick="rating(1)" data-rating="1"><i class="fa fa-star" title="Rate 1"></i></li>
-                            <li onclick="rating(2)" data-rating="2"><i class="fa fa-star" title="Rate 2"></i></li>
-                            <li onclick="rating(3)" data-rating="3"><i class="fa fa-star" title="Rate 3"></i></li>
-                            <li onclick="rating(4)" data-rating="4"><i class="fa fa-star" title="Rate 4"></i></li>
-                            <li onclick="rating(5)" data-rating="5"><i class="fa fa-star" title="Rate 5"></i></li>
-                        </ul>
+                        <!-- <ul class="btn btn-light list-inline rating-order-list">
+                            <li onclick="rating(5)" data-order-rating="5"><i class="fa fa-star checked" title="Rate 5"></i></li>
+                            <li onclick="rating(4)" data-order-rating="4"><i class="fa fa-star" title="Rate 4"></i></li>
+                            <li onclick="rating(3)" data-order-rating="3"><i class="fa fa-star" title="Rate 3"></i></li>
+                            <li onclick="rating(2)" data-order-rating="2"><i class="fa fa-star" title="Rate 2"></i></li>
+                            <li onclick="rating(1)" data-order-rating="1"><i class="fa fa-star" title="Rate 1"></i></li>
+                        </ul> -->
                         <br>
 
                         <label for="comment" style="color: black;">Comment:</label>
@@ -156,11 +164,25 @@
                     </form>
                     {% else %}
                     You have rated this build!
+                    <div class="star-rating">
+                        <span class="fa fa-star {% if item.order_rating.rating >= 1 %}checked{% endif %}"></span>
+                        <span class="fa fa-star {% if item.order_rating.rating >= 2 %}checked{% endif %}"></span>
+                        <span class="fa fa-star {% if item.order_rating.rating >= 3 %}checked{% endif %}"></span>
+                        <span class="fa fa-star {% if item.order_rating.rating >= 4 %}checked{% endif %}"></span>
+                        <span class="fa fa-star {% if item.order_rating.rating >= 5 %}checked{% endif %}"></span>
+                    </div>
+
+                    <strong>Comment</strong>: {{item.order_rating.comment}}
                     {% endif %}
                 </td>
             </tr>
         </tbody>
     </table>
+
+    <form method="POST" action="{% url 'add_to_cart' item.id %}">
+        {% csrf_token %}
+        <button type="submit" name="re-purchase-button" value="completed">Re-Purchase</button>
+      </form>
     {% endfor %}
     {% else %}
     <p class="empty-cart-message">No Completed Order</p>
@@ -171,21 +193,22 @@
 {% endblock %}
 
 <script>
-    var selectedRating = 0; // Initialize with a default value of 0
 
     function rating(rating) {
         selectedRating = rating; // Assign the selected rating to the JavaScript variable
-        document.getElementById('order_rating').value = rating; // Also set the hidden input field value
+        document.getElementById('order_ratingInput').value = rating; // Also set the hidden input field value
 
-        // Get all the star elements
-        var stars = document.querySelectorAll('.rating-order-list li i');
+        // Remove the 'checked' class from all stars
+        const stars = document.querySelectorAll('.rating-order-list i');
+        for (let i = 0; i < stars.length; i++) {
+            stars[i].classList.remove('checked');
+        }
 
-        // Loop through the stars and toggle the 'checked' class
-        for (var i = 0; i < stars.length; i++) {
-            if (i < rating) {
-                stars[i].classList.add('checked'); // Add 'checked' class to checked stars
-            } else {
-                stars[i].classList.remove('checked'); // Remove 'checked' class from unchecked stars
+        // Add the 'checked' class to the selected stars
+        for (let i = 1; i <= rating; i++) {
+            const star = document.querySelector(`.rating-order-list [data-order-rating="${i}"] i`);
+            if (star) {
+                star.classList.add('checked');
             }
         }
     }

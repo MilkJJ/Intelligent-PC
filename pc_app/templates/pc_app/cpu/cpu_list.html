@@ -1,46 +1,75 @@
 {% extends 'pc_app/base.html' %}
-
 {% block title %}{{ cpu.name }}{% endblock %}
-
 {% block content %}
-
 {% load custom_filters %}
-
-<h3>List of CPU ({{ cpus|length }})</h3>
-
-<input type="text" id="cpuSearch" onkeyup="filterCpus()" placeholder="Search CPUs...">
 
 <div class="col-sm-12">
   <div class="titleheader">
-    <h3 class="h2header text-center">CPU</h3>
-    <a href="#">See All</a>
+    <h3 class="h2header text-center">CPU ({{ cpus|length }})</h3>
     <a href="#" id="sortToggle" onclick="toggleSorting()">Sort A to Z</a>
+    <form method="get" action="{% url 'cpu_list' %}">
+      <label for="search_query">CPU Model:</label>
+      <input type="text" name="search_query" placeholder="Search CPU Model...">
+    <input type="number" name="min_clock_speed" id="min_clock_speed" step="0.01" min="0" style="width: 50px;" placeholder="Speed">
+    
+    <input type="number" name="min_core_count" id="min_core_count" min="1" style="width: 50px;" placeholder="Cores...">
+
+    <input type="number" name="min_price" id="min_price" min="1" style="width: 50px;" placeholder="Min Price">
+    <input type="number" name="max_price" id="max_price" min="1" style="width: 50px;" placeholder="Max Price">
+
+      <button type="submit">Search</button>
+      <button type="button" onclick="resetSearch()">Reset</button>
+    </form>
   </div>
 
   <div id="cpuList"> <!-- Add id="cpuList" to the container div -->
-    {% for cpu in cpus %}
-    <div class="book-wrapper text-center">
-      <div class="coverpage">
-        {% if cpu.name|lower|slice:"0:3" == "amd" %}
-        <img src="https://www.amd.com/system/files/2020-06/amd-default-social-image-1200x628.jpg" width="100"
-          height="100"> <!-- Replace with the actual path to AMD image -->
-        {% elif cpu.name|lower|slice:"0:5" == "intel" %}
-        <img src="https://www.intel.com/content/dam/logos/logo-energyblue-1x1.png" width="100" height="100">
-        <!-- Replace with the actual path to Intel image -->
-        {% else %}
-        <img src="default-image.png"> <!-- Add a default image path if needed -->
-        {% endif %}
+    <div class="component-row">
+      {% for cpu in cpus %}
+      <div class="component-box text-center">
+        <a href="{% url 'cpu_detail' cpu.pk %}">
+          <div class="coverpage">
+            {% if cpu.name|lower|slice:"0:3" == "amd" %}
+            <img src="https://www.amd.com/system/files/2020-06/amd-default-social-image-1200x628.jpg" width="100"
+              height="100"> <!-- Replace with the actual path to AMD image -->
+            {% elif cpu.name|lower|slice:"0:5" == "intel" %}
+            <img src="https://www.intel.com/content/dam/logos/logo-energyblue-1x1.png" width="100" height="100">
+            <!-- Replace with the actual path to Intel image -->
+            {% else %}
+            <img src="default-image.png"> <!-- Add a default image path if needed -->
+            {% endif %}
+          </div>
+          <p><a href="{% url 'cpu_detail' cpu.pk %}">{{ cpu.name }}</a></p>
+          <p>RM{{ cpu.price|convert_to_myr }}</p>
+          <button class="select-button" onclick="selectComponent('cpu', '{{ cpu.id }}')">Add</button>
       </div>
-      <a href="{% url 'cpu_detail' cpu.pk %}">{{ cpu.name }}</a>
-      <p>{{ cpu.price|convert_to_myr }}</p>
-      <button class="select-button" onclick="selectComponent('cpu', '{{ cpu.id }}')">Add</button>
+      {% if forloop.counter|divisibleby:5 and not forloop.last %} <!-- Create a new row after every 5 CPUs -->
     </div>
-    {% endfor %}
+    <div class="component-row">
+      {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="pagination">
+    <span class="step-links">
+      {% if cpus.has_previous %}
+      <a href="?page=1">&laquo; first</a>
+      <a href="?page={{ cpus.previous_page_number }}">previous</a>
+      {% endif %}
+  
+      <span class="current-page">
+        Page {{ cpus.number }} of {{ cpus.paginator.num_pages }}.
+      </span>
+  
+      {% if cpus.has_next %}
+      <a href="?page={{ cpus.next_page_number }}">next</a>
+      <a href="?page={{ cpus.paginator.num_pages }}">last &raquo;</a>
+      {% endif %}
+    </span>
   </div>
 
   <script>
-  
-  var ascending = true;
+    var ascending = true;
 
     function toggleSorting() {
       ascending = !ascending;
@@ -51,22 +80,9 @@
     }
 
 
-    function filterCpus() {
-      var input, filter, ul, li, a, i, txtValue;
-      input = document.getElementById('cpuSearch');
-      filter = input.value.toUpperCase();
-      ul = document.getElementById('cpuList'); // Use the correct ID here
-      li = ul.getElementsByClassName('book-wrapper'); // Change to the correct class name
-
-      for (i = 0; i < li.length; i++) {
-        a = li[i].getElementsByTagName('a')[0];
-        txtValue = a.textContent || a.innerText;
-        if (txtValue.toUpperCase().indexOf(filter) > -1) {
-          li[i].style.display = '';
-        } else {
-          li[i].style.display = 'none';
-        }
-      }
+    function resetSearch() {
+      document.querySelector('input[name="search_query"]').value = '';
+      document.querySelector('form').submit();
     }
   </script>
 

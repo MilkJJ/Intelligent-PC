@@ -1,7 +1,8 @@
-
 {% load static %}
 
 <script src="{% static 'js/chatbot.js' %}"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 
 <div class="footer">
     <div class="container">
@@ -24,13 +25,14 @@
                 </ul>
             </div>
 
+            <!-- Chatbot Open and Close Button -->
             <div id="chatbot-container">
-                <button id="open-chatbot">Open Chat</button>
+                <button id="open-chatbot" class="round-button"><i class="fas fa-comments fa-2x"></i></button>
                 <div id="chatbot-frame" class="hidden">
                     <iframe allow="microphone;" width="350" height="430"
                         src="https://console.dialogflow.com/api-client/demo/embedded/108b725a-9f61-4dd3-b416-290cd6fdc27f">
                     </iframe>
-                    <button id="close-chatbot">Close Chat</button>
+                    <button id="close-chatbot" class="round-button"><i class="fas fa-comments fa-2x"></i></button>
                 </div>
             </div>
 
@@ -42,12 +44,12 @@
         <!-- Feedback Form -->
         <form method="post">
             {% csrf_token %}
-            
+
             <!-- Hidden input field to store the rating value -->
             <input type="hidden" name="rating" id="ratingInput" value="{{ feedback_form.rating.value }}" />
-              
-            {{ feedback_form.rating.label_tag }}
-          
+
+            <span class="white-label">{{ feedback_form.rating.label_tag }}</span>
+
             <!-- Display the star rating widget for the 'rating' field -->
             <ul class="btn btn-light list-inline rating-list">
                 <li onclick="rate(5)" data-rating="5">
@@ -66,15 +68,15 @@
                     <i class="fa fa-star {% if feedback_form.rating.value >= 1 %}checked{% endif %}" title="Rate 1"></i>
                 </li>
             </ul>
-            
-            {{ feedback_form.feedbacks.label_tag }}
+
+            <span class="white-label">{{ feedback_form.feedbacks.label_tag }}</span>
             {{ feedback_form.feedbacks }}
-            
+
             <button type="submit">Submit Feedback</button>
         </form>
 
-        </div>
     </div>
+</div>
 </div>
 
 <!-- Add the map iframe here with a fixed coordinate -->
@@ -95,13 +97,13 @@
     function rate(rating) {
         // Update the hidden input field with the selected rating
         document.getElementById('ratingInput').value = rating;
-    
+
         // Remove the 'checked' class from all stars
         const stars = document.querySelectorAll('.rating-list i');
         for (let i = 0; i < stars.length; i++) {
             stars[i].classList.remove('checked');
         }
-    
+
         // Add the 'checked' class to the selected stars
         for (let i = 1; i <= rating; i++) {
             const star = document.querySelector(`.rating-list [data-rating="${i}"] i`);
@@ -110,31 +112,38 @@
             }
         }
     }
-    </script>
-  
-  <style>
-    .rating-list li {
-      float: right;
-      color: #ddd;
-      padding: 10px 5px;
-    }
-  
-    .rating-list li:hover,
-    .rating-list li:hover~li {
-      color: orange;
-    }
-  
-    .rating-list {
-      display: inline-block;
-      list-style: none;
-    }
-  
-    .checked {
-      color: orange;
+</script>
+
+<style>
+    .round-button {
+        border-radius: 50%;
+        /* Makes the button round */
+        padding: 10px 20px;
+        /* Adjust the padding as needed */
     }
 
-    label {
-        color: black;
+    .rating-list li {
+        float: right;
+        color: #ddd;
+        padding: 10px 5px;
+    }
+
+    .rating-list li:hover,
+    .rating-list li:hover~li {
+        color: orange;
+    }
+
+    .rating-list {
+        display: inline-block;
+        list-style: none;
+    }
+
+    .checked {
+        color: orange;
+    }
+
+    .white-label {
+        color: white;
     }
 
     #chatbot-container {
@@ -145,10 +154,10 @@
     }
 
     #open-chatbot {
-        background-color: #007bff;
+        background-color: #074384;
         color: #fff;
         border: none;
-        padding: 10px 20px;
+        padding: 20px 27px;
         cursor: pointer;
     }
 
@@ -157,11 +166,11 @@
     }
 
     #close-chatbot {
-        background-color: #dc3545;
+        background-color: #9e1926;
         color: #fff;
         border: none;
-        padding: 5px 10px;
+        padding: 20px 27px;
         cursor: pointer;
         margin-top: 10px;
     }
-  </style>
+</style>

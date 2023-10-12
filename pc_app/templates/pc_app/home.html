@@ -1,8 +1,60 @@
 {% extends 'pc_app/base.html' %}
-
 {% block content %}
-
 {% load custom_filters %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Recommended Build</title>
+</head>
+
+<body>
+  <!-- user_profile.html -->
+
+  <form action="#" method="get">
+    <!-- <label for="min_price">Minimum Price:</label>
+    <input type="number" id="min_price" name="min_price"> -->
+
+    <label for="max_budget">Max Budget:</label>
+    <input type="number" id="max_budget" name="max_budget" required>
+
+    <label for="preferred">Select Your Use Case Preference:</label>
+    <select id="preferred" name="preferred">
+      <option value="">-- --</option>
+      <option value="gaming">Gaming</option>
+      <option value="content_creation">Content Creation</option>
+      <option value="general">General Use</option>
+      <!-- Add more options for other use cases if needed -->
+    </select>
+
+    <button type="submit" name="build_type" value="amd">AMD Build</button>
+    <button type="submit" name="build_type" value="intel">Intel Build</button>
+  </form>
+
+
+  <h1>Recommended Build</h1>
+  <!-- here -->
+
+  <div class="recommended-builds-container">
+    {% if knn_recommended_builds %}
+    {% for recommended_build in knn_recommended_builds %}
+    {% if forloop.counter <= 3 %}
+    <div class="recommended-build">
+      <p><strong>Build {{ forloop.counter }}:</strong></p>
+      <p><strong>CPU:</strong> {{ recommended_build.cpu.name }}</p>
+      <p><strong>GPU:</strong> {{ recommended_build.gpu.name }} - {{ recommended_build.gpu.chipset }}</p>
+      <p><strong>Motherboard:</strong> {{ recommended_build.mboard.name }}</p>
+    </div>
+    {% endif %}
+    {% endfor %}
+    {% else %}
+    <p>No Build found within this budget!</p>
+    {% endif %}
+  </div>
+
+</body>
 
 {% if messages %}
 <ul class="messages">
@@ -13,12 +65,11 @@
 {% endif %}
 
 {% if rated_items %}
-<h3>Ratings by other users!</h3>
-<ul>
-  {% for item in rated_items %}
-  <li>
-    <strong>User:</strong> {{ item.user.username }}<br>
-    <strong>Item Name:</strong> <a href="{% url 'item_detail' item.id %}">
+<h3>Ratings by other users!</h3><br>
+<ul class="rating-container">
+  {% for item in rated_items|reverse_queryset %}
+  <li class="rating-column">
+    <a href="{% url 'item_detail' item.id %}">
       {% if 'amd' in item.cpu.name|lower %}
       AMD Build
       {% elif 'intel' in item.cpu.name|lower %}
@@ -34,16 +85,64 @@
       <span class="fa fa-star {% if item.latest_rating >= 3 %}checked{% endif %}"></span>
       <span class="fa fa-star {% if item.latest_rating >= 4 %}checked{% endif %}"></span>
       <span class="fa fa-star {% if item.latest_rating >= 5 %}checked{% endif %}"></span>
-  </div>
-    <strong>Total Price:</strong> {{ item.total_price|convert_to_myr }}<br>
-    <strong>Rating:</strong> {{ item.latest_rating|default:"No ratings yet" }}<br>
-    <strong>Comment:</strong> {{ item.latest_comment|default:"No comments yet" }}
+    </div>
+
+    <strong>User:</strong> {{ item.user.username }}<br>
+    <strong>Comment:</strong> {{ item.latest_comment|default:"No comments yet" }}<br>
+    <strong>Total Price:</strong> RM {{ item.total_price|convert_to_myr }}<br>
+
   </li>
-  <br>
+
+  {% if forloop.counter|divisibleby:3 %} {# Close the row and start a new one after every 3 items #}
+</ul>
+<ul class="rating-container">
+  {% endif %}
   {% endfor %}
 </ul>
 {% else %}
 <p>No rated items yet.</p>
 {% endif %}
+
+</html>
+
+<style>
+  .rating-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    /* space-between;*/
+    list-style: none;
+    padding: 0;
+  }
+
+  .rating-column {
+    flex-basis: calc(33.33% - 20px);
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid #ddd;
+  }
+
+  .recommended-builds-container {
+    display: flex;
+    flex-wrap: wrap;
+    /* Allow wrapping to the next line */
+    gap: 20px;
+    /* Adjust the spacing between recommended builds */
+    max-width: 100%;
+    /* Ensure the container doesn't exceed its parent's width */
+    overflow-x: auto;
+    /* Enable horizontal scrolling if needed */
+  }
+
+  .recommended-build {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 0;
+    flex: 0 0 calc(33.33% - 20px);
+    /* Adjust the width of each build to fit three builds in a row with spacing */
+    box-sizing: border-box;
+    /* Include padding and border in the width calculation */
+  }
+</style>
 
 {% endblock %}

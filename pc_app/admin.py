@@ -1,4 +1,8 @@
 from django.contrib import admin
-from .models import CartItem
+from .models import *
 # Register your models here.
-admin.site.register(CartItem)
+
+@admin.register(CPU)
+@admin.register(CartItem)
+class YourModelAdmin(admin.ModelAdmin):
+    search_fields = ['id']
