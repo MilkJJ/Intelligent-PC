@@ -162,6 +162,7 @@ class CartItem(models.Model):
     def __str__(self):
         return f"Order {self.id}"  # You can customize the string representation
 
+# Remove
 class Feedback(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     rating = models.PositiveIntegerField()
@@ -177,6 +178,7 @@ class CPUPivotTable(models.Model):
     def __str__(self):
         return f"{self.cpu.name} - {self.ratings}*"
 
+# To store or remove
 class RecommendedBuild(models.Model):
     cpu = models.ForeignKey(CPU, on_delete=models.CASCADE)
     gpu = models.ForeignKey(GPU, on_delete=models.CASCADE)

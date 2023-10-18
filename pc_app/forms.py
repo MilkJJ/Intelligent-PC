@@ -25,3 +25,10 @@ class FeedbackForm(forms.ModelForm):
     class Meta:
         model = Feedback
         fields = ['rating', 'feedbacks']
+
+class CPUPivotTableForm(forms.Form):
+    cpuRating = forms.ChoiceField(
+        label="Select Rating",
+        choices=[(1, '1'), (2, '2'), (3, '3'), (4, '4'), (5, '5')],
+        widget=forms.Select(attrs={'id': 'cpu_ratingInput'})
+    )

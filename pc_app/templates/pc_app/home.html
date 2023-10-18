@@ -13,12 +13,16 @@
 <body>
   <!-- user_profile.html -->
 
-  <form action="#" method="get">
+  <form action="{% url 'home' %}" method="get">
     <!-- <label for="min_price">Minimum Price:</label>
     <input type="number" id="min_price" name="min_price"> -->
+    
+    <label for="min_budget">Min Budget:</label>
+    <input type="number" id="min_budget" name="min_budget"> 
 
     <label for="max_budget">Max Budget:</label>
-    <input type="number" id="max_budget" name="max_budget" required>
+    <input type="number" id="max_budget" name="max_budget" required> 
+    <!-- required -->
 
     <label for="preferred">Select Your Use Case Preference:</label>
     <select id="preferred" name="preferred">
@@ -38,21 +42,52 @@
   <!-- here -->
 
   <div class="recommended-builds-container">
-    {% if knn_recommended_builds %}
-    {% for recommended_build in knn_recommended_builds %}
-    {% if forloop.counter <= 3 %}
+    {% if recommended_builds %}
+    {% for build in recommended_builds %}
+    {% if forloop.counter <= 1 %}
     <div class="recommended-build">
-      <p><strong>Build {{ forloop.counter }}:</strong></p>
-      <p><strong>CPU:</strong> {{ recommended_build.cpu.name }}</p>
-      <p><strong>GPU:</strong> {{ recommended_build.gpu.name }} - {{ recommended_build.gpu.chipset }}</p>
-      <p><strong>Motherboard:</strong> {{ recommended_build.mboard.name }}</p>
-    </div>
-    {% endif %}
+      <p><strong>Build 1:</strong></p>
+      <p><strong>CPU:</strong> {{ build.cpu.name }}</p>
+      <p><strong>GPU:</strong> {{ build.gpu.name }} + {{ build.gpu.chipset }}</p>
+      <!--  RATING MATRIX -->
+      <button class="select-button" onclick="selectBothComponents('{{ build.cpu.id }}', '{{ build.gpu.id }}')">Copy Build</button>
+  </div>
+  {% endif %}
     {% endfor %}
+    <div class="recommended-build">
+      {% if knn_recommended_builds %}
+      {% for recommended_build in knn_recommended_builds %}
+      {% if forloop.counter <= 1 %}
+        <p><strong>Build 2:</strong></p>
+        <p><strong>CPU:</strong> {{ recommended_build.cpu.name }}</p>
+        <p><strong>GPU:</strong> {{ recommended_build.gpu.name }} - {{ recommended_build.gpu.chipset }}</p>
+        <p><strong>Motherboard:</strong> {{ recommended_build.mboard.name }}</p>
+        <button class="select-button" onclick="selectBothComponents('{{ recommended_build.cpu.id }}', '{{ recommended_build.gpu.id }}')">Copy Build</button>
+        <button onclick="addToCart()">Add to Cart</button>
+      {% endif %}
+      {% endfor %}
+      {% else %}
+      <p>No Build found within this budget!</p>
+      {% endif %}
+    </div>
+      <!--  RATING MATRIX -->
     {% else %}
-    <p>No Build found within this budget!</p>
+    <div class="recommended-build">
+      {% if knn_recommended_builds %}
+      {% for recommended_build in knn_recommended_builds %}
+      {% if forloop.counter <= 2 %}
+        <p><strong>Build 2:</strong></p>
+        <p><strong>CPU:</strong> {{ recommended_build.cpu.name }}</p>
+        <p><strong>GPU:</strong> {{ recommended_build.gpu.name }} - {{ recommended_build.gpu.chipset }}</p>
+        <p><strong>Motherboard:</strong> {{ recommended_build.mboard.name }}</p>
+      {% endif %}
+      {% endfor %}
+      {% else %}
+      <p>No Build found within this budget!</p>
+      {% endif %}
     {% endif %}
   </div>
+
 
 </body>
 
@@ -105,6 +140,18 @@
 
 </html>
 
+<script>
+    function selectBothComponents(cpuId, gpuId) {
+        selectComponent('cpu', cpuId);
+        selectComponent('gpu', gpuId);
+    }
+
+    function addTocart(cpuId, gpuId){
+      
+    }
+    </script>
+
+
 <style>
   .rating-container {
     display: flex;
@@ -128,10 +175,11 @@
     /* Allow wrapping to the next line */
     gap: 20px;
     /* Adjust the spacing between recommended builds */
-    max-width: 100%;
+    max-width: 200%;
     /* Ensure the container doesn't exceed its parent's width */
     overflow-x: auto;
     /* Enable horizontal scrolling if needed */
+    justify-content: center;
   }
 
   .recommended-build {
