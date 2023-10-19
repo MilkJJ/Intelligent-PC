@@ -114,7 +114,7 @@
         </thead>
         <tbody>
             <tr>
-                <td>{{ item.cpu.name }}</td>
+                <td><a href="{% url 'cpu_detail' item.cpu.id %}">{{ item.cpu.name }}</a></td>
                 <td>{{ item.cpu.price|convert_to_myr }}</td>
             </tr>
             <tr>

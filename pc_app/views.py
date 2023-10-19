@@ -1,3 +1,4 @@
+import numpy as np
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
@@ -20,6 +21,10 @@ from io import BytesIO
 from datetime import datetime
 
 # Create your views here.
+from django.shortcuts import render, redirect
+from .models import CPUPivotTable
+from .forms import CPUPivotTableForm  # Create a form to handle the rating input
+
 def rating_detail(request, item_id):
     item = get_object_or_404(CartItem, id=item_id)
     order_rating = OrderRating.objects.filter(order_item=item).first()
@@ -170,10 +175,10 @@ def place_order(request):
             user=request.user, is_purchased=False)
         order_datetime = datetime.now()  # Get the current date and time
 
-        # for cart_item in cart_items:
-        #     cart_item.is_purchased = True
-        #     cart_item.order_date = order_datetime  # Assign the order date and time
-        #     cart_item.save()
+        for cart_item in cart_items:
+            cart_item.is_purchased = True
+            cart_item.order_date = order_datetime  # Assign the order date and time
+            cart_item.save()
 
         # Additional order processing logic can go here
 
@@ -227,7 +232,7 @@ def place_order(request):
         # Set the content-disposition header to prompt for download
         response['Content-Disposition'] = 'attachment; filename="purchase_confirmation.pdf"'
 
-        return response
+        #return response
 
         # Send the PDF as an email attachment
         # subject = 'Purchase Confirmation'
@@ -403,24 +408,88 @@ def cpu_detail(request, pk):
     other_cpus = CPU.objects.exclude(pk=pk)
 
     if request.method == 'POST':
-        form = CPUComparisonForm(request.POST)
-        if form.is_valid():
-            selected_cpu = form.cleaned_data['cpu']
-            # Redirect to the comparison view with the selected CPUs
-            return HttpResponseRedirect(f'/cpu/{cpu.pk}/{selected_cpu.pk}')
-            # return HttpResponseRedirect(f'cpu/{cpu.pk}/{selected_cpu.pk}')
+        if 'cpu_rating_form' in request.POST:
+        #if request.POST.get('name') == 'cpu_rating_form':
+            rating_form = CPUPivotTableForm(request.POST)
+            if rating_form.is_valid():
+                rating = rating_form.cleaned_data['cpuRating']
+                user = request.user
+
+                try:
+                    cart_item = CartItem.objects.filter(user=user, cpu=cpu, is_purchased=True).first()
+
+                    if cart_item:
+                        if cart_item.is_purchased:
+                            pivot_table, created = CPUPivotTable.objects.get_or_create(user=user, cpu=cpu)
+                            if pivot_table:
+                                pivot_table.ratings = rating
+                                pivot_table.save()
+                            else:
+                                print('CPU already rated!')
+                        else:
+                            print('Purchase CPU before Rating!')
+                    else:
+                        print('Add to cart CPU before Rating!')
+                except CartItem.DoesNotExist:
+                    print('Add to cart CPU before Rating!')
+
     else:
-        form = CPUComparisonForm()
+        rating_form = CPUPivotTableForm()
 
-    return render(request, 'pc_app/cpu/cpu_detail.html', {'cpu': cpu, 'other_cpus': other_cpus, 'form': form})
+    return render(request, 'pc_app/cpu/cpu_detail.html', {'cpu': cpu, 'other_cpus': other_cpus, 'rating_form': rating_form, 'rate': int(pivot_table.ratings)})
 
+from django.shortcuts import render
+import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_agg import FigureCanvasAgg
+from io import BytesIO
+import base64
 
 def cpu_comparison(request, pk1, pk2):
     cpu1 = CPU.objects.get(pk=pk1)
     cpu2 = CPU.objects.get(pk=pk2)
     all_cpus = CPU.objects.exclude(pk__in=[pk1, pk2])
+    
+# Prepare data for the chart
+    attributes = ['CoreCount', 'CoreClock', 'BoostClock']
+    values_cpu1 = [cpu1.core_count, cpu1.core_clock, cpu1.boost_clock]
+    values_cpu2 = [cpu2.core_count, cpu2.core_clock, cpu2.boost_clock]
 
-    return render(request, 'pc_app/cpu/cpu_comparison.html', {'cpu1': cpu1, 'cpu2': cpu2, 'all_cpus': all_cpus})
+    # Create a horizontal bar chart
+    num_attributes = len(attributes)
+    height = 0.35
+    y = range(num_attributes)
+
+    fig, ax = plt.subplots()
+    ax.barh(y, values_cpu1, height, label=cpu1.name)
+    ax.barh([yi + height for yi in y], values_cpu2, height, label=cpu2.name)
+
+    ax.set_ylabel('Attributes')
+    ax.set_xlabel('Values')
+    ax.set_title('CPU Comparison')
+    ax.set_yticks([yi + height/2 for yi in y])
+    ax.set_yticklabels(attributes)
+    ax.invert_yaxis()
+    ax.legend()
+
+    # Save the chart as an image
+    canvas = FigureCanvasAgg(fig)
+    buffer = BytesIO()
+    canvas.print_png(buffer)
+    buffer.seek(0)
+    chart = base64.b64encode(buffer.read()).decode('utf-8')
+    buffer.close()
+
+    # Render the chart in the template
+    context = {
+        'chart': chart,
+        'cpu1': cpu1,
+        'cpu2': cpu2,
+        'all_cpus': all_cpus,
+    }
+
+    return render(request, 'pc_app/cpu/cpu_comparison.html', context)
+
 
 
 # GPU

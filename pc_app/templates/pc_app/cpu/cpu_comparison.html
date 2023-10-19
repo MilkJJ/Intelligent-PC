@@ -1,34 +1,130 @@
 {% extends 'pc_app/base.html' %}
-
-{% block title %}{{ cpu.name }} - {{ cpu.graphics }}{% endblock %}
-
+{% block title %}{{ cpu1.name }} vs {{ cpu2.name }}{% endblock %}
 {% block content %}
-
 {% load custom_filters %}
 
-<h1>Comparison</h1>
-<h2>CPU 1:</h2>
-<p>CPU: {{ cpu1.name }}</p>
-<p>Cores: {{ cpu1.core_count }}</p>
-<p>Core Clock: {{ cpu1.core_clock }}</p>
-<p>Boost Clock: {{ cpu1.boost_clock }}</p>
-<p>Integrated_Graphics: {{ cpu1.graphics }}</p>
-<p>TDP: {{ cpu1.tdp }}</p>
-<p>Multithreading: {% if cpu1.smt %}Yes{% else %}No{% endif %}</p>
-<p>Price: {{ cpu1.price|convert_to_myr }}</p>
+<h2>CPU Comparison</h2>
 
-<button class="select-button" onclick="selectComponent('cpu', '{{ cpu1.id }}')">Add</button>
+<div class="cpu-box" style="display: inline-block; width: 45%; vertical-align: top;">
+    <h3>CPU: {{ cpu1.name }}</h3>
+    <table>
+        <tr>
+            <th class="label">Cores</th>
+            <td>{{ cpu1.core_count }}</td>
+        </tr>
+        <tr>
+            <th class="label">Core Clock</th>
+            <td>{{ cpu1.core_clock }}</td>
+        </tr>
+        <tr>
+            <th class="label">Boost Clock</th>
+            <td>{{ cpu1.boost_clock }}</td>
+        </tr>
+        <tr>
+            <th class="label">Integrated Graphics</th>
+            <td>{{ cpu1.graphics }}</td>
+        </tr>
+        <tr>
+            <th class="label">TDP</th>
+            <td>{{ cpu1.tdp }}</td>
+        </tr>
+        <tr>
+            <th class="label">Multithreading</th>
+            <td>{% if cpu1.smt %}Yes{% else %}No{% endif %}</td>
+        </tr>
+        <tr>
+            <th class="label">Price</th>
+            <td>RM{{ cpu1.price|convert_to_myr }}</td>
+        </tr>
+    </table>
+    <br>
+    <button class="select-button" onclick="selectComponent('cpu', '{{ cpu1.id }}')">Select for Customization</button>
+</div>
 
-<h2>CPU 2:</h2>
-<p>CPU: {{ cpu2.name }}</p>
-<p>Cores: {{ cpu2.core_count }}</p>
-<p>Core Clock: {{ cpu2.core_clock }}</p>
-<p>Boost Clock: {{ cpu2.boost_clock }}</p>
-<p>Integrated_Graphics: {{ cpu2.graphics }}</p>
-<p>TDP: {{ cpu2.tdp }}</p>
-<p>Multithreading: {% if cpu2.smt %}Yes{% else %}No{% endif %}</p>
-<p>Price: {{ cpu2.price|convert_to_myr }}</p>
+VS 
 
-<button class="select-button" onclick="selectComponent('cpu', '{{ cpu2.id }}')">Add</button>
+<div class="cpu-box" style="display: inline-block; width: 45%; vertical-align: top;">
+    <h3>CPU: {{ cpu2.name }}</h3>
+    <table>
+        <tr>
+            <th class="label">Cores</th>
+            <td>{{ cpu2.core_count }}</td>
+        </tr>
+        <tr>
+            <th class="label">Core Clock</th>
+            <td>{{ cpu2.core_clock }}</td>
+        </tr>
+        <tr>
+            <th class="label">Boost Clock</th>
+            <td>{{ cpu2.boost_clock }}</td>
+        </tr>
+        <tr>
+            <th class="label">Integrated Graphics</th>
+            <td>{{ cpu2.graphics }}</td>
+        </tr>
+        <tr>
+            <th class="label">TDP</th>
+            <td>{{ cpu2.tdp }}</td>
+        </tr>
+        <tr>
+            <th class="label">Multithreading</th>
+            <td>{% if cpu2.smt %}Yes{% else %}No{% endif %}</td>
+        </tr>
+        <tr>
+            <th class="label">Price</th>
+            <td>RM{{ cpu2.price|convert_to_myr }}</td>
+        </tr>
+    </table>
 
+    <br>
+    <button class="select-button" onclick="selectComponent('cpu', '{{ cpu2.id }}')">Select for Customization</button>
+</div>
+
+<h1>CPU Chart</h1>
+    <img src="data:image/png;base64,{{ chart }}" alt="CPU Comparison Chart">
+
+<style>
+    .label {
+    /* border-right: 1px solid #000; adjust the color and thickness as needed */
+    padding-right: 100px; /* add some space between the label and the line */
+    padding-left: 40px;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.cpu-box {
+    display: inline-block;
+    width: 45%;
+    vertical-align: top;
+    margin-bottom: 20px;
+    border: 1px solid #3d3d3d;
+    padding: 20px;
+    margin: 20px;
+}
+
+.cpu-box h2 {
+    margin-bottom: 10px;
+}
+
+.cpu-box p {
+    margin-bottom: 5px;
+}
+
+.select-button {
+    display: inline-block;
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.select-button:hover {
+    background-color: #0056b3;
+}
+</style>
 {% endblock %}
