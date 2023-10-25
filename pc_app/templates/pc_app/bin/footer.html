@@ -48,7 +48,7 @@
             <!-- Hidden input field to store the rating value -->
             <input type="hidden" name="rating" id="ratingInput" value="{{ feedback_form.rating.value }}" />
 
-            <span class="white-label">{{ feedback_form.rating.label_tag }}</span>
+            <div class="white-label">{{ feedback_form.rating.label_tag }}</div>
 
             <!-- Display the star rating widget for the 'rating' field -->
             <ul class="btn btn-light list-inline rating-list">
@@ -69,7 +69,7 @@
                 </li>
             </ul>
 
-            <span class="white-label">{{ feedback_form.feedbacks.label_tag }}</span>
+            <div class="white-label">{{ feedback_form.feedbacks.label_tag }}</div>
             {{ feedback_form.feedbacks }}
 
             <button type="submit">Submit Feedback</button>

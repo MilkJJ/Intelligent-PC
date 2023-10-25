@@ -3,73 +3,116 @@
 {% block content %}
 {% load custom_filters %}
 
-<h1>CPU Details</h1>
-<p>CPU: {{ cpu.name }}</p>
-<p>Cores: {{ cpu.core_count }}</p>
-<p>Core Clock: {{ cpu.core_clock }}</p>
-<p>Boost Clock: {{ cpu.boost_clock }}</p>
-<p>Integrated_Graphics: {{ cpu.graphics }}</p>
-<p>TDP: {{ cpu.tdp }}</p>
-<p>Multithreading: {% if cpu.smt %}Yes{% else %}No{% endif %}</p>
-<p>Price: {{ cpu.price|convert_to_myr }}</p>
-
-<button class="select-button" onclick="selectComponent('cpu', '{{ cpu.id }}')">Add</button>
-
-<h2>Add Rating for CPU {{cpu.id}}</h2>
 
 <!-- <input type="hidden" name="rating" id="cpu_ratingInput" value="{{ rating_form.cpuRating.value }}" /> -->
 
+<!DOCTYPE html>
+<html lang="en">
 
-{% if rate %}
-  Your previous rating: 
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CPU Details</title>
+</head>
 
-  <div class="star-rating">
-    <span class="fa fa-star {% if rate >= 1 %}checked{% endif %}"></span>
-    <span class="fa fa-star {% if rate >= 2 %}checked{% endif %}"></span>
-    <span class="fa fa-star {% if rate >= 3 %}checked{% endif %}"></span>
-    <span class="fa fa-star {% if rate >= 4 %}checked{% endif %}"></span>
-    <span class="fa fa-star {% if rate >= 5 %}checked{% endif %}"></span>
-  </div>
+<body>
+  <header>
+    <h2>CPU #{{cpu.id}} Details</h2>
+  </header>
+  <main>
+    <section class="cpu-metadata">
+      <ul>
+        <li><strong>Model:</strong> {{ cpu.name }}</li>
+        <li><strong>Cores:</strong> {{ cpu.core_count }}</li>
+        <li><strong>Base Clock:</strong> {{ cpu.core_clock }} GHz</li>
+        <li><strong>Max Turbo Clock:</strong> {{ cpu.boost_clock }} GHz</li>
+        <li><strong>Integrated_Graphics:</strong> {{ cpu.graphics }}</li>
+        <li><strong>TDP:</strong> {{ cpu.tdp }}</li>
+        <li><strong>Multithreading:</strong> {% if cpu.smt %}Yes{% else %}No{% endif %} </li>
+        <li><strong>Price:</strong> RM {{ cpu.price|convert_to_myr }}</li>
+        <!-- Add more CPU details as needed -->
+      </ul>
 
-{% endif %}
-<form method="post" name="cpu_rating_form">
-  {% csrf_token %}
-  <select type="hidden" name="cpuRating" id="cpu_ratingInput" style="display: none;">
-    <option value="1">1</option>
-    <option value="2">2</option>
-    <option value="3">3</option>
-    <option value="4">4</option>
-    <option value="5">5</option>
-  </select>
+      <button class="select-button" onclick="selectComponent('cpu', '{{ cpu.id }}')">Add to Customize</button>
 
-  <div id="star-rating">
-    <ul class="btn btn-light list-inline rating-list">
-      <li onclick="updateRating(5)" data-order-rating="5"><i class="fa fa-star" id="star-5" title="Rate 5"></i></li>
-      <li onclick="updateRating(4)" data-order-rating="4"><i class="fa fa-star" id="star-4" title="Rate 4"></i></li>
-      <li onclick="updateRating(3)" data-order-rating="3"><i class="fa fa-star" id="star-3" title="Rate 3"></i></li>
-      <li onclick="updateRating(2)" data-order-rating="2"><i class="fa fa-star" id="star-2" title="Rate 2"></i></li>
-      <li onclick="updateRating(1)" data-order-rating="1"><i class="fa fa-star" id="star-1" title="Rate 1"></i></li>
-    </ul>
-  </div>
+      <div class="rating">
+        {% if rate %}
+        Your previous rating:
+        <div class="star-rating">
+          <span class="fa fa-star {% if rate >= 1 %}checked{% endif %}"></span>
+          <span class="fa fa-star {% if rate >= 2 %}checked{% endif %}"></span>
+          <span class="fa fa-star {% if rate >= 3 %}checked{% endif %}"></span>
+          <span class="fa fa-star {% if rate >= 4 %}checked{% endif %}"></span>
+          <span class="fa fa-star {% if rate >= 5 %}checked{% endif %}"></span>
+        </div>
+        {% endif %}
 
-  <button type="submit" name="cpu_rating_form">Rate</button>
-</form>
+        <form method="post" name="cpu_rating_form">
+          {% csrf_token %}
+          <select type="hidden" name="cpuRating" id="cpu_ratingInput" style="display: none;">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+          </select>
 
-<h2>Select another CPU for comparison:</h2>
-<button id="chooseButton">Choose</button>
+          <div id="star-rating">
+            <ul class="btn btn-light list-inline rating-list">
+              <li onclick="updateRating(5)" data-order-rating="5"><i class="fa fa-star" id="star-5" title="Rate 5"></i>
+              </li>
+              <li onclick="updateRating(4)" data-order-rating="4"><i class="fa fa-star" id="star-4" title="Rate 4"></i>
+              </li>
+              <li onclick="updateRating(3)" data-order-rating="3"><i class="fa fa-star" id="star-3" title="Rate 3"></i>
+              </li>
+              <li onclick="updateRating(2)" data-order-rating="2"><i class="fa fa-star" id="star-2" title="Rate 2"></i>
+              </li>
+              <li onclick="updateRating(1)" data-order-rating="1"><i class="fa fa-star" id="star-1" title="Rate 1"></i>
+              </li>
+            </ul>
+          </div>
 
-<div id="cpuList" style="display: none;">
-  <h3>List of CPUs for Comparison:</h3>
-  <ul>
-    {% for other_cpu in other_cpus %}
-    <li>
-      <a href="{% url 'cpu_comparison' cpu.pk other_cpu.pk %}">{{ other_cpu.name }}</a>
-    </li>
-    {% endfor %}
-  </ul>
-</div>
+          <button type="submit" name="cpu_rating_form">Rate</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="cpu-comparison">
+      <button id="chooseButton">Select CPU to Compare</button>
+      <div id="cpuList" style="display: none;">
+        <input type="text" id="cpuSearch" placeholder="Search CPUs">
+        <ul>
+          {% for other_cpu in other_cpus %}
+          <li>
+            <a href="{% url 'cpu_comparison' cpu.pk other_cpu.pk %}">{{ other_cpu.name }}</a>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </section>
+  </main>
+</body>
+
+
 
 <script>
+  // JavaScript for search functionality
+        const cpuList = document.getElementById('cpuList');
+        const cpuSearch = document.getElementById('cpuSearch');
+        const cpuItems = document.querySelectorAll('#cpuList ul li');
+
+        cpuSearch.addEventListener('input', () => {
+            const searchValue = cpuSearch.value.toLowerCase();
+            cpuItems.forEach(cpuItem => {
+                const cpuName = cpuItem.textContent.toLowerCase();
+                if (cpuName.includes(searchValue)) {
+                    cpuItem.style.display = 'list-item';
+                } else {
+                    cpuItem.style.display = 'none';
+                }
+            });
+        });
+
   document.getElementById('chooseButton').addEventListener('click', function () {
     var cpuList = document.getElementById('cpuList');
     cpuList.style.display = (cpuList.style.display === 'none') ? 'block' : 'none';
@@ -94,4 +137,69 @@
   }
 </script>
 
+
+</html>
+
+<style>
+
+  /* main {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+  } */
+
+  .cpu-metadata {
+    border: 1px solid #ccc;
+    padding: 20px;
+  }
+
+  .cpu-metadata h2 {
+    color: #333;
+  }
+
+  .rating {
+    margin-top: 10px;
+  }
+
+  .stars {
+    font-size: 24px;
+    cursor: pointer;
+  }
+
+  .stars .star {
+    display: inline-block;
+    margin-right: 5px;
+    color: #f0c419;
+    /* Yellow color for stars */
+  }
+
+  .cpu-comparison {
+    margin-top: 20px;
+    border: 1px solid #ccc;
+    padding: 20px;
+  }
+
+  .cpu-comparison h2 {
+    color: #333;
+  }
+
+  label,
+  select {
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  button {
+    background-color: #333;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 20%;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: #555;
+  }
+</style>
 {% endblock %}

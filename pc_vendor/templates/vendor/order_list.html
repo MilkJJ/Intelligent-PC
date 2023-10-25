@@ -2,38 +2,95 @@
 {% extends 'pc_app/base.html' %}
 
 {% block content %}
-<a href="{% url 'vendor_completed_order' %}">Completed Orders</a>
-<h1>Vendor Order List</h1>
+    <h2>Vendor Order List</h2>
+  
+    <form method="get">
+        <label for="order_id">Search for Order Number:</label>
+        <input type="text" id="order_id" name="order_id" placeholder="Search Order Number">
+        <input type="submit" value="Search">
+    </form>
 
-<form method="get">
-  <label for="order_id">Search for Order Number:</label>
-  <input type="text" id="order_id" name="order_id" placeholder="Search Order Number">
-  <input type="submit" value="Search">
-</form>
+    <ul class="order-list">
+        {% if purchased_items %}
+            {% for order in purchased_items %}
+                <li class="order-item">
+                    <a href="{% url 'vendor_order_detail' order.id %}">Order #{{ order.id }}</a>
+                    <span class="order-status">
+                        {% if order.ready_pickup %}
+                            {% if order.is_completed %}
+                            <span class="completed-status">Completed</span>
+                            {% else %}
+                            <span class="pickup-status">Ready to Pick up</span>
+                            {% endif %}
+                        {% else %}
+                        <span class="not-ready-status">Not Ready</span>
+                        {% endif %}
+                    </span>
+                    <span class="order-placed">Order Placed: {{ order.order_date }}</span>
+                </li>
+            {% endfor %}
+        {% else %}
+            <li class="no-orders">
+                {% if order_id %}
+                    Order ID #{{ order_id }} NOT FOUND!
+                {% else %}
+                    No Orders yet!
+                {% endif %}
+            </li>
+        {% endif %}
+    </ul>
+    
+    <a href="{% url 'vendor_completed_order' %}" class="completed-orders">Completed Orders</a>
 
-<ul>
-  {% if purchased_items %}
-  {% for order in purchased_items %}
-  <li><a href="{% url 'vendor_order_detail' order.id %}">Order #{{ order.id }}</a></li>
-  {% if order.ready_pickup %}
-  {% if order.is_completed %}
-  Order Status: Completed
-  {% else %}
-  Order Status: Ready to Pick up
-  {% endif %}
-  {% else %}
-  Order Status: Not Ready
-  {% endif %}
-  <li>Order Placed: {{ order.order_date }}</li>
-  <br>
+<style>
+  /* vendor/templates/vendor/order_list.css */
+  .completed-status {
+    color: green;
+  }
 
-  {% endfor %}
-  {% else %}
-  {% if order_id %}
-    Order ID #{{ order_id }} NOT FOUND!
-    {% else %}
-    No Orders yet!
-    {% endif %}
-  {% endif %}
-</ul>
+  .pickup-status {
+    color: #007BFF;
+  }
+
+  .not-ready-status {
+    color: red;
+  }
+
+/* Style for the main container */
+.order-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+/* Style for each order item */
+.order-item {
+    max-width: 500px;
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+}
+
+/* Style for the order status */
+.order-status {
+    float: right;
+    font-weight: bold;
+    color: #007bff; /* Blue color for Completed/Ready to Pick up */
+}
+
+/* Style for the order placed date */
+.order-placed {
+    clear: both;
+    display: block;
+    color: #777;
+}
+
+/* Style for the "No Orders" message */
+.no-orders {
+    padding: 10px;
+    text-align: center;
+    background-color: #f9f9f9;
+}
+
+</style>
 {% endblock %}

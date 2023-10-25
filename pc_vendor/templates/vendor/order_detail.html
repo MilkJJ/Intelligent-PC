@@ -1,40 +1,115 @@
-<!-- vendor/templates/vendor/order_detail.html -->
+<!-- admin/templates/admin/order_detail.html -->
 {% extends 'pc_app/base.html' %}
 
 {% block content %}
-<h1>Order Detail</h1>
-<p>Order #: {{ order.id }}</p>
-<p>Order Placed: {{ order.order_date }}</p>
-<h4>Item Ordered</h4>
-<p>CPU: {{ order.cpu }}</p>
-<p>GPU: {{ order.gpu }}</p>
-<p>Total Price: {{ order.total_price }}</p>
-<p>Order by: {{ order.user.username }}</p>
-<p>Order by: {{ order.user.profile.phone_number }}</p>
-<!-- Display more order details here -->
+  <div class="order-detail">
+    <div class="customer-info">
+      <h2>Customer Information</h2>
+      <img class="profile-picture" src="{{ order.user.profile.profile_picture.url }}" alt="PFP">
+      <p><strong>Ordered by:</strong> {{ order.user.username }}</p>
+      <p><strong>Phone Number:</strong> {{ order.user.profile.phone_number }}</p>
+      <p><strong>Email address:</strong> {{ order.user.email }}</p>
+      <!-- Add more customer information here -->
+    </div>
 
-{% if order.ready_pickup %}
-<p>Status: Ready to pick up</p>
+    <div class="order-details">
+      <h2>Order #{{ order.id }} Details</h2>
+      <p><strong>Order Placed:</strong> {{ order.order_date }}</p>
+      <p><strong>CPU:</strong> {{ order.cpu }}</p>
+      <p><strong>GPU:</strong> {{ order.gpu }}</p>
+      <p><strong>Total Price:</strong> ${{ order.total_price }}</p>
+      <!-- Add more order details here -->
+    </div>
 
-{% if order.is_completed %}
-<p>Status: Completed</p>
+    <div class="order-status">
+      <h2>Order Status</h2>
+      {% if order.ready_pickup %}
+        <p><strong>Status:</strong> Ready to pick up</p>
+        {% if order.is_completed %}
+          <p><strong>Status:</strong> Completed</p>
+        {% else %}
+          <form method="POST" action="{% url 'mark_completed' order.id %}">
+            {% csrf_token %}
+            <button type="submit" id="complete-order-button">Mark as Completed</button>
+          </form>
+        {% endif %}
+      {% else %}
+        <p><strong>Status:</strong> Not ready to pick up</p>
+        <form method="POST" action="{% url 'mark_ready_pickup' order.id %}">
+          {% csrf_token %}
+          <button type="submit" id="ready-pickup-button">Ready to Pick up</button>
+        </form>
+      {% endif %}
+    </div>
+  </div>
 
-{% else %}
-<form method="POST" action="{% url 'mark_completed' order.id %}">
-  {% csrf_token %}
-  <button type="submit" id="complete-order-button">Mark as Completed</button>
-</form>
-{% endif %}
 
+  <style>
+    .profile-picture {
+    width: 15%;
+    /* Set the image width to fill the container */
+    height: 15%;
+    /* Set the image height to fill the container */
+    object-fit: cover;
+    /* Maintain the image aspect ratio */
+    border-radius: 50%;
+  }
 
-{% else %}
-<p>Status: Not ready to pick up</p>
-<form method="POST" action="{% url 'mark_ready_pickup' order.id %}">
-  {% csrf_token %}
-  <button type="submit" id="ready-pickup-button">Ready to Pick up</button>
-</form>
+  
+    .order-detail {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      margin-top: 20px;
+    }
 
-{% endif %}
+    /* Customer Information styling */
+    .customer-info {
+      background-color: #f2f2f2;
+      padding: 10px;
+      border: 1px solid #ccc;
+      margin: 10px 0;
+    }
+  
+    .customer-info p {
+      margin: 5px 0;
+    }
+  
+    /* Order Details styling */
+    .order-details {
+      padding: 10px;
+      border: 1px solid #ccc;
+      margin: 10px 0;
+    }
+  
+    .order-details p {
+      margin: 5px 0;
+    }
+  
+    /* Order Status styling */
+    .order-status {
+      background-color: #f2f2f2;
+      padding: 10px;
+      border: 1px solid #ccc;
+      margin: 10px 0;
+    }
+  
+    .order-status p {
+      margin: 5px 0;
+    }
+  
+    .order-status button {
+      background-color: #333;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+  
+  </style>
+  
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {

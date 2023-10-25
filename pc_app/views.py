@@ -1,3 +1,5 @@
+from win10toast import ToastNotifier
+from django.conf import settings
 import numpy as np
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
@@ -24,6 +26,7 @@ from datetime import datetime
 from django.shortcuts import render, redirect
 from .models import CPUPivotTable
 from .forms import CPUPivotTableForm  # Create a form to handle the rating input
+
 
 def rating_detail(request, item_id):
     item = get_object_or_404(CartItem, id=item_id)
@@ -64,6 +67,46 @@ def get_mboard_info(request, mboard_id):
     return JsonResponse(mboard_info)
 
 
+def get_ram_info(request, ram_id):
+    ram = Memory.objects.get(id=ram_id)
+    ram_info = {
+        'name': ram.name,  # Changed field name from 'model' to 'name'
+        'price': convert_to_myr(ram.price),
+        # Add more fields as needed
+    }
+    return JsonResponse(ram_info)
+
+
+def get_psu_info(request, psu_id):
+    psu = PSU.objects.get(id=psu_id)
+    psu_info = {
+        'name': psu.name,  # Changed field name from 'model' to 'name'
+        'price': convert_to_myr(psu.price),
+        # Add more fields as needed
+    }
+    return JsonResponse(psu_info)
+
+
+def get_storage_info(request, storage_id):
+    storage = StorageDrive.objects.get(id=storage_id)
+    storage_info = {
+        'name': storage.name,  # Changed field name from 'model' to 'name'
+        'price': convert_to_myr(storage.price),
+        # Add more fields as needed
+    }
+    return JsonResponse(storage_info)
+
+
+def get_case_info(request, case_id):
+    case = PCase.objects.get(id=case_id)
+    case_info = {
+        'name': case.name,  # Changed field name from 'model' to 'name'
+        'price': convert_to_myr(case.price),
+        # Add more fields as needed
+    }
+    return JsonResponse(case_info)
+
+
 def cart_items(request):
     # Get the favorited PC Builds for the current user
     cart_items = CartItem.objects.filter(user=request.user, is_purchased=False)
@@ -77,29 +120,51 @@ def cart_items(request):
 @login_required(login_url='login')
 def add_to_cart(request, build_id=None):
     # Add to cart from Favourite Page
-    if request.method == 'POST' and build_id:
-        repurchase = request.POST.get('re-purchase-button')
+    if request.method == 'POST':
+        if build_id:
+            repurchase = request.POST.get('repurchase-button')
 
-        if repurchase == 'completed':
-            build = CartItem.objects.get(
-                id=build_id)  # Retrieve the selected build from cart
-        elif repurchase is None:
-            build = FavouritedPC.objects.get(
-                id=build_id)  # Retrieve the selected build from favourite
+            if repurchase == 'completed':
+                build = CartItem.objects.get(
+                    id=build_id)  # Retrieve the selected build from cart
+            elif repurchase is None:
+                build = FavouritedPC.objects.get(
+                    id=build_id)  # Retrieve the selected build from favourite
 
-        # Check if the item is already in the cart
-        cpu_id = build.cpu.id
-        gpu_id = build.gpu.id
-        mboard_id = build.mboard.id
+            # Get the Components ID from the Model
+            cpu_id = build.cpu.id
+            gpu_id = build.gpu.id
+            mboard_id = build.mboard.id
+            psu_id = build.psu.id
+            storage_id = build.storage.id
+            ram_id = build.ram.id
+            case_id = build.case.id
+
+        else:
+            # Get the Components ID from Customization List
+            data = json.loads(request.body)
+            cpu_id = data.get('cpu_id')
+            gpu_id = data.get('gpu_id')
+            mboard_id = data.get('mboard_id')
+            psu_id = data.get('psu_id')
+            storage_id = data.get('storage_id')
+            ram_id = data.get('ram_id')
+            case_id = data.get('case_id')
 
         cpu = CPU.objects.get(id=cpu_id)
         gpu = GPU.objects.get(id=gpu_id)
         mboard = Motherboard.objects.get(id=mboard_id)
+        ram = Memory.objects.get(id=ram_id)
+        psu = PSU.objects.get(id=psu_id)
+        storage = StorageDrive.objects.get(id=storage_id)
+        case = PCase.objects.get(id=case_id)
 
-        total_price = cpu.price + gpu.price + mboard.price
+        total_price = cpu.price + gpu.price + mboard.price + \
+            ram.price + psu.price + storage.price + case.price
 
         created = CartItem.objects.create(
-            cpu_id=cpu_id, gpu_id=gpu_id, mboard_id=mboard_id, total_price=total_price, user=request.user)
+            cpu_id=cpu_id, gpu_id=gpu_id, mboard_id=mboard_id, ram_id=ram_id,
+            psu_id=psu_id, storage_id=storage_id, case_id=case_id, total_price=total_price, user=request.user)
 
         if created:
             messages.success(request, "Item added to cart successfully!")
@@ -108,29 +173,6 @@ def add_to_cart(request, build_id=None):
 
         # Redirect to the cart page or another relevant page
         return redirect('cart_items')
-
-    # Add to cart from Customization
-    elif request.method == 'POST':
-        data = json.loads(request.body)
-        cpu_id = data.get('cpu_id')
-        gpu_id = data.get('gpu_id')
-        mboard_id = data.get('mboard_id')
-
-        if cpu_id and gpu_id and mboard_id:
-            cpu = CPU.objects.get(id=cpu_id)
-            gpu = GPU.objects.get(id=gpu_id)
-            mboard = Motherboard.objects.get(id=mboard_id)
-
-            total_price = cpu.price + gpu.price + mboard.price
-
-            # Create a new CartItem and save it to the database
-            cart_item = CartItem(cpu_id=cpu_id, gpu_id=gpu_id, mboard_id=mboard_id, 
-                                 total_price=total_price, user=request.user)
-            cart_item.save()
-
-            return JsonResponse({'success': True})
-    else:
-        return JsonResponse({'success': False, 'message': 'Invalid request method'})
 
 
 def remove_from_cart(request, cart_item_id):
@@ -166,7 +208,6 @@ def checkout(request):
 
     return render(request, 'pc_app/checkout.html', context)
 
-from django.conf import settings
 
 def place_order(request):
     if request.method == 'POST':
@@ -225,14 +266,14 @@ def place_order(request):
         # Close the buffer and return the PDF as a response
         buffer.seek(0)
 
-        #Remove below: 
+        # !! REMOVE FROM HERE !!
         # Create an HttpResponse with the PDF content
         response = HttpResponse(buffer.read(), content_type='application/pdf')
 
         # Set the content-disposition header to prompt for download
         response['Content-Disposition'] = 'attachment; filename="purchase_confirmation.pdf"'
 
-        #return response
+        return response
 
         # Send the PDF as an email attachment
         # subject = 'Purchase Confirmation'
@@ -255,21 +296,21 @@ def completed_order_view(request):
     # Render the purchased_items in the purchase history template
     return render(request, 'pc_app/completed-order.html', {'shipped_items': shipped_items})
 
-from win10toast import ToastNotifier
 
 def ongoing_order_view(request):
     purchased_items = CartItem.objects.filter(
         user=request.user, is_purchased=True, is_completed=False).order_by('-order_date')
-    
+
     send_notification = any(item.ready_pickup for item in purchased_items)
 
     # If 'ready_pickup' is True, send a Windows notification
     if send_notification:
         notification_message = "One or more of your order(s) is ready for pickup!"
-        
+
         # Create a ToastNotifier instance and send the notification
         toaster = ToastNotifier()
-        toaster.show_toast("ORDER READY TO PICK UP", notification_message, duration=5)
+        toaster.show_toast("ORDER READY TO PICK UP",
+                           notification_message, duration=5)
 
     return render(request, 'pc_app/ongoing-order.html', {'purchased_items': purchased_items})
 
@@ -302,29 +343,37 @@ def toggle_favorite(request):
         cpu_id = data.get('cpu_id')
         gpu_id = data.get('gpu_id')
         mboard_id = data.get('mboard_id')
+        psu_id = data.get('psu_id')
+        storage_id = data.get('storage_id')
+        ram_id = data.get('ram_id')
+        case_id = data.get('case_id')
 
-        if cpu_id and gpu_id and mboard_id:
-            cpu = CPU.objects.get(id=cpu_id)
-            gpu = GPU.objects.get(id=gpu_id)
-            mboard = Motherboard.objects.get(id=mboard_id)
+        cpu = CPU.objects.get(id=cpu_id)
+        gpu = GPU.objects.get(id=gpu_id)
+        mboard = Motherboard.objects.get(id=mboard_id)
+        ram = Memory.objects.get(id=ram_id)
+        psu = PSU.objects.get(id=psu_id)
+        storage = StorageDrive.objects.get(id=storage_id)
+        case = PCase.objects.get(id=case_id)
 
-            total_price = cpu.price + gpu.price + mboard.price
+        total_price = cpu.price + gpu.price + mboard.price + \
+            ram.price + psu.price + storage.price + case.price
 
-            pc_build, created = FavouritedPC.objects.get_or_create(
-                user=request.user, cpu=cpu, gpu=gpu, mboard=mboard, total_price=total_price,
-            )
+        pc_build, created = FavouritedPC.objects.get_or_create(
+            cpu_id=cpu_id, gpu_id=gpu_id, mboard_id=mboard_id, ram_id=ram_id,
+            psu_id=psu_id, storage_id=storage_id, case_id=case_id, total_price=total_price, user=request.user)
 
-            if created:
-                response_data = {'success': True,
-                                 'message': 'Build has been favorited.'}
-            else:
-                pc_build.delete()
-                response_data = {'success': False,
-                                 'message': 'Build has been unfavorited.'}
+        if created:
+            response_data = {'success': True,
+                             'message': 'Build has been favorited.'}
+        else:
+            pc_build.delete()
+            response_data = {'success': False,
+                             'message': 'Build has been unfavorited.'}
 
-            return JsonResponse(response_data)
+        return JsonResponse(response_data)
 
-        return JsonResponse({'success': False})
+    return JsonResponse({'success': False})
 
 
 def favorited_builds(request):
@@ -357,225 +406,6 @@ def delete_favorited_build(request, build_id):
 
     # Redirect back to the favorited_builds page
     return redirect('favorited_builds')
-
-
-from django.db.models import ExpressionWrapper, F, FloatField, Value
-
-# CPU
-class CPUListView(ListView):
-    model = CPU
-    template_name = 'pc_app/cpu/cpu_list.html'
-    context_object_name = 'cpus'
-    paginate_by = 30  # Adjust the number of CPUs displayed per page as needed
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        search_query = self.request.GET.get('search_query')
-        min_clock_speed = self.request.GET.get('min_clock_speed')
-        min_core_count = self.request.GET.get('min_core_count')
-        min_price = self.request.GET.get('min_price')
-        max_price = self.request.GET.get('max_price')
-
-        if search_query:
-            # Filter CPUs by name containing the search query (case-insensitive)
-            queryset = queryset.filter(name__icontains=search_query)
-
-        # Filter CPUs by minimum clock speed
-        if min_clock_speed:
-            queryset = queryset.filter(core_clock__gte=float(min_clock_speed))
-
-        if min_price:
-            min_price = float(min_price)
-            min_price /= 4.55  # Divide by 4.55 as in your original code
-            queryset = queryset.filter(price__gte=min_price)
-
-        if max_price:
-            max_price = float(max_price)
-            max_price /= 4.55  # Divide by 4.55 as in your original code
-            queryset = queryset.filter(price__lte=max_price)
-
-        # Filter CPUs by minimum core count
-        if min_core_count:
-            queryset = queryset.filter(core_count__gte=int(min_core_count))
-
-        return queryset
-
-        return queryset
-
-
-def cpu_detail(request, pk):
-    cpu = CPU.objects.get(pk=pk)
-    other_cpus = CPU.objects.exclude(pk=pk)
-
-    if request.method == 'POST':
-        if 'cpu_rating_form' in request.POST:
-        #if request.POST.get('name') == 'cpu_rating_form':
-            rating_form = CPUPivotTableForm(request.POST)
-            if rating_form.is_valid():
-                rating = rating_form.cleaned_data['cpuRating']
-                user = request.user
-
-                try:
-                    cart_item = CartItem.objects.filter(user=user, cpu=cpu, is_purchased=True).first()
-
-                    if cart_item:
-                        if cart_item.is_purchased:
-                            pivot_table, created = CPUPivotTable.objects.get_or_create(user=user, cpu=cpu)
-                            if pivot_table:
-                                pivot_table.ratings = rating
-                                pivot_table.save()
-                            else:
-                                print('CPU already rated!')
-                        else:
-                            print('Purchase CPU before Rating!')
-                    else:
-                        print('Add to cart CPU before Rating!')
-                except CartItem.DoesNotExist:
-                    print('Add to cart CPU before Rating!')
-
-    else:
-        rating_form = CPUPivotTableForm()
-
-    return render(request, 'pc_app/cpu/cpu_detail.html', {'cpu': cpu, 'other_cpus': other_cpus, 'rating_form': rating_form, 'rate': int(pivot_table.ratings)})
-
-from django.shortcuts import render
-import matplotlib.pyplot as plt
-from matplotlib.figure import Figure
-from matplotlib.backends.backend_agg import FigureCanvasAgg
-from io import BytesIO
-import base64
-
-def cpu_comparison(request, pk1, pk2):
-    cpu1 = CPU.objects.get(pk=pk1)
-    cpu2 = CPU.objects.get(pk=pk2)
-    all_cpus = CPU.objects.exclude(pk__in=[pk1, pk2])
-    
-# Prepare data for the chart
-    attributes = ['CoreCount', 'CoreClock', 'BoostClock']
-    values_cpu1 = [cpu1.core_count, cpu1.core_clock, cpu1.boost_clock]
-    values_cpu2 = [cpu2.core_count, cpu2.core_clock, cpu2.boost_clock]
-
-    # Create a horizontal bar chart
-    num_attributes = len(attributes)
-    height = 0.35
-    y = range(num_attributes)
-
-    fig, ax = plt.subplots()
-    ax.barh(y, values_cpu1, height, label=cpu1.name)
-    ax.barh([yi + height for yi in y], values_cpu2, height, label=cpu2.name)
-
-    ax.set_ylabel('Attributes')
-    ax.set_xlabel('Values')
-    ax.set_title('CPU Comparison')
-    ax.set_yticks([yi + height/2 for yi in y])
-    ax.set_yticklabels(attributes)
-    ax.invert_yaxis()
-    ax.legend()
-
-    # Save the chart as an image
-    canvas = FigureCanvasAgg(fig)
-    buffer = BytesIO()
-    canvas.print_png(buffer)
-    buffer.seek(0)
-    chart = base64.b64encode(buffer.read()).decode('utf-8')
-    buffer.close()
-
-    # Render the chart in the template
-    context = {
-        'chart': chart,
-        'cpu1': cpu1,
-        'cpu2': cpu2,
-        'all_cpus': all_cpus,
-    }
-
-    return render(request, 'pc_app/cpu/cpu_comparison.html', context)
-
-
-
-# GPU
-class GPUListView(ListView):
-    model = GPU
-    template_name = 'pc_app/gpu/gpu_list.html'
-    context_object_name = 'gpus'
-    paginate_by = 30  # Adjust the number of CPUs displayed per page as needed
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        # sort_by = self.request.GET.get(
-        #     'sort_by', 'name')  # Default sorting by name
-        # return queryset.order_by(sort_by)
-        search_query = self.request.GET.get('search_query')
-
-        # Check if a search query is provided
-        if search_query:
-            # Filter GPUs by name containing the search query (case-insensitive)
-            queryset = queryset.filter(name__icontains=search_query)
-
-        return queryset
-
-
-def gpu_detail(request, pk):
-    gpu = GPU.objects.get(pk=pk)
-
-    if request.method == 'POST':
-        form = GPUComparisonForm(request.POST)
-        if form.is_valid():
-            selected_gpu = form.cleaned_data['gpu']
-            # Redirect to the comparison view with the selected GPUs
-            return HttpResponseRedirect(f'{selected_gpu.pk}')
-    else:
-        form = GPUComparisonForm()
-
-    return render(request, 'pc_app/gpu/gpu_detail.html', {'gpu': gpu, 'form': form})
-
-
-def gpu_comparison(request, pk1, pk2):
-    gpu1 = GPU.objects.get(pk=pk1)
-    gpu2 = GPU.objects.get(pk=pk2)
-
-    return render(request, 'pc_app/gpu/gpu_comparison.html', {'gpu1': gpu1, 'gpu2': gpu2})
-
-
-# Motherboard
-class MBoardListView(ListView):
-    model = Motherboard
-    template_name = 'pc_app/motherboard/mboard_list.html'
-    context_object_name = 'mboards'
-    # paginate_by = 30  # Adjust the number of Motherboard displayed per page as needed
-
-    # def get_queryset(self):
-    #     queryset = super().get_queryset()
-    #     # sort_by = self.request.GET.get(
-    #     #     'sort_by', 'name')  # Default sorting by name
-    #     # return queryset.order_by(sort_by)
-    #     search_query = self.request.GET.get('search_query')
-
-    #     # Check if a search query is provided
-    #     if search_query:
-    #         # Filter Motherboard by name containing the search query (case-insensitive)
-    #         queryset = queryset.filter(name__icontains=search_query)
-
-
-def mboard_detail(request, pk):
-    mboard = Motherboard.objects.get(pk=pk)
-
-    if request.method == 'POST':
-        form = MBoardComparisonForm(request.POST)
-        if form.is_valid():
-            selected_mboard = form.cleaned_data['mboard']
-            # Redirect to the comparison view with the selected GPUs
-            return HttpResponseRedirect(f'{selected_mboard.pk}')
-    else:
-        form = MBoardComparisonForm()
-
-    return render(request, 'pc_app/motherboard/mboard_detail.html', {'mboard': mboard, 'form': form})
-
-
-def mboard_comparison(request, pk1, pk2):
-    mboard1 = Motherboard.objects.get(pk=pk1)
-    mboard2 = Motherboard.objects.get(pk=pk2)
-
-    return render(request, 'pc_app/motherboard/mboard_compare.html', {'mboard1': mboard1, 'mboard2': mboard2})
 
 
 # Authentication
@@ -622,7 +452,7 @@ def LoginPage(request):
                 </script>
                 """
                 response = HttpResponse(clear_history_script)
-                
+
                 # Check if the user is a superuser
                 if user.is_superuser:
                     # Redirect to the vendor dashboard for superusers

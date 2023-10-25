@@ -1,50 +1,16 @@
 {% extends 'pc_app/base.html' %}
-
 {% block content %}
-
 {% load custom_filters %}
+{% load static %}
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cart</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-
-        h1 {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        table {
-            width: 80%;
-            margin: 0 auto;
-            border-collapse: collapse;
-            background-color: #fff;
-        }
-
-        th, td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-
-        th {
-            background-color: #333;
-            color: #fff;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-
         .empty-cart-message {
             text-align: center;
             font-size: 18px;
@@ -56,56 +22,112 @@
             text-align: center;
             margin-top: 20px;
         }
+
+        .cart-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .kart {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            margin:20px;
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #ddd;
+            margin: 5px 0;
+            padding: 5px 0;
+        }
+
+        .cart-item img {
+            max-width: 100px;
+            margin-bottom: 10px;
+        }
+
+        .cart-item-info {
+            flex: 1;
+            padding: 0 10px;
+        }
+
+        .cart-item-title {
+            font-size: 1.1rem;
+        }
+
+        .cart-item-price {
+            font-size: 1rem;
+            color: #333;
+        }
+
+        .remove-item {
+            color: #ff0000;
+            cursor: pointer;
+            border: none;
+            /* Add this line to hide the border */
+            background: none;
+            /* Add this line to remove the background color */
+        }
     </style>
 </head>
-<body>
-    <h1>Shopping Cart</h1>
 
+<body>
+    <!-- ITEM PRICE  item.cpu.price|convert_to_myr  -->
     {% if cart_items %}
+    <div class="cart-container">
+        <h2>Shopping Cart</h2>
         {% for item in cart_items %}
-            <table>
-                <thead>
-                    <tr>
-                        <th>PC BUILD</th>
-                        <th>Price</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        
-                        <td><a href="{% url 'cpu_detail' item.cpu.id %}">{{ item.cpu.name }}</a></td>
-                        <td>{{ item.cpu.price|convert_to_myr }}</td>
-                    </tr>
-                    <tr>
-                        <td>{{ item.gpu.name }} - {{ item.gpu.chipset }}</td>
-                        <td>{{ item.gpu.price|convert_to_myr }}</td>
-                    </tr>
-                    <tr>
-                        <td>{{ item.mboard.name }}</td>
-                        <td>{{ item.mboard.price|convert_to_myr }}</td>
-                    </tr>
-                    <tr>
-                        <td>Total Price:</td>
-                        <td>{{ item.total_price|convert_to_myr }}</td>
-                    </tr>
-                </tbody>
-                <tr>
-                    <td>
-                        <form method="POST" action="{% url 'remove_from_cart' item.id %}">
-                            {% csrf_token %}
-                            <button type="submit">Remove from cart</button>
-                          </form>
-                    </td>
-                    
-                </tr>
-                
-            </table>
-            
+        <div class="kart">
+            <div class="cart-item">
+                {% if 'amd' in item.cpu.name|lower %}
+                <img src="https://www.amd.com/system/files/2020-06/amd-default-social-image-1200x628.jpg" alt="AMD"
+                    width="100" height="100">
+                {% elif 'intel' in item.cpu.name|lower %}
+                <img src="https://www.intel.com/content/dam/logos/logo-energyblue-1x1.png" alt="Intel" width="100"
+                    height="100">
+                {% else %}
+                <img src="product1.jpg" alt="PC Build Img">
+                {% endif %}
+                <div class="cart-item-info">
+                    <div class="cart-item-title">{% if 'amd' in item.cpu.name|lower %}
+                        AMD PC Build #{{ item.id }}
+                        {% elif 'intel' in item.cpu.name|lower %}
+                        Intel PC Build #{{ item.id }}
+                        {% else %}
+                        Other Build
+                        {% endif %}</div>
+                    <div class="cart-item-description">
+                        <img src="static/image/cpu.png" width="50" height="50">: 
+                        <a href="{% url 'cpu_detail' item.cpu.id %}">{{ item.cpu.name }}</a></img>
+                        <p>GPU: <a href="{% url 'gpu_detail' item.gpu.id %}">{{ item.gpu.name }}</a></p>
+                        <p>Motherboard: <a href="{% url 'mboard_detail' item.mboard.id %}">{{ item.mboard.name }}</a>
+                        </p>
+                    </div>
+                    <div class="cart-item-price">RM {{ item.total_price|convert_to_myr }}</div>
+                </div>
+                <form method="POST" action="{% url 'remove_from_cart' item.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="remove-item">Remove from cart</button>
+                </form>
+            </div>
+        </div>
+
+
         {% endfor %}
         <a href="{% url 'checkout' %}" class="checkout-button">Proceed to Checkout</a>
+    </div>
     {% else %}
-        <p class="empty-cart-message">Your cart is empty!</p>
+    <p class="empty-cart-message">Your cart is empty!</p>
     {% endif %}
 </body>
+
 </html>
 {% endblock %}

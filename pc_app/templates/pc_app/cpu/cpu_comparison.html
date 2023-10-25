@@ -6,7 +6,7 @@
 <h2>CPU Comparison</h2>
 
 <div class="cpu-box" style="display: inline-block; width: 45%; vertical-align: top;">
-    <h3>CPU: {{ cpu1.name }}</h3>
+    <h3><a href="{% url 'cpu_detail' cpu1.pk %}">CPU: {{ cpu1.name }}</a></h3>
     <table>
         <tr>
             <th class="label">Cores</th>
@@ -44,7 +44,7 @@
 VS 
 
 <div class="cpu-box" style="display: inline-block; width: 45%; vertical-align: top;">
-    <h3>CPU: {{ cpu2.name }}</h3>
+    <h3><a href="{% url 'cpu_detail' cpu2.pk %}">CPU: {{ cpu2.name }}</a></h3>
     <table>
         <tr>
             <th class="label">Cores</th>

@@ -12,39 +12,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cart</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-
-        h1 {
-            text-align: center;
-            margin-top: 20px;
-        }
 
         table {
             width: 80%;
             margin: 0 auto;
             border-collapse: collapse;
             background-color: #fff;
-        }
-
-        th,
-        td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-
-        th {
-            background-color: #333;
-            color: #fff;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
         }
 
         .empty-cart-message {
@@ -72,9 +45,6 @@
 
     <div class="link-container">
         <p><a href="{% url 'completed_order' %}">Completed Orders</a></p>
-    </div>
-    <div class="link-container">
-        <p><a href="{% url 'ongoing_order' %}">Ongoing Orders</a></p>
     </div>
 
     {% if purchased_items %}
@@ -108,7 +78,8 @@
                 <p>Pick Up Point</p>
                 </td>
                 {% else %}
-                <td>Order #{{ item.id }} Status: Reviewing</td>
+                <td>Order #{{ item.id }} Status</td>
+                <td>Not Ready</td>
                 {% endif %}
             </tr>
         </tbody>

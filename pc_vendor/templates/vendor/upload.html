@@ -10,11 +10,61 @@
 {% endif %}
 
 <!-- upload.html -->
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" id="upload-dataset">Upload CSV</button>
-</form>
+<div class="upload-form-container">
+    <form method="post" enctype="multipart/form-data" class="upload-form">
+        {% csrf_token %}
+        <div class="form-group">
+            {{ form.as_p }}
+        </div>
+        <button type="submit" id="upload-dataset" class="upload-button">Upload CSV</button>
+    </form>
+</div>
+
+<style>
+  .alert.alert-success {
+    background-color: #dff0d8;
+    border: 1px solid #d6e9c6;
+    color: #3c763d;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+  }
+
+.upload-form-container {
+    max-width: 400px;
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    /* Move to center margin: 0 auto; */
+}
+
+.upload-form {
+    margin: 0;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.upload-button {
+    background-color: #337ab7;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.upload-button:hover {
+    background-color: #235a91;
+}
+
+/* You can adjust the styles as needed to match your design preferences. */
+
+</style>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {

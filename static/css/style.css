@@ -45,6 +45,7 @@ a:focus {
   padding-top: 10px;
   padding-bottom: 15px;
   background: none repeat scroll 0 0 #232f3e;
+  /* 232f3e; */
 }
 .search_box{
     padding: 2px; 
@@ -666,6 +667,7 @@ ul.pages>li>img{
 /*============*/
 .footer{
   background:#232f3e;
+  /* #232f3e; */
   display: block;
 }
 .footer_about h3, .footer_menu h3, .footer_news h3{
