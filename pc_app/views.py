@@ -359,8 +359,6 @@ def delete_favorited_build(request, build_id):
     return redirect('favorited_builds')
 
 
-from django.db.models import ExpressionWrapper, F, FloatField, Value
-
 # CPU
 class CPUListView(ListView):
     model = CPU
@@ -400,12 +398,11 @@ class CPUListView(ListView):
 
         return queryset
 
-        return queryset
-
 
 def cpu_detail(request, pk):
     cpu = CPU.objects.get(pk=pk)
     other_cpus = CPU.objects.exclude(pk=pk)
+    rates = 0
 
     if request.method == 'POST':
         if 'cpu_rating_form' in request.POST:
@@ -424,6 +421,7 @@ def cpu_detail(request, pk):
                             if pivot_table:
                                 pivot_table.ratings = rating
                                 pivot_table.save()
+                                rates = pivot_table.ratings
                             else:
                                 print('CPU already rated!')
                         else:
@@ -436,7 +434,7 @@ def cpu_detail(request, pk):
     else:
         rating_form = CPUPivotTableForm()
 
-    return render(request, 'pc_app/cpu/cpu_detail.html', {'cpu': cpu, 'other_cpus': other_cpus, 'rating_form': rating_form, 'rate': int(pivot_table.ratings)})
+    return render(request, 'pc_app/cpu/cpu_detail.html', {'cpu': cpu, 'other_cpus': other_cpus, 'rating_form': rating_form, 'rates': int(rates)})
 
 from django.shortcuts import render
 import matplotlib.pyplot as plt

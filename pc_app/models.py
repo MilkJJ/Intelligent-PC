@@ -173,7 +173,7 @@ class Feedback(models.Model):
 class CPUPivotTable(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     cpu = models.ForeignKey(CPU, on_delete=models.CASCADE)
-    ratings = models.DecimalField(max_digits=5, decimal_places=0)
+    ratings = models.DecimalField(max_digits=5, decimal_places=0, default=0)
 
     def __str__(self):
         return f"{self.cpu.name} - {self.ratings}*"
