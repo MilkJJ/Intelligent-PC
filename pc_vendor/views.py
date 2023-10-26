@@ -75,7 +75,7 @@ def mark_completed(request, order_id):
 
         # Send Email to user for completed confirmation
         if order.user.email:
-            subject = 'Your Order is Completed'
+            subject = f'Your Order #{order.id} is Completed'
             message = f'Hello {order.user.username},\n\nYou have picked up your Order #{order.id} Thank you for choosing us!'
             from_email = settings.EMAIL_HOST_USER
             recipient_list = [order.user.email]
@@ -98,7 +98,7 @@ def mark_ready_pickup(request, order_id):
 
         # Inform user order is ready to be picked up through Email
         if order.user.email:
-            subject = 'Your Order is Ready for Pickup'
+            subject = f'Your Order #{order.id} is Ready for Pickup'
             message = f'Hello {order.user.username},\n\nYour order is now ready for pickup.\n\nThank you for shopping with us!'
             from_email = settings.EMAIL_HOST_USER
             recipient_list = [order.user.email]

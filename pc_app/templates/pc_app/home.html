@@ -11,18 +11,13 @@
 </head>
 
 <body>
-  <!-- user_profile.html -->
-
-  <form action="{% url 'home' %}" method="get">
-    <!-- <label for="min_price">Minimum Price:</label>
-    <input type="number" id="min_price" name="min_price"> -->
-    
+  <form action="{% url 'home' %}" method="post">
+    {% csrf_token %}
     <label for="min_budget">Min Budget:</label>
-    <input type="number" id="min_budget" name="min_budget"> 
+    <input type="number" id="min_budget" name="min_budget">
 
     <label for="max_budget">Max Budget:</label>
-    <input type="number" id="max_budget" name="max_budget" required> 
-    <!-- required -->
+    <input type="number" id="max_budget" name="max_budget" required>
 
     <label for="preferred">Select Your Use Case Preference:</label>
     <select id="preferred" name="preferred">
@@ -30,66 +25,60 @@
       <option value="gaming">Gaming</option>
       <option value="content_creation">Content Creation</option>
       <option value="general">General Use</option>
-      <!-- Add more options for other use cases if needed -->
     </select>
 
-    <button type="submit" name="build_type" value="amd">AMD Build</button>
-    <button type="submit" name="build_type" value="intel">Intel Build</button>
+    <button type="submit" name="build_type" value="AMD">AMD Build</button>
+    <button type="submit" name="build_type" value="Intel">Intel Build</button>
   </form>
 
 
-  <h1>Recommended Build</h1>
-  <!-- here -->
-
+  <h3>PC Build Recommendation</h3>
   <div class="recommended-builds-container">
-    {% if recommended_builds %}
-    {% for build in recommended_builds %}
-    {% if forloop.counter <= 1 %}
+    {% if metadata_builds %}
     <div class="recommended-build">
-      <p><strong>Build 1:</strong></p>
-      <p><strong>CPU:</strong> {{ build.cpu.name }}</p>
-      <p><strong>GPU:</strong> {{ build.gpu.name }} + {{ build.gpu.chipset }}</p>
-      <!--  RATING MATRIX -->
-      <button class="select-button" onclick="selectBothComponents('{{ build.cpu.id }}', '{{ build.gpu.id }}')">Copy Build</button>
-  </div>
-  {% endif %}
-    {% endfor %}
-    <div class="recommended-build">
-      {% if knn_recommended_builds %}
-      {% for recommended_build in knn_recommended_builds %}
-      {% if forloop.counter <= 1 %}
-        <p><strong>Build 2:</strong></p>
-        <p><strong>CPU:</strong> {{ recommended_build.cpu.name }}</p>
-        <p><strong>GPU:</strong> {{ recommended_build.gpu.name }} - {{ recommended_build.gpu.chipset }}</p>
-        <p><strong>Motherboard:</strong> {{ recommended_build.mboard.name }}</p>
-        <button class="select-button" onclick="selectBothComponents('{{ recommended_build.cpu.id }}', '{{ recommended_build.gpu.id }}')">Copy Build</button>
-        <button onclick="addToCart()">Add to Cart</button>
-      {% endif %}
-      {% endfor %}
-      {% else %}
-      <p>No Build found within this budget!</p>
-      {% endif %}
+      {% for build in metadata_builds %}
+      {% if forloop.counter <= 1 %} <p><strong>Build 1:</strong></p>
+        <p><strong>CPU:</strong> {{ build.cpu.name }}</p>
+        <p><strong>GPU:</strong> {{ build.gpu.name }} + {{ build.gpu.chipset }}</p>
+        <p><strong>Motherboard:</strong> {{ build.mboard.name }}</p>
+        <button class="select-button" onclick="selectAllComponents('{{ build.cpu.id }}', '{{ build.gpu.id }}', '{{ build.mboard.id }}', '{{ build.ram.id }}', '{{ build.psu.id }}', '{{ build.storage.id }}', '{{ build.case.id }}')">Copy Build</button>
+        {% endif %}
+        {% endfor %}
     </div>
-      <!--  RATING MATRIX -->
-    {% else %}
+
+    {% if knn_rating_builds %}
     <div class="recommended-build">
-      {% if knn_recommended_builds %}
-      {% for recommended_build in knn_recommended_builds %}
-      {% if forloop.counter <= 2 %}
-        <p><strong>Build 2:</strong></p>
+      {% for rating_build in knn_rating_builds %}
+      {% if forloop.counter <= 1 %} <p><strong>Build 2:</strong></p>
+        <p><strong>CPU:</strong> {{ rating_build.cpu.name }}</p>
+        <p><strong>GPU:</strong> {{ rating_build.gpu.name }} - {{ rating_build.gpu.chipset }}</p>
+        <p><strong>Motherboard:</strong> {{ rating_build.mboard.name }}</p>
+        <button class="select-button" onclick="selectAllComponents('{{ rating_build.cpu.id }}', '{{ rating_build.gpu.id }}', '{{ rating_build.mboard.id }}', '{{ rating_build.ram.id }}', '{{ rating_build.psu.id }}', '{{ rating_build.storage.id }}', '{{ rating_build.case.id }}')">Copy Build</button>
+        {% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Display 2 ratings builds if metadata does not exist -->
+    {% elif knn_rating_builds %}
+    <div class="recommended-build">
+      {% for recommended_build in knn_rating_builds %}
+      {% if forloop.counter <= 2 %} <p><strong>Build 2:</strong></p>
         <p><strong>CPU:</strong> {{ recommended_build.cpu.name }}</p>
         <p><strong>GPU:</strong> {{ recommended_build.gpu.name }} - {{ recommended_build.gpu.chipset }}</p>
         <p><strong>Motherboard:</strong> {{ recommended_build.mboard.name }}</p>
-      {% endif %}
-      {% endfor %}
-      {% else %}
-      <p>No Build found within this budget!</p>
-      {% endif %}
+        {% endif %}
+        {% endfor %}
+    </div>
+
+    {% else %}
+    <p>No Build found within this budget!</p>
+
+    <!-- Endif for `if metadata_builds` -->
     {% endif %}
   </div>
-
-
 </body>
+
 
 {% if messages %}
 <ul class="messages">
@@ -98,6 +87,10 @@
     {% endfor %}
 </ul>
 {% endif %}
+
+
+<br>
+
 
 {% if rated_items %}
 <h3>Ratings by other users!</h3><br>
@@ -141,15 +134,20 @@
 </html>
 
 <script>
-    function selectBothComponents(cpuId, gpuId) {
-        selectComponent('cpu', cpuId);
-        selectComponent('gpu', gpuId);
+    function selectAllComponents(cpuId, gpuId, mboardId, ramId, psuId, storageId, caseId) {
+        selectComponent('cpu', cpuId, true);
+        selectComponent('gpu', gpuId, true);
+        selectComponent('motherboard', mboardId, true);
+        selectComponent('ram', ramId, true);
+        selectComponent('psu', psuId, true);
+        selectComponent('storage', storageId, true);
+        selectComponent('case', caseId, true);
     }
 
-    function addTocart(cpuId, gpuId){
-      
-    }
-    </script>
+  function addTocart(cpuId, gpuId) {
+
+  }
+</script>
 
 
 <style>

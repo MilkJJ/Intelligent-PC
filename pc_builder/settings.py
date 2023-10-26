@@ -49,6 +49,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
 ]
 
 ROOT_URLCONF = 'pc_builder.urls'
@@ -143,5 +144,13 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'p20012439@student.newinti.edu.my'
 EMAIL_HOST_PASSWORD = '$020620070105iicp'
+
+
+SESSION_COOKIE_AGE = 604800  # 1 week in seconds
+SESSION_SAVE_EVERY_REQUEST = True
+SESSION_ENGINE = "django.contrib.sessions.backends.db"
+
+
+
 
 

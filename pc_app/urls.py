@@ -1,5 +1,5 @@
 from django.urls import path
-from . import views_recommend, views_upgrade, views
+from . import views_recommend, views_upgrade, views, views_comp
 from .views import *
 from .context_processors import *
 from django.conf import settings
@@ -7,10 +7,10 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     # Homepage / Recommendation
-    path('home/', views_recommend.HomePage, name='home'),
+    path('', views_recommend.HomePage, name='home'),
 
     # User Authentication Page
-    path('', views.SignupPage, name='signup'),
+    path('signup/', views.SignupPage, name='signup'),
     path('login/', views.LoginPage, name='login'),
     path('logout/', views.LogoutPage, name='logout'),
 
@@ -20,19 +20,6 @@ urlpatterns = [
 
     path('forgot-password/', views.ForgotPassword, name='forgot_password'),
     path('reset-password/<str:token>/', views.reset_password, name='reset_password'),
-
-    # Component Displays
-    path('cpu/', CPUListView.as_view(), name='cpu_list'),
-    path('cpu/<int:pk>/', views.cpu_detail, name='cpu_detail'),
-    path('cpu/<int:pk1>/<int:pk2>/', views.cpu_comparison, name='cpu_comparison'),
-
-    path('gpu/', GPUListView.as_view(), name='gpu_list'),
-    path('gpu/<int:pk>/', views.gpu_detail, name='gpu_detail'),
-    path('gpu/<int:pk1>/<int:pk2>/', views.gpu_comparison, name='gpu_comparison'),
-
-    path('mboard/', MBoardListView.as_view(), name='mboard_list'),
-    path('mboard/<int:pk>/', views.mboard_detail, name='mboard_detail'),
-    path('mboard/<int:pk1>/<int:pk2>/', views.mboard_comparison, name='mboard_comparison'),
 
     #Upgrade
     path('upgrade/', views_upgrade.upgrade, name='upgrade'),
@@ -62,6 +49,40 @@ urlpatterns = [
     path('get_cpu_info/<int:cpu_id>/', views.get_cpu_info, name='get_cpu_info'),
     path('get_gpu_info/<int:gpu_id>/', views.get_gpu_info, name='get_gpu_info'),
     path('get_mboard_info/<int:mboard_id>/', views.get_mboard_info, name='get_mboard_info'),
+    path('get_ram_info/<int:ram_id>/', views.get_ram_info, name='get_ram_info'),
+    path('get_psu_info/<int:psu_id>/', views.get_psu_info, name='get_psu_info'),
+    path('get_storage_info/<int:storage_id>/', views.get_storage_info, name='get_storage_info'),
+    path('get_case_info/<int:case_id>/', views.get_case_info, name='get_case_info'),
+
+    # Component Displays
+    path('cpu/', views_comp.CPUListView.as_view(), name='cpu_list'),
+    path('cpu/<int:pk>/', views_comp.cpu_detail, name='cpu_detail'),
+    path('cpu/<int:pk1>/<int:pk2>/', views_comp.cpu_comparison, name='cpu_comparison'),
+
+    path('gpu/', views_comp.GPUListView.as_view(), name='gpu_list'),
+    path('gpu/<int:pk>/', views_comp.gpu_detail, name='gpu_detail'),
+    path('gpu/<int:pk1>/<int:pk2>/', views_comp.gpu_comparison, name='gpu_comparison'),
+
+    path('mboard/', views_comp.MBoardListView.as_view(), name='mboard_list'),
+    path('mboard/<int:pk>/', views_comp.mboard_detail, name='mboard_detail'),
+    path('mboard/<int:pk1>/<int:pk2>/', views_comp.mboard_comparison, name='mboard_comparison'),
+
+    path('ram/', views_comp.RAMListView.as_view(), name='ram_list'),
+    path('ram/<int:pk>/', views_comp.ram_detail, name='ram_detail'),
+    path('ram/<int:pk1>/<int:pk2>/', views_comp.ram_comparison, name='ram_comparison'),
+
+    path('psu/', views_comp.PSUListView.as_view(), name='psu_list'),
+    path('psu/<int:pk>/', views_comp.psu_detail, name='psu_detail'),
+    path('psu/<int:pk1>/<int:pk2>/', views_comp.psu_comparison, name='psu_comparison'),
+
+    path('storage/', views_comp.StorageListView.as_view(), name='storage_list'),
+    path('storage/<int:pk>/', views_comp.storage_detail, name='storage_detail'),
+    path('storage/<int:pk1>/<int:pk2>/', views_comp.storage_comparison, name='storage_comparison'),
+
+    path('case/', views_comp.CaseListView.as_view(), name='case_list'),
+    path('case/<int:pk>/', views_comp.case_detail, name='case_detail'),
+    path('case/<int:pk1>/<int:pk2>/', views_comp.case_comparison, name='case_comparison'),
+
 ]
 
 if settings.DEBUG:

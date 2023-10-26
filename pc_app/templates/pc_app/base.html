@@ -20,7 +20,7 @@
 <style>
     .component-row {
         display: flex;
-        justify-content: space-between;
+        /* justify-content: space-between; */
         margin-bottom: 20px;
         /* Add space between rows (adjust as needed) */
     }
@@ -43,9 +43,9 @@
     .slide-menu {
         position: fixed;
         top: 0;
-        right: -400px;
-        /* Start off-screen */
-        width: 400px;
+        right: -600px;
+        /* Customization Screen Size */
+        width: 700px;
         height: 100%;
         background-color: white;
         box-shadow: -5px 0px 5px rgba(0, 0, 0, 0.2);
@@ -62,8 +62,8 @@
     .slide-button {
         position: fixed;
         top: 20px;
-        right: -50px;
-        /* Changed from -50px to 20px */
+        /* Button visiblility */
+        right: -15px; 
         padding: 10px;
         background-color: #333;
         color: white;
@@ -75,7 +75,7 @@
     }
 
     .slide-button.open {
-        right: 0px;
+        right: 10px;
         /* Changed from 0 to 300px */
     }
 </style>
@@ -117,7 +117,7 @@
         {% include 'pc_app/bin/customize.html' %}
     </div>
 
-    <button id="slideToggleButton" class="slide-button" onclick="toggleSlideMenu()">&gt;</button>
+    <button id="slideToggleButton" class="slide-button" onclick="toggleSlideMenu()">Customize &gt;</button>
 
 
     <footer>{% include 'pc_app/bin/footer.html' %}</footer>
@@ -142,32 +142,44 @@
 
 <script>
     var totalPrice = 0.0;
-    var storedCPUPrice=0, storedGPUPrice=0, storedMotherboardPrice=0;
+    var storedCPUPrice = 0, storedGPUPrice = 0, storedMotherboardPrice = 0;
+
+    // Function to calculate and display the total price
+    var totalPrice = 0.0;
 
     // Function to calculate and display the total price
     function displayTotalPrice() {
         const storedCPUPrice = localStorage.getItem('selectedCPUPrice');
         const storedGPUPrice = localStorage.getItem('selectedGPUPrice');
         const storedMotherboardPrice = localStorage.getItem('selectedMotherboardPrice');
+        const storedRAMPrice = localStorage.getItem('selectedRAMPrice');
+        const storedPSUPrice = localStorage.getItem('selectedPSUPrice');
+        const storedStoragePrice = localStorage.getItem('selectedStoragePrice');
+        const storedCasePrice = localStorage.getItem('selectedCasePrice');
 
         // Check if stored prices exist, otherwise set them to 0
         const parsedCPUPrice = parseFloat(storedCPUPrice) || 0;
         const parsedGPUPrice = parseFloat(storedGPUPrice) || 0;
         const parsedMotherboardPrice = parseFloat(storedMotherboardPrice) || 0;
-        
-        totalPrice = 1 + parsedCPUPrice + parsedGPUPrice + parsedMotherboardPrice;
-        document.getElementById('totalPrice').innerText = `Total Price: RM${totalPrice.toFixed(2)}`;
+        const parsedRAMPrice = parseFloat(storedRAMPrice) || 0;
+        const parsedPSUPrice = parseFloat(storedPSUPrice) || 0;
+        const parsedStoragePrice = parseFloat(storedStoragePrice) || 0;
+        const parsedCasePrice = parseFloat(storedCasePrice) || 0;
+
+        totalPrice = 1 + parsedCPUPrice + parsedGPUPrice + parsedMotherboardPrice + parsedRAMPrice + parsedPSUPrice + parsedStoragePrice + parsedCasePrice;
+        document.getElementById('totalPrice').innerText = `RM${totalPrice.toFixed(2)}`;
         localStorage.setItem('totalPrice', totalPrice);
     }
+
 
 
     document.addEventListener('DOMContentLoaded', function () {
         var menu = document.getElementById('slideOutMenu');
         var button = document.getElementById('slideToggleButton');
 
-        // Open the menu on page load
-        menu.classList.add('open');
-        button.classList.add('open');
+        // // Open the menu on page load
+        // menu.classList.add('open');
+        // button.classList.add('open');
 
         // Toggle the menu when the button is clicked
         button.addEventListener('click', function () {
@@ -184,7 +196,7 @@
     // Get the CSRF token from the cookie
     const csrftoken = Cookies.get('csrftoken');
 
-    function selectComponent(componentType, componentId) {
+    function selectComponent(componentType, componentId, copyAll = false) {
         var menu = document.getElementById('slideOutMenu');
         var button = document.getElementById('slideToggleButton');
 
@@ -193,11 +205,11 @@
 
         if (componentType === 'cpu') {
             // Fetch CPU information using AJAX
-            var cpuXhr = new XMLHttpRequest();
-            cpuXhr.open("GET", `/get_cpu_info/${componentId}`);
-            cpuXhr.onreadystatechange = function () {
-                if (cpuXhr.readyState === XMLHttpRequest.DONE && cpuXhr.status === 200) {
-                    var cpuInfo = JSON.parse(cpuXhr.responseText);
+            var compXhr = new XMLHttpRequest();
+            compXhr.open("GET", `/get_cpu_info/${componentId}`);
+            compXhr.onreadystatechange = function () {
+                if (compXhr.readyState === XMLHttpRequest.DONE && compXhr.status === 200) {
+                    var cpuInfo = JSON.parse(compXhr.responseText);
                     localStorage.setItem('selectedCPUID', componentId); //To favourite the CPU
                     localStorage.setItem('selectedCPU', `${cpuInfo.name} - RM ${cpuInfo.price}`);
                     document.getElementById('selectedCPU').innerText = `${cpuInfo.name} - RM ${cpuInfo.price}`;
@@ -207,22 +219,27 @@
                     // Calculate and display total price
                     displayTotalPrice();
 
-                    alert(`CPU: ${cpuInfo.name} selected for customization!`);
+                    if (copyAll == false) {
+                        alert(`CPU: ${cpuInfo.name} selected for customization!`);
+                    } else {
+                        alert(`Successfully Copied build!`);
+                    }
                 }
             };
-            cpuXhr.send();
+            compXhr.send();
         } else if (componentType === 'gpu') {
-            // Fetch GPU information using AJAX
-            var gpuXhr = new XMLHttpRequest();
-            gpuXhr.open("GET", `/get_gpu_info/${componentId}`);
-            gpuXhr.onreadystatechange = function () {
-                if (gpuXhr.readyState === XMLHttpRequest.DONE && gpuXhr.status === 200) {
-                    var gpuInfo = JSON.parse(gpuXhr.responseText);
+            var compXhr = new XMLHttpRequest();
+            compXhr.open("GET", `/get_gpu_info/${componentId}`);
+            compXhr.onreadystatechange = function () {
+                if (compXhr.readyState === XMLHttpRequest.DONE && compXhr.status === 200) {
+                    var gpuInfo = JSON.parse(compXhr.responseText);
                     localStorage.setItem('selectedGPUID', componentId); //To favourite the GPU
                     localStorage.setItem('selectedGPU', `${gpuInfo.chipset} - RM ${gpuInfo.price}`);
                     document.getElementById('selectedGPU').innerText = `${gpuInfo.chipset} - RM ${gpuInfo.price}`;
 
-                    alert(`GPU: ${gpuInfo.chipset} selected for customization!`);
+                    if (copyAll == false) {
+                        alert(`GPU: ${gpuInfo.chipset} selected for customization!`);
+                    }
 
                     // Update GPU price
                     localStorage.setItem('selectedGPUPrice', parseFloat(`${gpuInfo.price}`));
@@ -231,19 +248,21 @@
                     displayTotalPrice();
                 }
             };
-            gpuXhr.send();
+            compXhr.send();
         } else if (componentType === 'motherboard') {
             // Fetch Motherboard information using AJAX
-            var gpuXhr = new XMLHttpRequest();
-            gpuXhr.open("GET", `/get_mboard_info/${componentId}`);
-            gpuXhr.onreadystatechange = function () {
-                if (gpuXhr.readyState === XMLHttpRequest.DONE && gpuXhr.status === 200) {
-                    var mboard_info = JSON.parse(gpuXhr.responseText);
+            var compXhr = new XMLHttpRequest();
+            compXhr.open("GET", `/get_mboard_info/${componentId}`);
+            compXhr.onreadystatechange = function () {
+                if (compXhr.readyState === XMLHttpRequest.DONE && compXhr.status === 200) {
+                    var mboard_info = JSON.parse(compXhr.responseText);
                     localStorage.setItem('selectedMotherboardID', componentId); //To favourite the GPU
                     localStorage.setItem('selectedMotherboard', `${mboard_info.name} - RM ${mboard_info.price}`);
                     document.getElementById('selectedMotherboard').innerText = `${mboard_info.name} - RM ${mboard_info.price}`;
 
-                    alert(`GPU: ${mboard_info.name} selected for customization!`);
+                    if (copyAll == false) {
+                        alert(`GPU: ${mboard_info.name} selected for customization!`);
+                    }
 
                     // Update Motherboard price
                     localStorage.setItem('selectedMotherboardPrice', parseFloat(`${mboard_info.price}`));
@@ -252,9 +271,128 @@
                     displayTotalPrice();
                 }
             };
-            gpuXhr.send();
-        }
-        // Add more else-if conditions for other components if needed
+            compXhr.send();
+        } else if (componentType === 'ram') {
+            var compXhr = new XMLHttpRequest();
+            compXhr.open("GET", `/get_ram_info/${componentId}`);
+
+            compXhr.onreadystatechange = function () {
+                if (compXhr.readyState === XMLHttpRequest.DONE && compXhr.status === 200) {
+                    const ramInfo = JSON.parse(compXhr.responseText);
+
+                    // Store the selected RAM ID and details in local storage
+                    localStorage.setItem('selectedRAMID', componentId);
+                    localStorage.setItem('selectedRAM', `${ramInfo.name} - RM ${ramInfo.price}`);
+
+                    // Update the displayed RAM selection
+                    const selectedRAMElement = document.getElementById('selectedRAM');
+                    selectedRAMElement.innerText = `${ramInfo.name} - RM ${ramInfo.price}`;
+
+                    if (!copyAll) {
+                        alert(`RAM: ${ramInfo.name} selected for customization!`);
+                    }
+
+                    // Update RAM price
+                    localStorage.setItem('selectedRAMPrice', parseFloat(ramInfo.price));
+                    selectedRAMPrice = parseFloat(ramInfo.price);
+
+                    // Calculate and display the total price
+                    displayTotalPrice();
+                }
+            };
+
+            compXhr.send();
+        } else if (componentType === 'psu') {
+            var compXhr = new XMLHttpRequest();
+            compXhr.open("GET", `/get_psu_info/${componentId}`);
+
+            compXhr.onreadystatechange = function () {
+                if (compXhr.readyState === XMLHttpRequest.DONE && compXhr.status === 200) {
+                    const psuInfo = JSON.parse(compXhr.responseText);
+
+                    // Store the selected PSU ID and details in local storage
+                    localStorage.setItem('selectedPSUID', componentId);
+                    localStorage.setItem('selectedPSU', `${psuInfo.name} - RM ${psuInfo.price}`);
+
+                    // Update the displayed PSU selection
+                    const selectedPSUElement = document.getElementById('selectedPSU');
+                    selectedPSUElement.innerText = `${psuInfo.name} - RM ${psuInfo.price}`;
+
+                    if (!copyAll) {
+                        alert(`Power Supply: ${psuInfo.name} selected for customization!`);
+                    }
+
+                    // Update PSU price
+                    localStorage.setItem('selectedPSUPrice', parseFloat(psuInfo.price));
+                    selectedPSUPrice = parseFloat(psuInfo.price);
+
+                    // Calculate and display the total price
+                    displayTotalPrice();
+                }
+            };
+
+            compXhr.send();
+        } else if (componentType === 'storage') {
+            const compXhr = new XMLHttpRequest();
+            compXhr.open("GET", `/get_storage_info/${componentId}`);
+
+            compXhr.onreadystatechange = function () {
+                if (compXhr.readyState === XMLHttpRequest.DONE && compXhr.status === 200) {
+                    const storageInfo = JSON.parse(compXhr.responseText);
+
+                    // Store the selected storage ID and details in local storage
+                    localStorage.setItem('selectedStorageID', componentId);
+                    localStorage.setItem('selectedStorage', `${storageInfo.name} - RM ${storageInfo.price}`);
+
+                    // Update the displayed storage selection
+                    const selectedStorageElement = document.getElementById('selectedStorage');
+                    selectedStorageElement.innerText = `${storageInfo.name} - RM ${storageInfo.price}`;
+
+                    if (!copyAll) {
+                        alert(`Storage: ${storageInfo.name} selected for customization!`);
+                    }
+
+                    // Update storage price
+                    localStorage.setItem('selectedStoragePrice', parseFloat(storageInfo.price));
+                    selectedStoragePrice = parseFloat(storageInfo.price);
+
+                    // Calculate and display the total price
+                    displayTotalPrice();
+                }
+            };
+
+            compXhr.send();
+        } else if (componentType === 'case') {
+            const compXhr = new XMLHttpRequest();
+            compXhr.open("GET", `/get_case_info/${componentId}`);
+
+            compXhr.onreadystatechange = function () {
+                if (compXhr.readyState === XMLHttpRequest.DONE && compXhr.status === 200) {
+                    const caseInfo = JSON.parse(compXhr.responseText);
+
+                    // Store the selected case ID and details in local storage
+                    localStorage.setItem('selectedCaseID', componentId);
+                    localStorage.setItem('selectedCase', `${caseInfo.name} - RM ${caseInfo.price}`);
+
+                    // Update the displayed case selection
+                    const selectedCaseElement = document.getElementById('selectedCase');
+                    selectedCaseElement.innerText = `${caseInfo.name} - RM ${caseInfo.price}`;
+
+                    if (!copyAll) {
+                        alert(`PC Case: ${caseInfo.name} selected for customization!`);
+                    }
+
+                    // Update case price
+                    localStorage.setItem('selectedCasePrice', parseFloat(caseInfo.price));
+                    selectedCasePrice = parseFloat(caseInfo.price);
+
+                    // Calculate and display the total price
+                    displayTotalPrice();
+                }
+            };
+
+            compXhr.send();
+        } // Add more else-if conditions for other components if needed
     }
 
     // Retrieve and display previously selected components on page load
@@ -262,35 +400,60 @@
         const storedCPU = localStorage.getItem('selectedCPU');
         const storedGPU = localStorage.getItem('selectedGPU');
         const storedMotherboard = localStorage.getItem('selectedMotherboard');
+        const storedRAM = localStorage.getItem('selectedRAM');
+        const storedPSU = localStorage.getItem('selectedPSU');
+        const storedStorage = localStorage.getItem('selectedStorage');
+        const storedCase = localStorage.getItem('selectedCase');
         const storedtotalPrice = localStorage.getItem('totalPrice');
 
         document.getElementById('selectedCPU').innerText = storedCPU || '';
         document.getElementById('selectedGPU').innerText = storedGPU || '';
         document.getElementById('selectedMotherboard').innerText = storedMotherboard || '';
+        document.getElementById('selectedRAM').innerText = storedRAM || '';
+        document.getElementById('selectedPSU').innerText = storedPSU || '';
+        document.getElementById('selectedStorage').innerText = storedStorage || '';
+        document.getElementById('selectedCase').innerText = storedCase || '';
         document.getElementById('totalPrice').innerText = `Total Price: RM${storedtotalPrice}`;
     };
 
     function clearSelections() {
         localStorage.removeItem('selectedCPU');
         localStorage.removeItem('selectedGPU');
+        localStorage.removeItem('selectedMotherboard');
+        localStorage.removeItem('selectedRAM');
+        localStorage.removeItem('selectedPSU');
+        localStorage.removeItem('selectedStorage');
+        localStorage.removeItem('selectedCase');
         localStorage.removeItem('selectedCPUID');
         localStorage.removeItem('selectedGPUID');
+        // Add similar lines for other component IDs if needed
         localStorage.removeItem('totalPrice');
-        // Add similar lines for other components if needed
+
         document.getElementById('selectedCPU').innerText = '';
         document.getElementById('selectedGPU').innerText = '';
+        document.getElementById('selectedMotherboard').innerText = '';
+        document.getElementById('selectedRAM').innerText = '';
+        document.getElementById('selectedPSU').innerText = '';
+        document.getElementById('selectedStorage').innerText = '';
+        document.getElementById('selectedCase').innerText = '';
         document.getElementById('selectedCPUID').innerText = '';
         document.getElementById('selectedGPUID').innerText = '';
+        // Add similar lines for other component IDs if needed
         document.getElementById('totalPrice').innerText = '';
     }
+
 
     //Storing to database
     function toggleFavorite() {
         const selectedCPUID = localStorage.getItem('selectedCPUID');
         const selectedGPUID = localStorage.getItem('selectedGPUID');
         const selectedMotherboardID = localStorage.getItem('selectedMotherboardID');
+        const selectedRAMID = localStorage.getItem('selectedRAMID');
+        const selectedPSUID = localStorage.getItem('selectedPSUID');
+        const selectedStorageID = localStorage.getItem('selectedStorageID');
+        const selectedCaseID = localStorage.getItem('selectedCaseID');
 
-        if (selectedCPUID && selectedGPUID && selectedMotherboardID) {
+        if (selectedCPUID && selectedGPUID && selectedMotherboardID && selectedRAMID && selectedPSUID && selectedStorageID && selectedCaseID) {
             const xhr = new XMLHttpRequest();
             xhr.open('POST', '/toggle_favorite/', true);
             xhr.setRequestHeader('X-CSRFToken', csrftoken); // Set the CSRF token in the request header
@@ -306,7 +469,15 @@
                     }
                 }
             };
-            xhr.send(JSON.stringify({ cpu_id: selectedCPUID, gpu_id: selectedGPUID, mboard_id: selectedMotherboardID }));
+            xhr.send(JSON.stringify({
+                cpu_id: selectedCPUID,
+                gpu_id: selectedGPUID,
+                mboard_id: selectedMotherboardID,
+                ram_id: selectedRAMID,
+                psu_id: selectedPSUID,
+                storage_id: selectedStorageID,
+                case_id: selectedCaseID
+            }));
         } else {
             alert('Please select all components before saving!');
         }
@@ -316,8 +487,12 @@
         var selectedCPUID = localStorage.getItem('selectedCPUID');
         var selectedGPUID = localStorage.getItem('selectedGPUID');
         var selectedMotherboardID = localStorage.getItem('selectedMotherboardID');
+        var selectedRAMID = localStorage.getItem('selectedRAMID');
+        var selectedPSUID = localStorage.getItem('selectedPSUID');
+        var selectedStorageID = localStorage.getItem('selectedStorageID');
+        var selectedCaseID = localStorage.getItem('selectedCaseID');
 
-        if (selectedCPUID && selectedGPUID && selectedMotherboardID) {
+        if (selectedCPUID && selectedGPUID && selectedMotherboardID && selectedRAMID && selectedPSUID && selectedStorageID && selectedCaseID) {
             // Send selected component IDs to Django view
             var xhr = new XMLHttpRequest();
             xhr.open('POST', '/add_to_cart/', true);
@@ -338,18 +513,19 @@
                     }
                 }
             };
-            xhr.send(JSON.stringify({ cpu_id: selectedCPUID, gpu_id: selectedGPUID, mboard_id: selectedMotherboardID }));
+
+            var formData = new FormData();
+            formData.append('selectedCPUID', selectedCPUID);
+            formData.append('selectedGPUID', selectedGPUID);
+            formData.append('selectedMotherboardID', selectedMotherboardID);
+            formData.append('selectedRAMID', selectedRAMID);
+            formData.append('selectedPSUID', selectedPSUID);
+            formData.append('selectedStorageID', selectedStorageID);
+            formData.append('selectedCaseID', selectedCaseID);
+
+            xhr.send(formData);
         } else {
             alert('Please select all components before adding to cart!');
         }
-
-        // Send the selected component IDs to the server
-        var formData = new FormData();
-        formData.append('selectedCPUID', selectedCPUID);
-        formData.append('selectedGPUID', selectedGPUID);
-        formData.append('selectedMotherboardID', selectedMotherboardID);
-        xhr.send(formData);
     }
-
-
 </script>

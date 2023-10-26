@@ -10,10 +10,7 @@ def upgrade(request):
     budget = None  # Initialize budget to None
 
     if request.method == 'POST':
-        budget = request.POST.get('budget')
-        
-    if budget is None or not budget:
-        budget = 99999
+        budget = request.POST.get('budget', 99999)
 
     print('User Budget:', budget)
 
@@ -21,7 +18,7 @@ def upgrade(request):
     # Define weightages for CPU, GPU, and RAM
     cpu_weightage = 0.4
     gpu_weightage = 0.3
-    ram_weightage = 0.2
+    ram_weightage = 0.3
 
     # Calculate component budgets based on weightages
     cpu_budget = budget * cpu_weightage
@@ -96,6 +93,7 @@ def find_cpu_upgrade(request, proc_info, cpu_budget):
         better_cpu_upgrades = CPU.objects.filter(
             name__icontains=device_cpu_brand,  # Partial string matching
             core_clock__gt=device_cpu_speed / 1000,
+            socket__icontains=device_socket,
             price__lte=cpu_budget,
             # socket__icontains=device_socket,
         )  # .order_by('-core_clock')

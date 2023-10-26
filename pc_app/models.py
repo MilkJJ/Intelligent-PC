@@ -127,10 +127,15 @@ class PCase(models.Model):
 
 
 class FavouritedPC(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    cpu = models.ForeignKey(CPU, on_delete=models.CASCADE)
-    gpu = models.ForeignKey(GPU, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    cpu = models.ForeignKey(CPU, on_delete=models.CASCADE, null=True)
+    gpu = models.ForeignKey(GPU, on_delete=models.CASCADE, null=True)
     mboard = models.ForeignKey(Motherboard, on_delete=models.CASCADE, null=True)
+    ram = models.ForeignKey(Memory, on_delete=models.CASCADE, null=True)
+    psu = models.ForeignKey(PSU, on_delete=models.CASCADE, null=True)
+    storage = models.ForeignKey(StorageDrive, on_delete=models.CASCADE, null=True)
+    case = models.ForeignKey(PCase, on_delete=models.CASCADE, null=True)
+
     total_price = models.FloatField(default=0.0)
     # Add other fields as needed
 
@@ -151,6 +156,11 @@ class CartItem(models.Model):
     cpu = models.ForeignKey(CPU, on_delete=models.CASCADE, null=True)
     gpu = models.ForeignKey(GPU, on_delete=models.CASCADE, null=True)
     mboard = models.ForeignKey(Motherboard, on_delete=models.CASCADE, null=True)
+    ram = models.ForeignKey(Memory, on_delete=models.CASCADE, null=True)
+    psu = models.ForeignKey(PSU, on_delete=models.CASCADE, null=True)
+    storage = models.ForeignKey(StorageDrive, on_delete=models.CASCADE, null=True)
+    case = models.ForeignKey(PCase, on_delete=models.CASCADE, null=True)
+
     total_price = models.FloatField(default=0.0)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     is_purchased = models.BooleanField(default=False)
@@ -177,6 +187,54 @@ class CPUPivotTable(models.Model):
 
     def __str__(self):
         return f"{self.cpu.name} - {self.ratings}*"
+    
+class GPUPivotTable(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    gpu = models.ForeignKey(GPU, on_delete=models.CASCADE)
+    ratings = models.DecimalField(max_digits=5, decimal_places=0, default=0)
+
+    def __str__(self):
+        return f"{self.gpu.name} - {self.ratings}*"
+    
+class RAMPivotTable(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    ram = models.ForeignKey(Memory, on_delete=models.CASCADE)
+    ratings = models.DecimalField(max_digits=5, decimal_places=0, default=0)
+
+    def __str__(self):
+        return f"{self.ram.name} - {self.ratings}*"
+    
+class MotherboardPivotTable(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    mboard = models.ForeignKey(Motherboard, on_delete=models.CASCADE)
+    ratings = models.DecimalField(max_digits=5, decimal_places=0, default=0)
+
+    def __str__(self):
+        return f"{self.mboard.name} - {self.ratings}*"
+    
+class PSUPivotTable(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    psu = models.ForeignKey(PSU, on_delete=models.CASCADE)
+    ratings = models.DecimalField(max_digits=5, decimal_places=0, default=0)
+
+    def __str__(self):
+        return f"{self.psu.name} - {self.ratings}*"
+    
+class StoragePivotTable(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    storage = models.ForeignKey(StorageDrive, on_delete=models.CASCADE)
+    ratings = models.DecimalField(max_digits=5, decimal_places=0, default=0)
+
+    def __str__(self):
+        return f"{self.storage.name} - {self.ratings}*"
+    
+class PCasePivotTable(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    case = models.ForeignKey(PCase, on_delete=models.CASCADE)
+    ratings = models.DecimalField(max_digits=5, decimal_places=0, default=0)
+
+    def __str__(self):
+        return f"{self.case.name} - {self.ratings}*"
 
 # To store or remove
 class RecommendedBuild(models.Model):

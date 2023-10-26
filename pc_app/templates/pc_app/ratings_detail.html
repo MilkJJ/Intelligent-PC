@@ -23,13 +23,19 @@
 
 <a href="{% url 'home' %}">Back to Home</a>
 
-<button class="select-button" onclick="selectBothComponents('{{ item.cpu.id }}', '{{ item.gpu.id }}')">Copy Build</button>
+<button class="select-button" onclick="selectAllComponents('{{ item.cpu.id }}', '{{ item.gpu.id }}', '{{ item.mboard.id }}', '{{ item.ram.id }}', '{{ item.psu.id }}', '{{ item.storage.id }}', '{{ item.case.id }}')">Copy Build</button>
 
 <script>
-    function selectBothComponents(cpuId, gpuId) {
-        selectComponent('cpu', cpuId);
-        selectComponent('gpu', gpuId);
+    function selectAllComponents(cpuId, gpuId, motherboardId, ramId, psuId, storageId, caseId) {
+        selectComponent('cpu', cpuId, true);
+        selectComponent('gpu', gpuId, true);
+        selectComponent('motherboard', motherboardId, true);
+        selectComponent('ram', ramId, true);
+        selectComponent('psu', psuId, true);
+        selectComponent('storage', storageId, true);
+        selectComponent('case', caseId, true);
     }
-    </script>
+</script>
+
 
 {% endblock %}

@@ -2,18 +2,24 @@
 {% block content %}
 {% load custom_filters %}
 
-<div>
-    <h4>Your Current Build</h4>
-    <p>CPU: {{ proc_info }}</p>
-    {% if ram_count > 1 %}
-    <p>RAM: {{ ram_gb|multiply:ram_count }} GB ({{ ram_gb }}GB + {{ ram_speed}}Mhz) x{{ram_count}}</p>
-    {% else %}
-    <p>RAM: {{ ram_gb }} GB + {{ ram_speed }}Mhz x{{ram_count}}</p>
-    {% endif %}
+<!DOCTYPE html>
+<html lang="en">
 
-    <p>Graphics Card: {{ gpu_info }}</p>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Component Upgrade Suggestions</title>
+</head>
 
+<body>
+    <form method="post">
+        {% csrf_token %}
+        <h1>Enter Your Budget</h1>
+        <input type="number" name="budget" placeholder="Enter your budget">
+        <button type="submit">Check for Upgrades</button>
+    </form>
     <br>
+
     {% if messages %}
     {% for message in messages %}
     <div class="alert alert-info">
@@ -21,55 +27,109 @@
     </div>
     {% endfor %}
     {% endif %}
+    
+    <div class="upgrade-container">
+        <h1>Your Hardware Specifications</h1>
+        <div class="specs">
+            <div class="hardware">
+                <h2>CPU</h2>
+                <p>Current: {{ proc_info }}</p>
+            </div>
+            <div class="hardware">
+                <h2>GPU</h2>
+                    <p>Current: {{ gpu_info }}</p>
+            </div>
+            <div class="hardware">
+                <h2>RAM</h2>
+                {% if ram_count > 1 %}
+                <p>Current: {{ ram_gb|multiply:ram_count }} GB ({{ ram_gb }}GB + {{ ram_speed}}Mhz) x{{ram_count}}</p>
+                {% else %}
+                <p>Current: {{ ram_gb }} GB + {{ ram_speed }}Mhz x{{ram_count}}</p>
+                {% endif %}
+            </div>
+        </div>
 
-    <!-- Placeholder for CPU and GPU Upgrades -->
-    <div id="upgrade-suggestions">
-        <h4>PC Build Upgrade</h4>
-        <form method="post">
-            {% csrf_token %}
-            <input type="number" name="budget" placeholder="Input Budget" style="width: 130px;">
-            <button type="submit">Search</button>
-        </form>
-        <br>
-        <!-- CPU Upgrade -->
-        {% if cpu_upgrade %}
-        <a href="{% url 'cpu_detail' cpu_upgrade.pk %}">
-            <p>CPU: {{ cpu_upgrade }}</p>
-        </a>
-        {% else %}
-            No CPU found with the set budget!
-        {% endif %}
-        <br>
-        {% if ram_upgrade %}
-        <a href="">
-            <p>RAM: {{ ram_upgrade.name }} ({{ram_upgrade.memory_size }}GB + {{ram_upgrade.speed_mhz}}Mhz)
-                x{{ram_upgrade.num_modules }}</p>
-        </a>
-        {% else %}
-            No RAM found with the set budget!
-        {% endif %}
-        <br>
-        {% if gpu_upgrade %}
-        <a href="{% url 'gpu_detail' gpu_upgrade.pk %}">
-            <p>GPU: {{ gpu_upgrade }}</p>
-        </a>
-        {% else %}
-            No GPU found with the set budget!
-        {% endif %}
-
-        <!-- GPU Upgrade
-            {% if suggested_gpu_upgrade %}
-                <h3>Suggested GPU Upgrade</h3>
-                <p>GPU: {{ suggested_gpu_upgrade.name }}</p>
-                <p>Price: ${{ suggested_gpu_upgrade.price }}</p>
-                <p>Core Count: {{ suggested_gpu_upgrade.core_count }}</p>
-                <p>Core Clock: {{ suggested_gpu_upgrade.core_clock }} MHz</p>
-                <p>Boost Clock: {{ suggested_gpu_upgrade.boost_clock }} MHz</p>
-                <p>TDP: {{ suggested_gpu_upgrade.tdp }} W</p>
-                <p>Integrated Graphics: {{ suggested_gpu_upgrade.graphics }}</p>
-                <p>Multithreading: {% if suggested_gpu_upgrade.smt %}Yes{% else %}No{% endif %}</p>
-                <p>Socket: {{ suggested_gpu_upgrade.socket }}</p>
-            {% endif %} -->
+        <h1>Upgrade Suggestions</h1>
+        <div class="upgrade">
+                <div class="hardware">
+                    <h2>CPU</h2>
+                    {% if cpu_upgrade %}
+                    <a href="{% url 'cpu_detail' cpu_upgrade.pk %}"><p>Suggested Upgrade: {{ cpu_upgrade }}</p></a>
+                    {% else %}
+                    <p>No CPU found with the set budget!</p>
+                    {% endif %}
+                </div>
+                <div class="hardware">
+                    <h2>GPU</h2>
+                    {% if gpu_upgrade %}
+                    <a href="{% url 'gpu_detail' gpu_upgrade.pk %}"><p>Suggested Upgrade: {{ gpu_upgrade }}</p></a>
+                    {% else %}
+                    <p>No GPU found with the set budget!</p>
+                    {% endif %}
+               
+                </div>
+                <div class="hardware">
+                    <h2>RAM</h2>
+                    {% if ram_upgrade %}
+                    <a href="{% url 'ram_detail' ram_upgrade.pk %}"><p>Suggested Upgrade: {{ ram_upgrade.name }} ({{ram_upgrade.memory_size }}GB + {{ram_upgrade.speed_mhz}}Mhz)
+                        x{{ram_upgrade.num_modules }}</p></a>
+                        {% else %}
+                        <p>No RAM found with the set budget!</p>
+                        {% endif %}
+                </div>
+        </div>
     </div>
-</div>
+    <br>
+
+</body>
+
+</html>
+
+<style>
+.upgrade-container {
+    max-width: 1100px;
+    margin: 20 auto;
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    /* text-align: center; */
+}
+
+
+h1 {
+    font-size: 24px;
+    margin-top: 20px;
+}
+
+.specs, .upgrade {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    /* border: 1px solid #818181; */
+    padding: 20px;
+}
+
+
+.hardware {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 10px;
+    width: 300px;
+    height: 130px;
+}
+
+h2 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+p {
+    font-size: 16px;
+}
+
+</style>
 {% endblock %}
