@@ -7,14 +7,14 @@ from win32com.client import GetObject
 import wmi
 
 def upgrade(request):    
-    budget = None  # Initialize budget to None
+    budget = 9999
 
     if request.method == 'POST':
-        budget = request.POST.get('budget', 99999)
-
+        budget = request.POST.get('budget', 9999)
+        budget = float(budget)
+        
     print('User Budget:', budget)
 
-    budget = float(budget)
     # Define weightages for CPU, GPU, and RAM
     cpu_weightage = 0.4
     gpu_weightage = 0.3

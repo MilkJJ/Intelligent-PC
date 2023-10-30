@@ -20,7 +20,7 @@
     <input type="number" id="max_budget" name="max_budget" required>
 
     <label for="preferred">Select Your Use Case Preference:</label>
-    <select id="preferred" name="preferred">
+    <select id="preferred" name="preferred" required>
       <option value="">-- --</option>
       <option value="gaming">Gaming</option>
       <option value="content_creation">Content Creation</option>
@@ -41,6 +41,10 @@
         <p><strong>CPU:</strong> {{ build.cpu.name }}</p>
         <p><strong>GPU:</strong> {{ build.gpu.name }} + {{ build.gpu.chipset }}</p>
         <p><strong>Motherboard:</strong> {{ build.mboard.name }}</p>
+        <p><strong>RAM:</strong> {{ build.ram.name }}</p>
+        <p><strong>Storage:</strong> {{ build.storage.name }}</p>
+        <p><strong>Power Supply:</strong> {{ build.psu.name }}</p>
+        <p><strong>Chassis:</strong> {{ build.case.name }}</p>
         <button class="select-button" onclick="selectAllComponents('{{ build.cpu.id }}', '{{ build.gpu.id }}', '{{ build.mboard.id }}', '{{ build.ram.id }}', '{{ build.psu.id }}', '{{ build.storage.id }}', '{{ build.case.id }}')">Copy Build</button>
         {% endif %}
         {% endfor %}
@@ -53,6 +57,10 @@
         <p><strong>CPU:</strong> {{ rating_build.cpu.name }}</p>
         <p><strong>GPU:</strong> {{ rating_build.gpu.name }} - {{ rating_build.gpu.chipset }}</p>
         <p><strong>Motherboard:</strong> {{ rating_build.mboard.name }}</p>
+        <p><strong>RAM:</strong> {{ rating_build.ram.name }}</p>
+        <p><strong>Storage:</strong> {{ rating_build.storage.name }}</p>
+        <p><strong>Power Supply:</strong> {{ rating_build.psu.name }}</p>
+        <p><strong>Chassis:</strong> {{ rating_build.case.name }}</p>
         <button class="select-button" onclick="selectAllComponents('{{ rating_build.cpu.id }}', '{{ rating_build.gpu.id }}', '{{ rating_build.mboard.id }}', '{{ rating_build.ram.id }}', '{{ rating_build.psu.id }}', '{{ rating_build.storage.id }}', '{{ rating_build.case.id }}')">Copy Build</button>
         {% endif %}
         {% endfor %}

@@ -2,9 +2,10 @@
 {% block title %}{{ cpu.name }}{% endblock %}
 {% block content %}
 {% load custom_filters %}
-
+{% load static %}
 
 <!-- <input type="hidden" name="rating" id="cpu_ratingInput" value="{{ rating_form.cpuRating.value }}" /> -->
+<link rel="stylesheet" type="text/css" href="{% static 'css/component.css' %}">
 
 <!DOCTYPE html>
 <html lang="en">
@@ -12,33 +13,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CPU Details</title>
+  <title>CPU Specifications</title>
 </head>
 
 <body>
   <header>
-    <h2>CPU #{{cpu.id}} Details</h2>
+    <h3>CPU #{{cpu.id}} Specifications</h3>
   </header>
+
   <main>
-    <section class="cpu-metadata">
-      <ul>
-        <li><strong>Model:</strong> {{ cpu.name }}</li>
-        <li><strong>Cores:</strong> {{ cpu.core_count }}</li>
-        <li><strong>Base Clock:</strong> {{ cpu.core_clock }} GHz</li>
-        <li><strong>Max Turbo Clock:</strong> {{ cpu.boost_clock }} GHz</li>
-        <li><strong>Integrated_Graphics:</strong> {{ cpu.graphics }}</li>
-        <li><strong>TDP:</strong> {{ cpu.tdp }}</li>
-        <li><strong>Multithreading:</strong> {% if cpu.smt %}Yes{% else %}No{% endif %} </li>
-        <li><strong>Price:</strong> RM {{ cpu.price|convert_to_myr }}</li>
-        <!-- Add more CPU details as needed -->
-      </ul>
-
-      <button class="select-button" onclick="selectComponent('cpu', '{{ cpu.id }}')">Add to Customize</button>
-
-      <div class="rating">
+    <div class="component-container">
+      <section class="component-metadata">
         {% if rate %}
-        Your previous rating:
         <div class="star-rating">
+          Previously Rated:
           <span class="fa fa-star {% if rate >= 1 %}checked{% endif %}"></span>
           <span class="fa fa-star {% if rate >= 2 %}checked{% endif %}"></span>
           <span class="fa fa-star {% if rate >= 3 %}checked{% endif %}"></span>
@@ -46,50 +34,116 @@
           <span class="fa fa-star {% if rate >= 5 %}checked{% endif %}"></span>
         </div>
         {% endif %}
+        <br>
+        <table>
+          <thead>
+            <tr>
+              <th>Model</th>
+              <th>{{ cpu.name }}</th>
+            </tr>
+          </thead>
+          <tr>
+            <td>Cores <span class="icon" data-hover-text="The number of processing cores" title="Hover for More Info">&#9432;</span></td>
+            <td>{{ cpu.core_count }}</td>
+          </tr>
+          <tr>
+            <td>Base Clock <span class="icon" data-hover-text="The base clock speed of the processing cores" title="Hover for More Info">&#9432;</span></td>
+            <td>{{ cpu.core_clock }} GHz</td>
+          </tr>
+          <tr>
+            <td>Max Turbo Clock <span class="icon" data-hover-text="The maximum clock speed the cores can reach under load" title="Hover for More Info">&#9432;</span></td>
+            <td>{{ cpu.boost_clock }} GHz</td>
+          </tr>
+          <tr>
+            <td>Integrated Graphics <span class="icon" data-hover-text="Information about the integrated graphics processing unit (GPU)" title="Hover for More Info">&#9432;</span></td>
+            <td>{{ cpu.graphics }}</td>
+          </tr>
+          <tr>
+            <td>Thermal Design Power <span class="icon" data-hover-text="The maximum amount of power the device is designed to consume and dissipate as heat" title="Hover for More Info">&#9432;</span></td>
+            <td>{{ cpu.tdp }}</td>
+          </tr>
+          <tr>
+            <td>Multithreading <span class="icon" data-hover-text="Indicates whether the device supports simultaneous multithreading, which can improve multitasking and performance" title="Hover for More Info">&#9432;</span></td>
+            <td>{% if cpu.smt %}Yes{% else %}No{% endif %}</td>
+          </tr>
+          <tr>
+            <td>Socket <span class="icon" data-hover-text="The type of CPU socket or interface used for connecting the device to the motherboard" title="Hover for More Info">&#9432;</span></td>
+            <td>{{ cpu.socket }}</td>
+          </tr>
+          <tr>
+            <td>Price</td>
+            <td>RM {{ cpu.price|convert_to_myr }}</td>
+          </tr>
+          <!-- Add more CPU details as needed -->
+        </table>
 
-        <form method="post" name="cpu_rating_form">
-          {% csrf_token %}
-          <select type="hidden" name="cpuRating" id="cpu_ratingInput" style="display: none;">
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-          </select>
+        <br>
+        <div class="rating">
+          {% if messages %}
+          <ul class="messages">
+            {% for message in messages %}
+            <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+            {% endfor %}
+          </ul>
+          {% endif %}
 
-          <div id="star-rating">
-            <ul class="btn btn-light list-inline rating-list">
-              <li onclick="updateRating(5)" data-order-rating="5"><i class="fa fa-star" id="star-5" title="Rate 5"></i>
-              </li>
-              <li onclick="updateRating(4)" data-order-rating="4"><i class="fa fa-star" id="star-4" title="Rate 4"></i>
-              </li>
-              <li onclick="updateRating(3)" data-order-rating="3"><i class="fa fa-star" id="star-3" title="Rate 3"></i>
-              </li>
-              <li onclick="updateRating(2)" data-order-rating="2"><i class="fa fa-star" id="star-2" title="Rate 2"></i>
-              </li>
-              <li onclick="updateRating(1)" data-order-rating="1"><i class="fa fa-star" id="star-1" title="Rate 1"></i>
-              </li>
-            </ul>
-          </div>
 
-          <button type="submit" name="cpu_rating_form">Rate</button>
-        </form>
-      </div>
-    </section>
+          <form method="post" name="cpu_rating_form">
+            {% csrf_token %}
+            <select type="hidden" name="cpuRating" id="cpu_ratingInput" style="display: none;">
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+            </select>
 
-    <section class="cpu-comparison">
-      <button id="chooseButton">Select CPU to Compare</button>
-      <div id="cpuList" style="display: none;">
-        <input type="text" id="cpuSearch" placeholder="Search CPUs">
-        <ul>
-          {% for other_cpu in other_cpus %}
-          <li>
-            <a href="{% url 'cpu_comparison' cpu.pk other_cpu.pk %}">{{ other_cpu.name }}</a>
-          </li>
-          {% endfor %}
-        </ul>
-      </div>
-    </section>
+            <div id="star-rating">
+              Re-rate:
+              <ul class="btn btn-light list-inline rating-list">
+                <li onclick="updateRating(5)" data-order-rating="5"><i class="fa fa-star" id="star-5"
+                    title="Rate 5"></i>
+                </li>
+                <li onclick="updateRating(4)" data-order-rating="4"><i class="fa fa-star" id="star-4"
+                    title="Rate 4"></i>
+                </li>
+                <li onclick="updateRating(3)" data-order-rating="3"><i class="fa fa-star" id="star-3"
+                    title="Rate 3"></i>
+                </li>
+                <li onclick="updateRating(2)" data-order-rating="2"><i class="fa fa-star" id="star-2"
+                    title="Rate 2"></i>
+                </li>
+                <li onclick="updateRating(1)" data-order-rating="1"><i class="fa fa-star" id="star-1"
+                    title="Rate 1"></i>
+                </li>
+              </ul>
+            </div>
+
+            <button type="submit" name="cpu_rating_form">Rate</button>
+          </form>
+
+          <button class="select-button" onclick="selectComponent('cpu', '{{ cpu.id }}')">Add to Customize</button>
+
+        </div>
+
+      </section>
+
+      <section class="component-comparison">
+        <button id="chooseButton" class="compare-button">Select CPU to Compare</button>
+        <div id="cpuList" class="component-list">
+          <input type="text" id="cpuSearch" class="search-input" placeholder="Search CPUs">
+          <ul class="component-items">
+            {% for other_cpu in other_cpus %}
+            <li class="component-item">
+              <a href="{% url 'cpu_comparison' cpu.pk other_cpu.pk %}" class="component-link">{{ other_cpu.name }}</a>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </section>
+
+    </div>
+
   </main>
 </body>
 
@@ -97,26 +151,26 @@
 
 <script>
   // JavaScript for search functionality
-        const cpuList = document.getElementById('cpuList');
-        const cpuSearch = document.getElementById('cpuSearch');
-        const cpuItems = document.querySelectorAll('#cpuList ul li');
+  const cpuSearch = document.getElementById('cpuSearch');
+  const cpuItems = document.querySelectorAll('#cpuList ul li');
 
-        cpuSearch.addEventListener('input', () => {
-            const searchValue = cpuSearch.value.toLowerCase();
-            cpuItems.forEach(cpuItem => {
-                const cpuName = cpuItem.textContent.toLowerCase();
-                if (cpuName.includes(searchValue)) {
-                    cpuItem.style.display = 'list-item';
-                } else {
-                    cpuItem.style.display = 'none';
-                }
-            });
-        });
+  cpuSearch.addEventListener('input', () => {
+    const searchValue = cpuSearch.value.toLowerCase();
+    cpuItems.forEach(cpuItem => {
+      const cpuName = cpuItem.textContent.toLowerCase();
+      if (cpuName.includes(searchValue)) {
+        cpuItem.style.display = 'list-item';
+      } else {
+        cpuItem.style.display = 'none';
+      }
+    });
+  });
 
   document.getElementById('chooseButton').addEventListener('click', function () {
-    var cpuList = document.getElementById('cpuList');
-    cpuList.style.display = (cpuList.style.display === 'none') ? 'block' : 'none';
+    const cpuList = document.querySelector('#cpuList'); // Use querySelector to select the first element with id 'cpuList'
+    cpuList.style.display = (cpuList.style.display === 'none' || cpuList.style.display === '') ? 'block' : 'none';
   });
+
 
   // Function to update the star rating
   function updateRating(rating) {
@@ -141,6 +195,129 @@
 </html>
 
 <style>
+  .messages {
+  padding: 10px;
+  margin: 0;
+  font-size: 14px;
+}
+
+/* Style each individual message item */
+.messages li {
+  padding: 5px;
+}
+
+/* Style the different message tags (e.g., success, error) */
+.messages .success {
+  border-radius: 3px;
+  background-color: #4CAF50;
+  color: white;
+}
+
+.messages .error {
+  border-radius: 5px;
+  background-color: #F44336;
+  color: white;
+}
+
+  .icon {
+    display: inline-block;
+    position: relative;
+  }
+
+  .icon:hover::before {
+    content: attr(data-hover-text);
+    position: absolute;
+    background: #333;
+    color: #fff;
+    padding: 5px;
+    border-radius: 5px;
+    transform: translateX(-50%);
+    opacity: 0;
+    visibility: visible;
+    transition: opacity 0.3s, visibility 0.3s;
+    font-size: 12px;
+  }
+  
+  .icon:hover::before {
+    left: 20px;
+    opacity: 1;
+    display:inline-block;
+    visibility: visible;
+  }
+
+  /*  */
+
+  .component-comparison {
+    background-color: #f0f0f0;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    text-align: center;
+    margin: 20px;
+    max-width: 450px;
+  }
+
+  .component-list {
+    display: none;
+    margin-top: 20px;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+
+  .component-items {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .component-item {
+    margin: 10px 0;
+  }
+
+  .component-link {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+  }
+
+  .component-link:hover {
+    text-decoration: underline;
+    color: #007bff;
+  }
+
+  form {
+    display: inline-block;
+    /* Display the form and button inline */
+  }
+
+  .select-button {
+    vertical-align: bottom;
+    /* Align the button with the top of the form button */
+    float: right;
+    /* Place it at the right of the container */
+    margin-top: 75px;
+    /* Add some spacing between the buttons */
+  }
+
+  .component-container {
+    display: flex;
+    flex-direction: row;
+    /* Horizontal layout for section1 and section2 */
+    flex-wrap: wrap;
+    padding: 20px;
+  }
+
+
+
+  .component-metadata {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
 
   /* main {
     width: 80%;
@@ -148,17 +325,21 @@
     padding: 20px;
   } */
 
-  .cpu-metadata {
-    border: 1px solid #ccc;
-    padding: 20px;
+  .component-metadata,
+  .component-comparison {
+    float: left;
+    width: 50%;
+    padding: 10px;
+    /* Adjust the width as needed */
   }
 
-  .cpu-metadata h2 {
+  .component-metadata h2 {
     color: #333;
   }
 
   .rating {
     margin-top: 10px;
+    display: flexbox
   }
 
   .stars {
@@ -173,13 +354,7 @@
     /* Yellow color for stars */
   }
 
-  .cpu-comparison {
-    margin-top: 20px;
-    border: 1px solid #ccc;
-    padding: 20px;
-  }
-
-  .cpu-comparison h2 {
+  .component-comparison h2 {
     color: #333;
   }
 
@@ -193,9 +368,10 @@
     background-color: #333;
     color: #fff;
     border: none;
-    padding: 5px 10px;
-    border-radius: 20%;
     cursor: pointer;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: bold;
   }
 
   button:hover {

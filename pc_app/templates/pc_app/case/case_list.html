@@ -1,13 +1,13 @@
 {% extends 'pc_app/base.html' %}
-{% block title %}{{ ram.name }}{% endblock %}
+{% block title %}{{ case.name }}{% endblock %}
 {% block content %}
 {% load custom_filters %}
 
 <div class="col-sm-12">
   <div class="titleheader">
-    <h3 class="h2header text-center">RAM ({{ rams|length }})</h3>
+    <h3 class="h2header text-center">RAM ({{ cases|length }})</h3>
     <a href="#" id="sortToggle" onclick="toggleSorting()">Sort A to Z</a>
-    <form method="get" action="{% url 'ram_list' %}">
+    <form method="get" action="{% url 'case_list' %}">
       <label for="search_query">RAM Model:</label>
       <input type="text" name="search_query" placeholder="Search RAM Model...">
 
@@ -34,25 +34,25 @@
     </span>
   </div>
   
-  <div id="ramList"> <!-- Add id="ramList" to the container div -->
+  <div id="caseList"> <!-- Add id="caseList" to the container div -->
     <div class="component-row">
-      {% for ram in page_obj %}
+      {% for case in page_obj %}
       <div class="component-box text-center">
-        <a href="{% url 'ram_detail' ram.pk %}">
+        <a href="{% url 'case_detail' case.pk %}">
           <div class="coverpage">
-            {% if ram.name|lower|slice:"0:3" == "amd" %}
+            {% if case.name|lower|slice:"0:3" == "amd" %}
             <img src="https://www.amd.com/system/files/2020-06/amd-default-social-image-1200x628.jpg" width="100"
               height="100"> <!-- Replace with the actual path to AMD image -->
-            {% elif ram.name|lower|slice:"0:5" == "intel" %}
+            {% elif case.name|lower|slice:"0:5" == "intel" %}
             <img src="https://www.intel.com/content/dam/logos/logo-energyblue-1x1.png" width="100" height="100">
             <!-- Replace with the actual path to Intel image -->
             {% else %}
             <img src="default-image.png"> <!-- Add a default image path if needed -->
             {% endif %}
           </div>
-          <p><a href="{% url 'ram_detail' ram.pk %}">{{ ram.name }}</a></p>
-          <p>RM{{ ram.price|convert_to_myr }}</p>
-          <button class="select-button" onclick="selectComponent('ram', '{{ ram.id }}')">Add</button>
+          <p><a href="{% url 'case_detail' case.pk %}">{{ case.name }}</a></p>
+          <p>RM{{ case.price|convert_to_myr }}</p>
+          <button class="select-button" onclick="selectComponent('case', '{{ case.id }}')">Add</button>
       </div>
       {% if forloop.counter|divisibleby:5 and not forloop.last %} <!-- Create a new row after every 5 RAMs -->
     </div>

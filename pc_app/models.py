@@ -88,7 +88,8 @@ class Motherboard(models.Model):
     
 class PSU(models.Model):
     name = models.CharField(max_length=255)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    price = models.FloatField() 
+    # price = models.DecimalField(max_digits=10, decimal_places=2)
     type = models.CharField(max_length=50)
     efficiency = models.CharField(max_length=50)
     wattage = models.IntegerField()
@@ -101,7 +102,8 @@ class PSU(models.Model):
 
 class StorageDrive(models.Model):
     name = models.CharField(max_length=255)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    price = models.FloatField()
+    # price = models.DecimalField(max_digits=10, decimal_places=2)
     capacity = models.IntegerField()
     price_per_gb = models.DecimalField(max_digits=10, decimal_places=3)
     type = models.CharField(max_length=50)
@@ -114,7 +116,8 @@ class StorageDrive(models.Model):
     
 class PCase(models.Model):
     name = models.CharField(max_length=255)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    price = models.FloatField()
+    # price = models.DecimalField(max_digits=10, decimal_places=2)
     type = models.CharField(max_length=50)
     color = models.CharField(max_length=50)
     psu = models.IntegerField()

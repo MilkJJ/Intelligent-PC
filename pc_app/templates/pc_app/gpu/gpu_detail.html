@@ -1,26 +1,192 @@
 {% extends 'pc_app/base.html' %}
-
-{% block title %}{{ gpu.name }} - {{ gpu.chipset }}{% endblock %}
-
+{% block title %}{{ gpu.name }}{% endblock %}
 {% block content %}
-
 {% load custom_filters %}
+{% load static %}
 
-<h1>GPU Details</h1>
-<p>GPU: {{ gpu.name }}</p>
-<p>Chipset: {{ gpu.chipset }}</p>
-<p>VRAM: {{ gpu.memory }}</p>
-<p>Core Clock: {{ gpu.core_clock }}</p>
-<p>Boost Clock: {{ gpu.boost_clock }}</p>
-<p>Price: {{ gpu.price|convert_to_myr }}</p>
-<p>Color: {{ gpu.color }}</p>
-<p>Length: {{ gpu.length }}</p>
+<!-- <input type="hidden" name="rating" id="gpu_ratingInput" value="{{ rating_form.gpuRating.value }}" /> -->
+<link rel="stylesheet" type="text/css" href="{% static 'css/component.css' %}">
 
-<h2>Select another GPU for comparison:</h2>
-<form method="post" action="{% url 'gpu_detail' gpu.pk %}">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Compare</button>
-</form>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GPU Specifications</title>
+</head>
+
+<body>
+  <header>
+    <h3>GPU #{{gpu.id}} Specifications</h3>
+  </header>
+
+  <main>
+    <div class="component-container">
+      <section class="component-metadata">
+        {% if rate %}
+        <div class="star-rating">
+          Previously Rated:
+          <span class="fa fa-star {% if rate >= 1 %}checked{% endif %}"></span>
+          <span class="fa fa-star {% if rate >= 2 %}checked{% endif %}"></span>
+          <span class="fa fa-star {% if rate >= 3 %}checked{% endif %}"></span>
+          <span class="fa fa-star {% if rate >= 4 %}checked{% endif %}"></span>
+          <span class="fa fa-star {% if rate >= 5 %}checked{% endif %}"></span>
+        </div>
+        {% endif %}
+        <br>
+        <table>
+          <thead>
+            <tr>
+              <th>Model</th>
+              <th>{{ gpu.name }}</th>
+            </tr>
+          </thead>
+          <tr>
+            <td>Chipset <span class="icon" data-hover-text="" title="Hover for More Info">&#9432;</span></td>
+            <td>{{ gpu.chipset }}</td>
+          </tr>
+          <tr>
+            <td>VRAM <span class="icon" data-hover-text="" title="Hover for More Info">&#9432;</span></td>
+            <td>{{ gpu.memory }} Gb</td>
+          </tr>
+          <tr>
+            <td>Core Clock <span class="icon" data-hover-text="" title="Hover for More Info">&#9432;</span></td>
+            <td>{{ gpu.core_clock }} GHz</td>
+          </tr>
+          <tr>
+            <td>Boost Clock <span class="icon" data-hover-text="" title="Hover for More Info">&#9432;</span></td>
+            <td>{{ gpu.boost_clock }}</td>
+          </tr>
+          <tr>
+            <td>Color <span class="icon" data-hover-text="" title="Hover for More Info">&#9432;</span></td>
+            <td>{{ gpu.color }}</td>
+          </tr>
+          <tr>
+            <td>Length <span class="icon" data-hover-text="" title="Hover for More Info">&#9432;</span></td>
+            <td>{{ gpu.length }}</td>
+          </tr>
+          <tr>
+            <td>Price</td>
+            <td>RM {{ gpu.price|convert_to_myr }}</td>
+          </tr>
+          <!-- Add more GPU details as needed -->
+        </table>
+
+        <br>
+        <div class="rating">
+          {% if messages %}
+          <ul class="messages">
+            {% for message in messages %}
+            <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+
+
+          <form method="post" name="gpu_rating_form">
+            {% csrf_token %}
+            <select type="hidden" name="gpuRating" id="gpu_ratingInput" style="display: none;">
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+            </select>
+
+            <div id="star-rating">
+              Re-rate:
+              <ul class="btn btn-light list-inline rating-list">
+                <li onclick="updateRating(5)" data-order-rating="5"><i class="fa fa-star" id="star-5"
+                    title="Rate 5"></i>
+                </li>
+                <li onclick="updateRating(4)" data-order-rating="4"><i class="fa fa-star" id="star-4"
+                    title="Rate 4"></i>
+                </li>
+                <li onclick="updateRating(3)" data-order-rating="3"><i class="fa fa-star" id="star-3"
+                    title="Rate 3"></i>
+                </li>
+                <li onclick="updateRating(2)" data-order-rating="2"><i class="fa fa-star" id="star-2"
+                    title="Rate 2"></i>
+                </li>
+                <li onclick="updateRating(1)" data-order-rating="1"><i class="fa fa-star" id="star-1"
+                    title="Rate 1"></i>
+                </li>
+              </ul>
+            </div>
+
+            <button type="submit" name="gpu_rating_form">Rate</button>
+          </form>
+
+          <button class="select-button" onclick="selectComponent('gpu', '{{ gpu.id }}')">Add to Customize</button>
+
+        </div>
+
+      </section>
+
+      <section class="component-comparison">
+        <button id="chooseButton" class="compare-button">Select GPU to Compare</button>
+        <div id="gpuList" class="component-list">
+          <input type="text" id="gpuSearch" class="search-input" placeholder="Search GPUs">
+          <ul class="component-items">
+            {% for other_gpu in other_gpus %}
+            <li class="component-item">
+              <a href="{% url 'gpu_comparison' gpu.pk other_gpu.pk %}" class="component-link">{{ other_gpu.name }} ({{ other_gpu.chipset }})</a>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </section>
+
+    </div>
+
+  </main>
+</body>
+
+
+
+<script>
+  // JavaScript for search functionality
+  const gpuSearch = document.getElementById('gpuSearch');
+  const gpuItems = document.querySelectorAll('#gpuList ul li');
+
+  gpuSearch.addEventListener('input', () => {
+    const searchValue = gpuSearch.value.toLowerCase();
+    gpuItems.forEach(gpuItem => {
+      const gpuName = gpuItem.textContent.toLowerCase();
+      if (gpuName.includes(searchValue)) {
+        gpuItem.style.display = 'list-item';
+      } else {
+        gpuItem.style.display = 'none';
+      }
+    });
+  });
+
+  document.getElementById('chooseButton').addEventListener('click', function () {
+    const gpuList = document.querySelector('#gpuList'); // Use querySelector to select the first element with id 'gpuList'
+    gpuList.style.display = (gpuList.style.display === 'none' || gpuList.style.display === '') ? 'block' : 'none';
+  });
+
+
+  // Function to update the star rating
+  function updateRating(rating) {
+    const starElements = document.querySelectorAll('.fa-star');
+
+    // Remove 'checked' class from all stars
+    starElements.forEach(star => {
+      star.classList.remove('checked');
+    });
+
+    // Add 'checked' class to stars up to the selected rating
+    for (let i = 1; i <= rating; i++) {
+      document.getElementById('star-' + i).classList.add('checked');
+    }
+
+    // Set the selected rating in the dropdown
+    document.getElementById('gpu_ratingInput').value = rating;
+  }
+</script>
+
+</html>
 
 {% endblock %}

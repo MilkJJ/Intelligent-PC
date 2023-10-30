@@ -1,10 +1,10 @@
 {% extends 'pc_app/base.html' %}
-{% block title %}{{ ram.name }}{% endblock %}
+{% block title %}{{ case.name }}{% endblock %}
 {% block content %}
 {% load custom_filters %}
 {% load static %}
 
-<!-- <input type="hidden" name="rating" id="ram_ratingInput" value="{{ rating_form.ramRating.value }}" /> -->
+<!-- <input type="hidden" name="rating" id="case_ratingInput" value="{{ rating_form.caseRating.value }}" /> -->
 <link rel="stylesheet" type="text/css" href="{% static 'css/component.css' %}">
 
 <!DOCTYPE html>
@@ -13,12 +13,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RAM Specifications</title>
+  <title>Chassis Specifications</title>
 </head>
 
 <body>
   <header>
-    <h3>RAM #{{ram.id}} Specifications</h3>
+    <h3>Chassis #{{case.id}} Specifications</h3>
   </header>
 
   <main>
@@ -35,43 +35,42 @@
         </div>
         {% endif %}
         <br>
-
         <table>
           <thead>
             <tr>
               <th>Model</th>
-              <th>{{ ram.name }}</th>
+              <th>{{ case.name }}</th>
             </tr>
           </thead>
           <tr>
             <td>Chipset <span class="icon" data-hover-text="" title="Hover for More Info">&#9432;</span></td>
-            <td>{{ ram.chipset }}</td>
+            <td>{{ case.chipset }}</td>
           </tr>
           <tr>
             <td>VRAM <span class="icon" data-hover-text="" title="Hover for More Info">&#9432;</span></td>
-            <td>{{ ram.memory }} Gb</td>
+            <td>{{ case.memory }} Gb</td>
           </tr>
           <tr>
             <td>Core Clock <span class="icon" data-hover-text="" title="Hover for More Info">&#9432;</span></td>
-            <td>{{ ram.core_clock }} GHz</td>
+            <td>{{ case.core_clock }} GHz</td>
           </tr>
           <tr>
             <td>Boost Clock <span class="icon" data-hover-text="" title="Hover for More Info">&#9432;</span></td>
-            <td>{{ ram.boost_clock }}</td>
+            <td>{{ case.boost_clock }}</td>
           </tr>
           <tr>
             <td>Color <span class="icon" data-hover-text="" title="Hover for More Info">&#9432;</span></td>
-            <td>{{ ram.color }}</td>
+            <td>{{ case.color }}</td>
           </tr>
           <tr>
             <td>Length <span class="icon" data-hover-text="" title="Hover for More Info">&#9432;</span></td>
-            <td>{{ ram.length }}</td>
+            <td>{{ case.length }}</td>
           </tr>
           <tr>
             <td>Price</td>
-            <td>RM {{ ram.price|convert_to_myr }}</td>
+            <td>RM {{ case.price|convert_to_myr }}</td>
           </tr>
-          <!-- Add more RAM details as needed -->
+          <!-- Add more Case details as needed -->
         </table>
 
         <br>
@@ -85,9 +84,9 @@
           {% endif %}
 
 
-          <form method="post" name="ram_rating_form">
+          <form method="post" name="case_rating_form">
             {% csrf_token %}
-            <select type="hidden" name="ramRating" id="ram_ratingInput" style="display: none;">
+            <select type="hidden" name="caseRating" id="case_ratingInput" style="display: none;">
               <option value="1">1</option>
               <option value="2">2</option>
               <option value="3">3</option>
@@ -116,23 +115,23 @@
               </ul>
             </div>
 
-            <button type="submit" name="ram_rating_form">Rate</button>
+            <button type="submit" name="case_rating_form">Rate</button>
           </form>
 
-          <button class="select-button" onclick="selectComponent('ram', '{{ ram.id }}')">Add to Customize</button>
+          <button class="select-button" onclick="selectComponent('case', '{{ case.id }}')">Add to Customize</button>
 
         </div>
 
       </section>
 
       <section class="component-comparison">
-        <button id="chooseButton" class="compare-button">Select RAM to Compare</button>
-        <div id="ramList" class="component-list">
-          <input type="text" id="ramSearch" class="search-input" placeholder="Search RAMs">
+        <button id="chooseButton" class="compare-button">Select Case to Compare</button>
+        <div id="caseList" class="component-list">
+          <input type="text" id="caseSearch" class="search-input" placeholder="Search Cases">
           <ul class="component-items">
-            {% for other_ram in other_rams %}
+            {% for other_case in other_cases %}
             <li class="component-item">
-              <a href="{% url 'ram_comparison' ram.pk other_ram.pk %}" class="component-link">{{ other_ram.name }}</a>
+              <a href="{% url 'case_comparison' case.pk other_case.pk %}" class="component-link">{{ other_case.name }}</a>
             </li>
             {% endfor %}
           </ul>
@@ -148,24 +147,24 @@
 
 <script>
   // JavaScript for search functionality
-  const ramSearch = document.getElementById('ramSearch');
-  const ramItems = document.querySelectorAll('#ramList ul li');
+  const caseSearch = document.getElementById('caseSearch');
+  const caseItems = document.querySelectorAll('#caseList ul li');
 
-  ramSearch.addEventListener('input', () => {
-    const searchValue = ramSearch.value.toLowerCase();
-    ramItems.forEach(ramItem => {
-      const ramName = ramItem.textContent.toLowerCase();
-      if (ramName.includes(searchValue)) {
-        ramItem.style.display = 'list-item';
+  caseSearch.addEventListener('input', () => {
+    const searchValue = caseSearch.value.toLowerCase();
+    caseItems.forEach(caseItem => {
+      const caseName = caseItem.textContent.toLowerCase();
+      if (caseName.includes(searchValue)) {
+        caseItem.style.display = 'list-item';
       } else {
-        ramItem.style.display = 'none';
+        caseItem.style.display = 'none';
       }
     });
   });
 
   document.getElementById('chooseButton').addEventListener('click', function () {
-    const ramList = document.querySelector('#ramList'); // Use querySelector to select the first element with id 'ramList'
-    ramList.style.display = (ramList.style.display === 'none' || ramList.style.display === '') ? 'block' : 'none';
+    const caseList = document.querySelector('#caseList'); // Use querySelector to select the first element with id 'caseList'
+    caseList.style.display = (caseList.style.display === 'none' || caseList.style.display === '') ? 'block' : 'none';
   });
 
 
@@ -184,7 +183,7 @@
     }
 
     // Set the selected rating in the dropdown
-    document.getElementById('ram_ratingInput').value = rating;
+    document.getElementById('case_ratingInput').value = rating;
   }
 </script>
 

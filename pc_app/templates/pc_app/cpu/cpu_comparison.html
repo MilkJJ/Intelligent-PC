@@ -2,129 +2,125 @@
 {% block title %}{{ cpu1.name }} vs {{ cpu2.name }}{% endblock %}
 {% block content %}
 {% load custom_filters %}
+{% load static %}
 
-<h2>CPU Comparison</h2>
+<link rel="stylesheet" type="text/css" href="{% static 'css/comparison.css' %}">
 
-<div class="cpu-box" style="display: inline-block; width: 45%; vertical-align: top;">
-    <h3><a href="{% url 'cpu_detail' cpu1.pk %}">CPU: {{ cpu1.name }}</a></h3>
-    <table>
-        <tr>
-            <th class="label">Cores</th>
-            <td>{{ cpu1.core_count }}</td>
-        </tr>
-        <tr>
-            <th class="label">Core Clock</th>
-            <td>{{ cpu1.core_clock }}</td>
-        </tr>
-        <tr>
-            <th class="label">Boost Clock</th>
-            <td>{{ cpu1.boost_clock }}</td>
-        </tr>
-        <tr>
-            <th class="label">Integrated Graphics</th>
-            <td>{{ cpu1.graphics }}</td>
-        </tr>
-        <tr>
-            <th class="label">TDP</th>
-            <td>{{ cpu1.tdp }}</td>
-        </tr>
-        <tr>
-            <th class="label">Multithreading</th>
-            <td>{% if cpu1.smt %}Yes{% else %}No{% endif %}</td>
-        </tr>
-        <tr>
-            <th class="label">Price</th>
-            <td>RM{{ cpu1.price|convert_to_myr }}</td>
-        </tr>
-    </table>
-    <br>
-    <button class="select-button" onclick="selectComponent('cpu', '{{ cpu1.id }}')">Select for Customization</button>
+<h3>CPU Comparison</h3>
+
+<div class="comp-container">
+    <div class="comp-box">
+        <h3><a href="{% url 'cpu_detail' cpu1.pk %}">CPU: {{ cpu1.name }}</a></h3>
+        <table>
+            <tr>
+                <th>Cores <span class="icon" data-hover-text="The number of processing cores"
+                        title="Hover for More Info">&#9432;</span></th>
+                <td>{{ cpu1.core_count }}</td>
+            </tr>
+            <tr>
+                <td>Base Clock <span class="icon" data-hover-text="The base clock speed of the processing cores"
+                        title="Hover for More Info">&#9432;</span></td>
+                <td>{{ cpu1.core_clock }} GHz</td>
+            </tr>
+            <tr>
+                <td>Max Turbo Clock <span class="icon"
+                        data-hover-text="The maximum clock speed the cores can reach under load"
+                        title="Hover for More Info">&#9432;</span></td>
+                <td>{{ cpu1.boost_clock }} GHz</td>
+            </tr>
+            <tr>
+                <td>Integrated Graphics <span class="icon"
+                        data-hover-text="Information about the integrated graphics processing unit (GPU)"
+                        title="Hover for More Info">&#9432;</span></td>
+                <td>{{ cpu1.graphics }}</td>
+            </tr>
+            <tr>
+                <td>Thermal Design Power <span class="icon"
+                        data-hover-text="The maximum amount of power the device is designed to consume and dissipate as heat"
+                        title="Hover for More Info">&#9432;</span></td>
+                <td>{{ cpu1.tdp }}</td>
+            </tr>
+            <tr>
+                <td>Multithreading <span class="icon"
+                        data-hover-text="Indicates whether the device supports simultaneous multithreading, which can improve multitasking and performance"
+                        title="Hover for More Info">&#9432;</span></td>
+                <td>{% if cpu1.smt %}Yes{% else %}No{% endif %}</td>
+            </tr>
+            <tr>
+                <td>Socket <span class="icon"
+                        data-hover-text="The type of CPU socket or interface used for connecting the device to the motherboard"
+                        title="Hover for More Info">&#9432;</span></td>
+                <td>{{ cpu1.socket }}</td>
+            </tr>
+            <tr>
+                <td>Price</td>
+                <td>RM {{ cpu1.price|convert_to_myr }}</td>
+            </tr>
+        </table>
+        <div class="button-container"><button class="select-button"
+                onclick="selectComponent('cpu', '{{ cpu1.id }}')">Select for Customization</button></div>
+    </div>
+
+    <div class="vs-divider">VS</div>
+
+    <div class="comp-box">
+        <h3><a href="{% url 'cpu_detail' cpu2.pk %}">CPU: {{ cpu2.name }}</a></h3>
+        <table>
+            <tr>
+                <td>Cores <span class="icon" data-hover-text="The number of processing cores"
+                        title="Hover for More Info">&#9432;</span></td>
+                <td>{{ cpu2.core_count }}</td>
+            </tr>
+            <tr>
+                <td>Base Clock <span class="icon" data-hover-text="The base clock speed of the processing cores"
+                        title="Hover for More Info">&#9432;</span></td>
+                <td>{{ cpu2.core_clock }} GHz</td>
+            </tr>
+            <tr>
+                <td>Max Turbo Clock <span class="icon"
+                        data-hover-text="The maximum clock speed the cores can reach under load"
+                        title="Hover for More Info">&#9432;</span></td>
+                <td>{{ cpu2.boost_clock }} GHz</td>
+            </tr>
+            <tr>
+                <td>Integrated Graphics <span class="icon"
+                        data-hover-text="Information about the integrated graphics processing unit (GPU)"
+                        title="Hover for More Info">&#9432;</span></td>
+                <td>{{ cpu2.graphics }}</td>
+            </tr>
+            <tr>
+                <td>Thermal Design Power <span class="icon"
+                        data-hover-text="The maximum amount of power the device is designed to consume and dissipate as heat"
+                        title="Hover for More Info">&#9432;</span></td>
+                <td>{{ cpu2.tdp }}</td>
+            </tr>
+            <tr>
+                <td>Multithreading <span class="icon"
+                        data-hover-text="Indicates whether the device supports simultaneous multithreading, which can improve multitasking and performance"
+                        title="Hover for More Info">&#9432;</span></td>
+                <td>{% if cpu2.smt %}Yes{% else %}No{% endif %}</td>
+            </tr>
+            <tr>
+                <td>Socket <span class="icon"
+                        data-hover-text="The type of CPU socket or interface used for connecting the device to the motherboard"
+                        title="Hover for More Info">&#9432;</span></td>
+                <td>{{ cpu2.socket }}</td>
+            </tr>
+            <tr>
+                <td>Price</td>
+                <td>RM {{ cpu2.price|convert_to_myr }}</td>
+            </tr>
+        </table>
+        <div class="button-container"><button class="select-button"
+                onclick="selectComponent('cpu', '{{ cpu2.id }}')">Select for Customization</button></div>
+
+    </div>
 </div>
 
-VS 
+<div class="divider"></div>
 
-<div class="cpu-box" style="display: inline-block; width: 45%; vertical-align: top;">
-    <h3><a href="{% url 'cpu_detail' cpu2.pk %}">CPU: {{ cpu2.name }}</a></h3>
-    <table>
-        <tr>
-            <th class="label">Cores</th>
-            <td>{{ cpu2.core_count }}</td>
-        </tr>
-        <tr>
-            <th class="label">Core Clock</th>
-            <td>{{ cpu2.core_clock }}</td>
-        </tr>
-        <tr>
-            <th class="label">Boost Clock</th>
-            <td>{{ cpu2.boost_clock }}</td>
-        </tr>
-        <tr>
-            <th class="label">Integrated Graphics</th>
-            <td>{{ cpu2.graphics }}</td>
-        </tr>
-        <tr>
-            <th class="label">TDP</th>
-            <td>{{ cpu2.tdp }}</td>
-        </tr>
-        <tr>
-            <th class="label">Multithreading</th>
-            <td>{% if cpu2.smt %}Yes{% else %}No{% endif %}</td>
-        </tr>
-        <tr>
-            <th class="label">Price</th>
-            <td>RM{{ cpu2.price|convert_to_myr }}</td>
-        </tr>
-    </table>
+<h3>CPU Chart</h3>
+<div class="image-container"><img src="data:image/png;base64,{{ chart }}" alt="CPU Comparison Chart"></div>
 
-    <br>
-    <button class="select-button" onclick="selectComponent('cpu', '{{ cpu2.id }}')">Select for Customization</button>
-</div>
 
-<h1>CPU Chart</h1>
-    <img src="data:image/png;base64,{{ chart }}" alt="CPU Comparison Chart">
-
-<style>
-    .label {
-    /* border-right: 1px solid #000; adjust the color and thickness as needed */
-    padding-right: 100px; /* add some space between the label and the line */
-    padding-left: 40px;
-}
-
-h2 {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.cpu-box {
-    display: inline-block;
-    width: 45%;
-    vertical-align: top;
-    margin-bottom: 20px;
-    border: 1px solid #3d3d3d;
-    padding: 20px;
-    margin: 20px;
-}
-
-.cpu-box h2 {
-    margin-bottom: 10px;
-}
-
-.cpu-box p {
-    margin-bottom: 5px;
-}
-
-.select-button {
-    display: inline-block;
-    padding: 5px 10px;
-    background-color: #007bff;
-    color: #fff;
-    text-decoration: none;
-    border-radius: 3px;
-    cursor: pointer;
-}
-
-.select-button:hover {
-    background-color: #0056b3;
-}
-</style>
 {% endblock %}
