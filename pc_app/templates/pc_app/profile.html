@@ -80,6 +80,7 @@
 </ul>
 {% endif %}
 
+
 <form method="post" id="password-change-form" style="display: none;"> <!-- action="{% url 'change_password' %}" -->
   {% csrf_token %}
   {{ password_change_form.as_p }}

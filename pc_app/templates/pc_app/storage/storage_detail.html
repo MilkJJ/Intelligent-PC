@@ -1,10 +1,10 @@
 {% extends 'pc_app/base.html' %}
-{% block title %}{{ ram.name }}{% endblock %}
+{% block title %}{{ storage.name }}{% endblock %}
 {% block content %}
 {% load custom_filters %}
 {% load static %}
 
-<!-- <input type="hidden" name="rating" id="ram_ratingInput" value="{{ rating_form.ramRating.value }}" /> -->
+<!-- <input type="hidden" name="rating" id="storage_ratingInput" value="{{ rating_form.storageRating.value }}" /> -->
 <link rel="stylesheet" type="text/css" href="{% static 'css/component.css' %}">
 
 <!DOCTYPE html>
@@ -13,12 +13,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RAM Specifications</title>
+  <title>Storage Drive Specifications</title>
 </head>
 
 <body>
   <header>
-    <h3>RAM #{{ram.id}} Specifications</h3>
+    <h3>Storage Drive #{{storage.id}} Specifications</h3>
   </header>
 
   <main>
@@ -40,38 +40,38 @@
           <thead>
             <tr>
               <th>Model</th>
-              <th>{{ ram.name }}</th>
+              <th>{{ storage.name }}</th>
             </tr>
           </thead>
           <tr>
             <td>Chipset <span class="icon" data-hover-text="" title="Hover for More Info">&#9432;</span></td>
-            <td>{{ ram.chipset }}</td>
+            <td>{{ storage.chipset }}</td>
           </tr>
           <tr>
             <td>VRAM <span class="icon" data-hover-text="" title="Hover for More Info">&#9432;</span></td>
-            <td>{{ ram.memory }} Gb</td>
+            <td>{{ storage.memory }} Gb</td>
           </tr>
           <tr>
             <td>Core Clock <span class="icon" data-hover-text="" title="Hover for More Info">&#9432;</span></td>
-            <td>{{ ram.core_clock }} GHz</td>
+            <td>{{ storage.core_clock }} GHz</td>
           </tr>
           <tr>
             <td>Boost Clock <span class="icon" data-hover-text="" title="Hover for More Info">&#9432;</span></td>
-            <td>{{ ram.boost_clock }}</td>
+            <td>{{ storage.boost_clock }}</td>
           </tr>
           <tr>
             <td>Color <span class="icon" data-hover-text="" title="Hover for More Info">&#9432;</span></td>
-            <td>{{ ram.color }}</td>
+            <td>{{ storage.color }}</td>
           </tr>
           <tr>
             <td>Length <span class="icon" data-hover-text="" title="Hover for More Info">&#9432;</span></td>
-            <td>{{ ram.length }}</td>
+            <td>{{ storage.length }}</td>
           </tr>
           <tr>
             <td>Price</td>
-            <td>RM {{ ram.price|convert_to_myr }}</td>
+            <td>RM {{ storage.price|convert_to_myr }}</td>
           </tr>
-          <!-- Add more RAM details as needed -->
+          <!-- Add more Storage Drive details as needed -->
         </table>
 
         <br>
@@ -85,9 +85,9 @@
           {% endif %}
 
 
-          <form method="post" name="ram_rating_form">
+          <form method="post" name="storage_rating_form">
             {% csrf_token %}
-            <select type="hidden" name="ramRating" id="ram_ratingInput" style="display: none;">
+            <select type="hidden" name="storageRating" id="storage_ratingInput" style="display: none;">
               <option value="1">1</option>
               <option value="2">2</option>
               <option value="3">3</option>
@@ -116,23 +116,23 @@
               </ul>
             </div>
 
-            <button type="submit" name="ram_rating_form">Rate</button>
+            <button type="submit" name="storage_rating_form">Rate</button>
           </form>
 
-          <button class="select-button" onclick="selectComponent('ram', '{{ ram.id }}')">Add to Customize</button>
+          <button class="select-button" onclick="selectComponent('storage', '{{ storage.id }}')">Add to Customize</button>
 
         </div>
 
       </section>
 
       <section class="component-comparison">
-        <button id="chooseButton" class="compare-button">Select RAM to Compare</button>
-        <div id="ramList" class="component-list">
-          <input type="text" id="ramSearch" class="search-input" placeholder="Search RAMs">
+        <button id="chooseButton" class="compare-button">Select Storage Drive to Compare</button>
+        <div id="storageList" class="component-list">
+          <input type="text" id="storageSearch" class="search-input" placeholder="Search Storage Drives">
           <ul class="component-items">
-            {% for other_ram in other_rams %}
+            {% for other_storage in other_storages %}
             <li class="component-item">
-              <a href="{% url 'ram_comparison' ram.pk other_ram.pk %}" class="component-link">{{ other_ram.name }}</a>
+              <a href="{% url 'storage_comparison' storage.pk other_storage.pk %}" class="component-link">{{ other_storage.name }}</a>
             </li>
             {% endfor %}
           </ul>
@@ -148,24 +148,24 @@
 
 <script>
   // JavaScript for search functionality
-  const ramSearch = document.getElementById('ramSearch');
-  const ramItems = document.querySelectorAll('#ramList ul li');
+  const storageSearch = document.getElementById('storageSearch');
+  const storageItems = document.querySelectorAll('#storageList ul li');
 
-  ramSearch.addEventListener('input', () => {
-    const searchValue = ramSearch.value.toLowerCase();
-    ramItems.forEach(ramItem => {
-      const ramName = ramItem.textContent.toLowerCase();
-      if (ramName.includes(searchValue)) {
-        ramItem.style.display = 'list-item';
+  storageSearch.addEventListener('input', () => {
+    const searchValue = storageSearch.value.toLowerCase();
+    storageItems.forEach(storageItem => {
+      const storageName = storageItem.textContent.toLowerCase();
+      if (storageName.includes(searchValue)) {
+        storageItem.style.display = 'list-item';
       } else {
-        ramItem.style.display = 'none';
+        storageItem.style.display = 'none';
       }
     });
   });
 
   document.getElementById('chooseButton').addEventListener('click', function () {
-    const ramList = document.querySelector('#ramList'); // Use querySelector to select the first element with id 'ramList'
-    ramList.style.display = (ramList.style.display === 'none' || ramList.style.display === '') ? 'block' : 'none';
+    const storageList = document.querySelector('#storageList'); // Use querySelector to select the first element with id 'storageList'
+    storageList.style.display = (storageList.style.display === 'none' || storageList.style.display === '') ? 'block' : 'none';
   });
 
 
@@ -184,7 +184,7 @@
     }
 
     // Set the selected rating in the dropdown
-    document.getElementById('ram_ratingInput').value = rating;
+    document.getElementById('storage_ratingInput').value = rating;
   }
 </script>
 

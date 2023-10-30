@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 from io import BytesIO
 import base64
+from django.contrib import messages
 
 # Create your views here.
 # CPU
@@ -62,8 +63,9 @@ def cpu_detail(request, pk):
 
     if request.method == 'POST':
         if 'cpu_rating_form' in request.POST:
-        #if request.POST.get('name') == 'cpu_rating_form':
+            #if request.POST.get('name') == 'cpu_rating_form':
             rating_form = CPUPivotTableForm(request.POST)
+
             if rating_form.is_valid():
                 rating = rating_form.cleaned_data['cpuRating']
 
@@ -77,14 +79,15 @@ def cpu_detail(request, pk):
                                 pivot_table.ratings = rating
                                 pivot_table.save()
                                 rates = pivot_table.ratings
+                                messages.success(request, 'Sucessfully rated this CPU!')
                             else:
-                                print('CPU already rated!')
+                                messages.success(request, 'CPU already reated!')
                         else:
-                            print('Purchase CPU before Rating!')
+                            messages.error(request, 'Purchase CPU before Rating!')
                     else:
-                        print('Add to cart CPU before Rating!')
+                        messages.error(request, 'Purchase CPU before Rating!')
                 except CartItem.DoesNotExist:
-                    print('Add to cart CPU before Rating!')
+                    messages.error(request, 'Purchase CPU before Rating!')
 
     else:
         rating_form = CPUPivotTableForm()

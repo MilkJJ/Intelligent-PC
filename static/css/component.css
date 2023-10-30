@@ -1,0 +1,182 @@
+.messages {
+    padding: 10px;
+    margin: 0;
+    font-size: 14px;
+  }
+  
+  /* Style each individual message item */
+  .messages li {
+    padding: 5px;
+  }
+  
+  /* Style the different message tags (e.g., success, error) */
+  .messages .success {
+    border-radius: 3px;
+    background-color: #4CAF50;
+    color: white;
+  }
+  
+  .messages .error {
+    border-radius: 5px;
+    background-color: #F44336;
+    color: white;
+  }
+  
+    .icon {
+      display: inline-block;
+      position: relative;
+    }
+  
+    .icon:hover::before {
+      content: attr(data-hover-text);
+      position: absolute;
+      background: #333;
+      color: #fff;
+      padding: 5px;
+      border-radius: 5px;
+      transform: translateX(-50%);
+      opacity: 0;
+      visibility: visible;
+      transition: opacity 0.3s, visibility 0.3s;
+      font-size: 12px;
+    }
+    
+    .icon:hover::before {
+      left: 20px;
+      opacity: 1;
+      display:inline-block;
+      visibility: visible;
+    }
+  
+    /*  */
+  
+    .component-comparison {
+      background-color: #f0f0f0;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      text-align: center;
+      margin: 20px;
+      max-width: 450px;
+    }
+  
+    .component-list {
+      display: none;
+      margin-top: 20px;
+    }
+  
+    .search-input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+  
+    .component-items {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+  
+    .component-item {
+      margin: 10px 0;
+    }
+  
+    .component-link {
+      text-decoration: none;
+      color: #333;
+      font-weight: bold;
+    }
+  
+    .component-link:hover {
+      text-decoration: underline;
+      color: #007bff;
+    }
+  
+    form {
+      display: inline-block;
+      /* Display the form and button inline */
+    }
+  
+    .select-button {
+      vertical-align: bottom;
+      /* Align the button with the top of the form button */
+      float: right;
+      /* Place it at the right of the container */
+      margin-top: 75px;
+      /* Add some spacing between the buttons */
+    }
+  
+    .component-container {
+      display: flex;
+      flex-direction: row;
+      /* Horizontal layout for section1 and section2 */
+      flex-wrap: wrap;
+      padding: 20px;
+    }
+  
+  
+  
+    .component-metadata {
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+  
+    /* main {
+      width: 80%;
+      margin: 0 auto;
+      padding: 20px;
+    } */
+  
+    .component-metadata,
+    .component-comparison {
+      float: left;
+      width: 50%;
+      padding: 10px;
+      /* Adjust the width as needed */
+    }
+  
+    .component-metadata h2 {
+      color: #333;
+    }
+  
+    .rating {
+      margin-top: 10px;
+      display: flexbox
+    }
+  
+    .stars {
+      font-size: 24px;
+      cursor: pointer;
+    }
+  
+    .stars .star {
+      display: inline-block;
+      margin-right: 5px;
+      color: #f0c419;
+      /* Yellow color for stars */
+    }
+  
+    .component-comparison h2 {
+      color: #333;
+    }
+  
+    label,
+    select {
+      display: block;
+      margin-bottom: 10px;
+    }
+  
+    button {
+      background-color: #333;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+  
+    button:hover {
+      background-color: #555;
+    }
