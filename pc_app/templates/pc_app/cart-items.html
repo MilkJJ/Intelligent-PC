@@ -105,7 +105,7 @@
                         Other Build
                         {% endif %}</div>
                     <div class="cart-item-description">
-                        <img src="static/image/cpu.png" width="50" height="50">: 
+                        <img src="{% static 'images/component-logo/cpu.png' %}" width="50" height="50">: 
                         <a href="{% url 'cpu_detail' item.cpu.id %}">{{ item.cpu.name }}</a></img>
                         <p>GPU: <a href="{% url 'gpu_detail' item.gpu.id %}">{{ item.gpu.name }}</a></p>
                         <p>Motherboard: <a href="{% url 'mboard_detail' item.mboard.id %}">{{ item.mboard.name }}</a>

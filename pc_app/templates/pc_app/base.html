@@ -413,7 +413,7 @@
         document.getElementById('selectedPSU').innerText = storedPSU || '';
         document.getElementById('selectedStorage').innerText = storedStorage || '';
         document.getElementById('selectedCase').innerText = storedCase || '';
-        document.getElementById('totalPrice').innerText = `RM${storedtotalPrice.toFixed(2)}`;
+        document.getElementById('totalPrice').innerText = `RM${storedtotalPrice}`;
     };
 
     function clearSelections() {
@@ -483,22 +483,23 @@
     }
 
     function addToCart() {
-        const selectedCPUID = localStorage.getItem('selectedCPUID');
-        const selectedGPUID = localStorage.getItem('selectedGPUID');
-        const selectedMotherboardID = localStorage.getItem('selectedMotherboardID');
-        const selectedRAMID = localStorage.getItem('selectedRAMID');
-        const selectedPSUID = localStorage.getItem('selectedPSUID');
-        const selectedStorageID = localStorage.getItem('selectedStorageID');
-        const selectedCaseID = localStorage.getItem('selectedCaseID');
+    const selectedCPUID = localStorage.getItem('selectedCPUID');
+    const selectedGPUID = localStorage.getItem('selectedGPUID');
+    const selectedMotherboardID = localStorage.getItem('selectedMotherboardID');
+    const selectedRAMID = localStorage.getItem('selectedRAMID');
+    const selectedPSUID = localStorage.getItem('selectedPSUID');
+    const selectedStorageID = localStorage.getItem('selectedStorageID');
+    const selectedCaseID = localStorage.getItem('selectedCaseID');
 
-        if (selectedCPUID && selectedGPUID && selectedMotherboardID && selectedRAMID && selectedPSUID && selectedStorageID && selectedCaseID) {
-            // Send selected component IDs to Django view
-            const xhr = new XMLHttpRequest();
-            xhr.open('POST', '/add_to_cart/', true);
-            xhr.setRequestHeader('X-CSRFToken', csrftoken);
-            xhr.setRequestHeader('Content-Type', 'application/json'); // application/x-www-form-urlencoded
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+    if (selectedCPUID && selectedGPUID && selectedMotherboardID && selectedRAMID && selectedPSUID && selectedStorageID && selectedCaseID) {
+        // Send selected component IDs to Django view
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '/add_to_cart/', true);
+        xhr.setRequestHeader('X-CSRFToken', csrftoken);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
                     const response = JSON.parse(xhr.responseText);
                     if (response.success) {
                         alert('Components added to cart successfully!');
@@ -506,22 +507,28 @@
                     } else {
                         alert('Failed to add components to cart!');
                     }
-
                 } else {
-                    alert('Failed to communicate with the server!');
+                    alert('Request failed with status: ' + xhr.status);
                 }
-            };
-            xhr.send(JSON.stringify({
-                cpu_id: selectedCPUID,
-                gpu_id: selectedGPUID,
-                mboard_id: selectedMotherboardID,
-                ram_id: selectedRAMID,
-                psu_id: selectedPSUID,
-                storage_id: selectedStorageID,
-                case_id: selectedCaseID
-            }));
-        } else {
-            alert('Please select all components before adding to cart!');
-        }
+            }
+        };
+        
+        xhr.onerror = function () {
+            alert('Request error occurred');
+        };
+
+        xhr.send(JSON.stringify({
+            cpu_id: selectedCPUID,
+            gpu_id: selectedGPUID,
+            mboard_id: selectedMotherboardID,
+            ram_id: selectedRAMID,
+            psu_id: selectedPSUID,
+            storage_id: selectedStorageID,
+            case_id: selectedCaseID
+        }));
+    } else {
+        alert('Please select all components before adding to cart!');
     }
+}
+
 </script>

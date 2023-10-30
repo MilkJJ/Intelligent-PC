@@ -166,13 +166,17 @@ def add_to_cart(request, build_id=None):
             cpu_id=cpu_id, gpu_id=gpu_id, mboard_id=mboard_id, ram_id=ram_id,
             psu_id=psu_id, storage_id=storage_id, case_id=case_id, total_price=total_price, user=request.user)
 
-        if created:
-            messages.success(request, "Item added to cart successfully!")
-        else:
-            messages.info(request, "Item is already in your cart.")
 
-        # Redirect to the cart page or another relevant page
-        return redirect('cart_items')
+        if created:
+            response_data = {'success': True,
+                             'message': "Item added to cart successfully!"}
+        else:
+            response_data = {'success': False,
+                             'message': "Item is already in your cart!"}
+
+        return JsonResponse(response_data)
+
+    return JsonResponse({'success': False})
 
 
 def remove_from_cart(request, cart_item_id):
