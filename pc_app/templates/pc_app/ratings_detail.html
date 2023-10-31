@@ -4,38 +4,130 @@
 
 {% load custom_filters %}
 
-<h1>Item Details</h1>
+<h3>Rated PC Build Specifications</h3>
 
-<p><strong>PC Build:</strong> {{ item.cpu.name }} (CPU) / {{ item.gpu.chipset }} (GPU)</p>
-<!-- <p><strong>Average Rating:</strong> </p> -->
-<p><strong>Rating:</strong> {{ order_rating.rating|default:"No ratings yet" }}
+<table>
+    <tr>
+        <th>Component</th>
+        <th>Model</th>
+    </tr>
+    <tr>
+        <td>CPU</td>
+        <td><a href="{% url 'cpu_detail' item.cpu.id %}">{{ item.cpu.name }}</a></td>
+    </tr>
+    <tr>
+        <td>GPU</td>
+        <td><a href="{% url 'gpu_detail' item.gpu.id %}">{{ item.gpu.name }}</a></td>
+    </tr>
+    <tr>
+        <td>RAM</td>
+        <td><a href="{% url 'ram_detail' item.ram.id %}">{{ item.ram.name }}</a></td>
+    </tr>
+    <tr>
+        <td>Motherboard</td>
+        <td><a href="{% url 'mboard_detail' item.ram.id %}">{{ item.mboard.name }}</a></td>
+    </tr>
+    <tr>
+        <td>PSU</td>
+        <td><a href="{% url 'psu_detail' item.psu.id %}">{{ item.psu.name }}</a></td>
+    </tr>
+    <tr>
+        <td>Storage</td>
+        <td><a href="{% url 'storage_detail' item.storage.id %}">{{ item.storage.name }}</a></td>
+    </tr>
+    <tr>
+        <td>Chassis</td>
+        <td><a href="{% url 'case_detail' item.case.id %}">{{ item.case.name }}</a></td>
+    </tr>
+    <tr>
+        <th>Total Price</th>
+        <th>RM {{ item.total_price|convert_to_myr }}</th>
+    </tr>
+</table>
+<br>
+<div class="rating-column">
+    <div class="profile-container">
+        <div class="profile-picture-container">
+            {% if order_rating.user.profile.profile_picture %}
+            <img class="profile-picture" src="{{ user.profile.profile_picture.url }}" alt="PFP">
+            {% else %}
+            <img class="profile-picture"
+                src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
+                alt="Default PFP">
+            {% endif %}
+        </div>
+        <div class="username">
+            {{ order_rating.user.username }}
+        </div>
+    </div>
+    <div class="rating-date">{{item.order_rating.date_added}}</div>
 
-<div class="star-rating">
-    <span class="fa fa-star {% if order_rating.rating >= 1 %}checked{% endif %}"></span>
-    <span class="fa fa-star {% if order_rating.rating >= 2 %}checked{% endif %}"></span>
-    <span class="fa fa-star {% if order_rating.rating >= 3 %}checked{% endif %}"></span>
-    <span class="fa fa-star {% if order_rating.rating >= 4 %}checked{% endif %}"></span>
-    <span class="fa fa-star {% if order_rating.rating >= 5 %}checked{% endif %}"></span>
-</div></p>
+    <div class="star-rating">
+        <span class="fa fa-star {% if order_rating.rating >= 1 %}checked{% endif %}"></span>
+        <span class="fa fa-star {% if order_rating.rating >= 2 %}checked{% endif %}"></span>
+        <span class="fa fa-star {% if order_rating.rating >= 3 %}checked{% endif %}"></span>
+        <span class="fa fa-star {% if order_rating.rating >= 4 %}checked{% endif %}"></span>
+        <span class="fa fa-star {% if order_rating.rating >= 5 %}checked{% endif %}"></span>
+    </div>
 
-<p><strong>Comment:</strong> {{ order_rating.comment|default:"No comments yet" }}</p>
-<p><strong>Total Price:</strong> {{ item.total_price|convert_to_myr }}</p>
+    {{ order_rating.comment|default:"No comments yet" }}
+    <br>
 
-<a href="{% url 'home' %}">Back to Home</a>
+    <a href="{% url 'home' %}">Back to Home</a>
 
-<button class="select-button" onclick="selectAllComponents('{{ item.cpu.id }}', '{{ item.gpu.id }}', '{{ item.mboard.id }}', '{{ item.ram.id }}', '{{ item.psu.id }}', '{{ item.storage.id }}', '{{ item.case.id }}')">Copy Build</button>
+    <button class="select-button"
+        onclick="selectAllComponents('{{ item.cpu.id }}', '{{ item.gpu.id }}', '{{ item.mboard.id }}', '{{ item.ram.id }}', '{{ item.psu.id }}', '{{ item.storage.id }}', '{{ item.case.id }}')">Copy
+        Build</button>
 
-<script>
-    function selectAllComponents(cpuId, gpuId, motherboardId, ramId, psuId, storageId, caseId) {
-        selectComponent('cpu', cpuId, true);
-        selectComponent('gpu', gpuId, true);
-        selectComponent('motherboard', motherboardId, true);
-        selectComponent('ram', ramId, true);
-        selectComponent('psu', psuId, true);
-        selectComponent('storage', storageId, true);
-        selectComponent('case', caseId, true);
-    }
-</script>
+    <script>
+        function selectAllComponents(cpuId, gpuId, motherboardId, ramId, psuId, storageId, caseId) {
+            selectComponent('cpu', cpuId, true);
+            selectComponent('gpu', gpuId, true);
+            selectComponent('motherboard', motherboardId, true);
+            selectComponent('ram', ramId, true);
+            selectComponent('psu', psuId, true);
+            selectComponent('storage', storageId, true);
+            selectComponent('case', caseId, true);
+        }
+    </script>
+
+    <style>
+        .rating-date {
+            font-size: 12px;
+            color: rgb(68, 68, 68);
+        }
+
+        .profile-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .profile-picture-container {
+            display: flex;
+            width: 30px;
+            height: 30px;
+            overflow: hidden;
+            border-radius: 50%;
+            cursor: pointer;
+        }
 
 
-{% endblock %}
+        .profile-picture-container {
+            margin-right: 10px;
+            /* Optional spacing between profile picture and username */
+        }
+
+        .profile-picture {
+            max-width: 50px;
+            /* Adjust the size as needed */
+            max-height: 50px;
+            /* Adjust the size as needed */
+        }
+
+        .username {
+            font-size: 16px;
+            /* Adjust the font size as needed */
+        }
+    </style>
+
+    {% endblock %}

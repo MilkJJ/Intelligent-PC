@@ -1,6 +1,8 @@
+{% load static %}
 
-
-<div class="header-top"><h3 style="color:white";>PC Customize</h3></div>
+<div class="header-top">
+    <h3 style="color:white" ;>PC Customize</h3>
+</div>
 <br>
 <table>
     <thead>
@@ -11,32 +13,39 @@
     </thead>
     <tbody>
         <tr>
-            <td><a href="{% url 'cpu_list' %}">CPU</a></td>
-            <td><span id="selectedCPU"></span></td>
+            <td><a href="{% url 'cpu_list' %}"><img src="{% static 'images/component-logo/cpu.png' %}" width="50" height="50"></img>
+                CPU</a></td>
+            <td><span id="selectedCPU">Select a CPU</span></td>
         </tr>
         <tr>
-            <td><a href="{% url 'gpu_list' %}">GPU</a></td>
-            <td><span id="selectedGPU"></span></td>
+            <td><a href="{% url 'gpu_list' %}"><img src="{% static 'images/component-logo/gpu.png' %}" width="50" height="50"></img>
+                GPU</a></td>
+            <td><span id="selectedGPU">Select a GPU</span></td>
         </tr>
         <tr>
-            <td><a href="{% url 'mboard_list' %}">Motherboard</a></td>
-            <td><span id="selectedMotherboard"></span></td>
+            <td><a href="{% url 'mboard_list' %}"><img src="{% static 'images/component-logo/mboard.png' %}" width="50" height="50"></img>
+                Motherboard</a></td>
+            <td><span id="selectedMotherboard">Select a Motherboard</span></td>
         </tr>
         <tr>
-            <td><a href="{% url 'ram_list' %}">RAM</a></td>
-            <td><span id="selectedRAM"></span></td>
+            <td><a href="{% url 'ram_list' %}"><img src="{% static 'images/component-logo/ram.png' %}" width="50" height="50"></img>
+                RAM</a></td>
+            <td><span id="selectedRAM"></span>Select a RAM</td>
         </tr>
         <tr>
-            <td><a href="{% url 'psu_list' %}">PSU</a></td>
-            <td><span id="selectedPSU"></span></td>
+            <td><a href="{% url 'psu_list' %}"><img src="{% static 'images/component-logo/psu.png' %}" width="50" height="50"></img>
+                PSU</a></td>
+            <td><span id="selectedPSU"></span>Select a Power Supply</td>
         </tr>
         <tr>
-            <td><a href="{% url 'storage_list' %}">Storage</a></td>
-            <td><span id="selectedStorage"></span></td>
+            <td><a href="{% url 'storage_list' %}"><img src="{% static 'images/component-logo/storage.png' %}" width="50" height="50"></img>
+                Storage</a></td>
+            <td><span id="selectedStorage"></span>Select a Storage Drive</td>
         </tr>
         <tr>
-            <td><a href="{% url 'case_list' %}">PC Case</a></td>
-            <td><span id="selectedCase"></span></td>
+            <td><a href="{% url 'case_list' %}"><img src="{% static 'images/component-logo/case.png' %}" width="50" height="50"></img>
+                PC Case</a></td>
+            <td><span id="selectedCase"></span>Select a Chassis</td>
         </tr>
         <tr>
             <td>Total Price:</td>
@@ -44,41 +53,43 @@
         </tr>
     </tbody>
 </table>
-        <button onclick="clearSelections()">Clear</button>
-        <button onclick="toggleFavorite()">Save <i class="fa fa-heart"></i></button>
-        <button onclick="addToCart()">Add to Cart</button>
+<button onclick="clearSelections()">Clear</button>
+<button onclick="toggleFavorite()">Save <i class="fa fa-heart"></i></button>
+<button onclick="addToCart()">Add to Cart</button>
 
 
-        <style>
-            h3 {
-                text-align: center;
-                margin-bottom: 20px;
-            }
-    
-            table {
-                margin: 0 auto;
-                border-collapse: collapse;
-                width: 80%;
-            }
-    
-            th, td {
-                padding: 10px;
-                text-align: left;
-            }
-    
-            th {
-                background-color: #f2f2f2;
-            }
-    
-            a {
-                text-decoration: none;
-                color: #0073e6;
-            }
-    
-            a:hover {
-                text-decoration: underline;
-            }
-/*     
+<style>
+    h3 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    table {
+        margin: 0 auto;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    th,
+    td {
+        padding: 10px;
+        text-align: left;
+    }
+
+    th {
+        background-color: #f2f2f2;
+    }
+
+    a {
+        text-decoration: none;
+        color: #0073e6;
+    }
+
+    a:hover {
+        text-decoration: underline;
+    }
+
+    /*     
             button {
                 display: block;
                 margin: 10px auto;
@@ -90,7 +101,7 @@
                 border-radius: 5px;
             }
      */
-            button:hover {
-                background-color: #0059b3;
-            }
-        </style>
+    button:hover {
+        background-color: #0059b3;
+    }
+</style>

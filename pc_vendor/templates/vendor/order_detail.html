@@ -14,9 +14,15 @@
 
     <div class="order-details">
       <h2>Order #{{ order.id }} Details</h2>
-      <p><strong>Order Placed:</strong> {{ order.order_date }}</p>
+      <p>{{ order.order_date }}</p><br>
       <p><strong>CPU:</strong> {{ order.cpu }}</p>
       <p><strong>GPU:</strong> {{ order.gpu }}</p>
+      <p><strong>RAM:</strong> {{ order.ram }}</p>
+      <p><strong>Motherboard:</strong> {{ order.mboard }}</p>
+      <p><strong>Power Supply:</strong> {{ order.psu }}</p>
+      <p><strong>Storage Drive:</strong> {{ order.storage }}</p>
+      <p><strong>Chassis:</strong> {{ order.case }}</p>
+<br>
       <p><strong>Total Price:</strong> ${{ order.total_price }}</p>
       <!-- Add more order details here -->
     </div>

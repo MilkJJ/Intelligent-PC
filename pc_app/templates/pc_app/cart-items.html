@@ -147,7 +147,7 @@
                 </div>
                 <form method="POST" action="{% url 'remove_from_cart' item.id %}">
                     {% csrf_token %}
-                    <button type="submit" class="remove-item">Remove from cart</button>
+                    <button type="submit" id="remove-cart-item" class="remove-item">Remove from cart</button>
                 </form>
             </div>
         </div>
@@ -162,4 +162,16 @@
 </body>
 
 </html>
+
+<script>
+      document.addEventListener('DOMContentLoaded', function () {
+    var completeOrderButton = document.getElementById('remove-cart-item');
+    
+    completeOrderButton.addEventListener('click', function (e) {
+      if (!confirm('Are you sure you want to remove this item from cart?')) {
+        e.preventDefault(); // Cancel the form submission
+      }
+    });
+  });
+</script>
 {% endblock %}

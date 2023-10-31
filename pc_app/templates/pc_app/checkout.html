@@ -1,45 +1,181 @@
+{% extends 'pc_app/base.html' %}
+
+{% block content %}
+
+{% load custom_filters %}
+
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
-    <!-- Include necessary CSS and JavaScript libraries -->
-    <title>Checkout</title>
+    <title>PC Build Checkout</title>
 </head>
+
 <body>
-    <h1>Checkout</h1>
-    
-    <!-- Display cart items -->
-    <h2>Items in Your Cart:</h2>
-    <ul>
-        {% for cart_item in cart_items %}
-            <li>{{ forloop.counter }} - {{ cart_item.cpu.name }} - {{ cart_item.gpu.chipset }} - {{ cart_item.total_price }}</li>
-        {% endfor %}
-    </ul>
-    
-    <!-- Display delivery price -->
-    <p>Service Charge (6%): RM 5</p>
-    
-    <!-- Address input form -->
-    <form method="post" action="{% url 'place_order' %}">
-        {% csrf_token %}
-        <h2>Delivery Method</h2>
-        <label for="delivery-method-pickup">
-            <input type="radio" id="delivery-method-pickup" name="delivery-method" value="pickup">
-            Pickup
-        </label>
-        
-        <!-- Payment method selection -->
-        <h2>Payment Method</h2>
-        <label for="payment-method-cash">
-            <input type="radio" id="payment-method-cash" name="payment_method" value="cash">
-            Cash
-        </label>
-        <!-- Add more payment method options as needed -->
-        
-        <!-- Display total price -->
-        <p>Total Price: {{ total_price }}</p> <!-- Total price + fixed delivery price -->
-        
-        <!-- Place order button -->
-        <button type="submit">Place Order</button>
-    </form>
+    <header>
+        <h2>PC Build Checkout</h2>
+    </header>
+    <br>
+    <div class="checkout-container">
+        <div class="checkout">
+            {% for cart_item in cart_items %}
+            <div class="checkout-item">
+                <div class="item-details">
+                    <table>
+                        <h4>PC Build {{ forloop.counter }}</h4>
+                        <tr>
+                            <td>CPU</td>
+                            <td>{{ cart_item.cpu.name }}</td>
+                        </tr>
+                        <tr>
+                            <td>GPU</td>
+                            <td>{{ cart_item.gpu.name }}</td>
+                        </tr>
+                        <tr>
+                            <td>RAM</td>
+                            <td>{{ cart_item.ram.name }}</td>
+                        </tr>
+                        <tr>
+                            <td>Motherboard</td>
+                            <td>{{ cart_item.mboard.name }}</td>
+                        </tr>
+                        <tr>
+                            <td>PSU</td>
+                            <td>{{ cart_item.psu.name }}</td>
+                        </tr>
+                        <tr>
+                            <td>Storage</td>
+                            <td>{{ cart_item.storage.name }}</td>
+                        </tr>
+                        <tr>
+                            <td>Chassis</td>
+                            <td>{{ cart_item.case.name }}</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="item-price">Total: RM {{ cart_item.total_price|floatformat:2 }}</div>
+
+                {% endfor %}
+            </div>
+        </div>
+
+        <br>
+        <div class="place-order">
+            <form method="post" action="{% url 'place_order' %}">
+                {% csrf_token %}
+            
+            <div class="payment-method">
+                <h4>Select Payment Method</h4>
+                <select>
+                    <option value="credit-card">Tng/Cash Upon Pickup</option>
+                </select>
+            </div>
+
+            <div class="delivery-method">
+                <h4>Select Delivery Method</h4>
+                <select>
+                    <option value="standard">Pickup</option>
+                </select>
+            </div>
+
+            <div class="total">
+                Grand Total: RM {{ total_price }}
+            </div>
+
+            <button type="submit">Place Order</button>
+        </form>
+        </div>
+    </div>
 </body>
+
 </html>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var completeOrderButton = document.getElementById('place-order-button');
+
+        completeOrderButton.addEventListener('click', function (e) {
+            if (!confirm('Are you sure you want to place order?')) {
+                e.preventDefault(); // Cancel the form submission
+            }
+        });
+    });
+</script>
+
+<style>
+    header {
+        background-color: #333;
+        color: #fff;
+        text-align: center;
+        padding: 1rem;
+    }
+
+    .checkout {
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+
+    .place-order {
+        border: 2px solid #d1d1d1;
+        border-radius: 5px;
+        background-color: #f7f7f7;
+        margin: 10px;
+        padding: 10px;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f2f2f2;
+    }
+
+    .checkout-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #fff;
+    }
+
+    h1 {
+        text-align: center;
+    }
+
+    .checkout-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+
+    .item-details {
+        flex-grow: 1;
+        font-size: 14px;
+    }
+
+    .payment-method {
+        margin-top: 20px;
+    }
+
+    .delivery-method {
+        margin-top: 20px;
+    }
+
+    .total {
+        font-weight: bold;
+        text-align: right;
+        margin-top: 20px;
+    }
+
+    button {
+        display: block;
+        margin: 20px auto;
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+    }
+</style>
+
+{% endblock %}

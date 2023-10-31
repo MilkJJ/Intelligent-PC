@@ -128,6 +128,15 @@ class PCase(models.Model):
     def __str__(self):
         return self.name
 
+class InitialRec(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    cpu = models.ForeignKey(CPU, on_delete=models.CASCADE, null=True)
+    gpu = models.ForeignKey(GPU, on_delete=models.CASCADE, null=True)
+    mboard = models.ForeignKey(Motherboard, on_delete=models.CASCADE, null=True)
+    ram = models.ForeignKey(Memory, on_delete=models.CASCADE, null=True)
+    psu = models.ForeignKey(PSU, on_delete=models.CASCADE, null=True)
+    storage = models.ForeignKey(StorageDrive, on_delete=models.CASCADE, null=True)
+    case = models.ForeignKey(PCase, on_delete=models.CASCADE, null=True)
 
 class FavouritedPC(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)

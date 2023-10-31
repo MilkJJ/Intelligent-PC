@@ -21,6 +21,7 @@ from pc_app.templatetags.custom_filters import convert_to_myr
 from reportlab.lib.pagesizes import letter
 from io import BytesIO
 from datetime import datetime
+from django.template.defaultfilters import floatformat
 
 # Create your views here.
 from django.shortcuts import render, redirect
@@ -201,13 +202,15 @@ def remove_from_cart(request, cart_item_id):
 def checkout(request):
     # Get cart items for the user
     cart_items = CartItem.objects.filter(user=request.user, is_purchased=False)
-
+    
     # Calculate the total price
     total_price = sum(item.total_price for item in cart_items)
 
+    formatted_total_price = floatformat(total_price + 5, 2)
+
     context = {
         'cart_items': cart_items,
-        'total_price': total_price + 5,
+        'total_price': formatted_total_price,
     }
 
     return render(request, 'pc_app/checkout.html', context)

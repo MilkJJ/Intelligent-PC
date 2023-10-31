@@ -405,6 +405,7 @@
         const storedStorage = localStorage.getItem('selectedStorage');
         const storedCase = localStorage.getItem('selectedCase');
         const storedtotalPrice = localStorage.getItem('totalPrice');
+        const totalPrice = parseFloat(storedtotalPrice);
 
         document.getElementById('selectedCPU').innerText = storedCPU || '';
         document.getElementById('selectedGPU').innerText = storedGPU || '';
@@ -413,7 +414,7 @@
         document.getElementById('selectedPSU').innerText = storedPSU || '';
         document.getElementById('selectedStorage').innerText = storedStorage || '';
         document.getElementById('selectedCase').innerText = storedCase || '';
-        document.getElementById('totalPrice').innerText = `RM${storedtotalPrice}`;
+        document.getElementById('totalPrice').innerText = `RM${totalPrice.toFixed(2)}`;
     };
 
     function clearSelections() {

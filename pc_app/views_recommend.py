@@ -49,11 +49,14 @@ def HomePage(request):
         try:
             favourited_pc_list = FavouritedPC.objects.filter(user=current_user)
             pc_cart_list = CartItem.objects.filter(user=current_user)
+            initial_list = InitialRec.objects.all()
 
             if pc_cart_list:
                 pc = random.choice(pc_cart_list)
-            else:
+            elif favourited_pc_list:
                 pc = random.choice(favourited_pc_list)
+            else:
+                pc = random.choice(initial_list)
 
         except FavouritedPC.DoesNotExist:
             print('FavouritedPC objects not found for the current user.')

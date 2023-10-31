@@ -45,7 +45,9 @@
         <p><strong>Storage:</strong> {{ build.storage.name }}</p>
         <p><strong>Power Supply:</strong> {{ build.psu.name }}</p>
         <p><strong>Chassis:</strong> {{ build.case.name }}</p>
-        <button class="select-button" onclick="selectAllComponents('{{ build.cpu.id }}', '{{ build.gpu.id }}', '{{ build.mboard.id }}', '{{ build.ram.id }}', '{{ build.psu.id }}', '{{ build.storage.id }}', '{{ build.case.id }}')">Copy Build</button>
+        <button class="select-button"
+          onclick="selectAllComponents('{{ build.cpu.id }}', '{{ build.gpu.id }}', '{{ build.mboard.id }}', '{{ build.ram.id }}', '{{ build.psu.id }}', '{{ build.storage.id }}', '{{ build.case.id }}')">Copy
+          Build</button>
         {% endif %}
         {% endfor %}
     </div>
@@ -61,7 +63,9 @@
         <p><strong>Storage:</strong> {{ rating_build.storage.name }}</p>
         <p><strong>Power Supply:</strong> {{ rating_build.psu.name }}</p>
         <p><strong>Chassis:</strong> {{ rating_build.case.name }}</p>
-        <button class="select-button" onclick="selectAllComponents('{{ rating_build.cpu.id }}', '{{ rating_build.gpu.id }}', '{{ rating_build.mboard.id }}', '{{ rating_build.ram.id }}', '{{ rating_build.psu.id }}', '{{ rating_build.storage.id }}', '{{ rating_build.case.id }}')">Copy Build</button>
+        <button class="select-button"
+          onclick="selectAllComponents('{{ rating_build.cpu.id }}', '{{ rating_build.gpu.id }}', '{{ rating_build.mboard.id }}', '{{ rating_build.ram.id }}', '{{ rating_build.psu.id }}', '{{ rating_build.storage.id }}', '{{ rating_build.case.id }}')">Copy
+          Build</button>
         {% endif %}
         {% endfor %}
     </div>
@@ -87,33 +91,41 @@
   </div>
 </body>
 
-
-{% if messages %}
-<ul class="messages">
-  {% for message in messages %}
-  <p{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</p>
-    {% endfor %}
-</ul>
-{% endif %}
-
-
 <br>
 
 
 {% if rated_items %}
-<h3>Ratings by other users!</h3><br>
+
 <ul class="rating-container">
+  <div class="rating-header"><h3>Ratings by other users!</h3></div>
+
   {% for item in rated_items|reverse_queryset %}
   <li class="rating-column">
+    <div class="profile-container">
+      <div class="profile-picture-container">
+          {% if item.user.profile.profile_picture %}
+              <img class="profile-picture" src="{{ user.profile.profile_picture.url }}" alt="PFP">
+          {% else %}
+              <img class="profile-picture" src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="Default PFP">
+          {% endif %}
+      </div>
+      <div class="username">
+          {{ item.user.username }}
+      </div>
+  </div>
+    
+  <div class="rating-total-price">RM{{ item.total_price|convert_to_myr }}</div>
+  
     <a href="{% url 'item_detail' item.id %}">
       {% if 'amd' in item.cpu.name|lower %}
-      AMD Build
+      AMD Build 
       {% elif 'intel' in item.cpu.name|lower %}
       Intel Build
       {% else %}
       Other Build
       {% endif %}
     </a>
+
 
     <div class="star-rating">
       <span class="fa fa-star {% if item.latest_rating >= 1 %}checked{% endif %}"></span>
@@ -123,9 +135,9 @@
       <span class="fa fa-star {% if item.latest_rating >= 5 %}checked{% endif %}"></span>
     </div>
 
-    <strong>User:</strong> {{ item.user.username }}<br>
-    <strong>Comment:</strong> {{ item.latest_comment|default:"No comments yet" }}<br>
-    <strong>Total Price:</strong> RM {{ item.total_price|convert_to_myr }}<br>
+    {{ item.latest_comment|default:"No comments yet" }}<br>
+
+    <div class="rating-date">{{item.order_rating.date_added}}</div>
 
   </li>
 
@@ -142,15 +154,15 @@
 </html>
 
 <script>
-    function selectAllComponents(cpuId, gpuId, mboardId, ramId, psuId, storageId, caseId) {
-        selectComponent('cpu', cpuId, true);
-        selectComponent('gpu', gpuId, true);
-        selectComponent('motherboard', mboardId, true);
-        selectComponent('ram', ramId, true);
-        selectComponent('psu', psuId, true);
-        selectComponent('storage', storageId, true);
-        selectComponent('case', caseId, true);
-    }
+  function selectAllComponents(cpuId, gpuId, mboardId, ramId, psuId, storageId, caseId) {
+    selectComponent('cpu', cpuId, true);
+    selectComponent('gpu', gpuId, true);
+    selectComponent('motherboard', mboardId, true);
+    selectComponent('ram', ramId, true);
+    selectComponent('psu', psuId, true);
+    selectComponent('storage', storageId, true);
+    selectComponent('case', caseId, true);
+  }
 
   function addTocart(cpuId, gpuId) {
 
@@ -159,6 +171,43 @@
 
 
 <style>
+  .rating-total-price{
+    float:right;
+  }
+  .comment-bracker {
+    border: 1px solid #c2c2c2;
+  }
+
+  .profile-container {
+    display: flex;
+    align-items: center;
+}
+
+.profile-picture-container {
+    margin-right: 10px; /* Optional spacing between profile picture and username */
+}
+
+.profile-picture {
+    max-width: 50px; /* Adjust the size as needed */
+    max-height: 50px; /* Adjust the size as needed */
+}
+.username {
+    font-size: 16px; /* Adjust the font size as needed */
+}
+.rating-date {
+  font-size: 12px;
+  color: rgb(68, 68, 68);
+}
+
+  .profile-picture-container {
+    display: flex;
+    width: 30px;
+    height: 30px;
+    overflow: hidden;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
   .rating-container {
     display: flex;
     flex-wrap: wrap;

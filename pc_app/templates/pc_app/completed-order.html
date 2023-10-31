@@ -34,22 +34,38 @@
         <div class="order-card">
             <p class="order-status">Order #{{ item.id }} Status: Completed</p>
             <div class="order-details">
-                <p><strong>CPU:</strong> <a href="{% url 'cpu_detail' item.cpu.id %}">{{ item.cpu.name }}</a> 
+                <p><strong>CPU:</strong> <a href="{% url 'cpu_detail' item.cpu.id %}">{{ item.cpu.name }}</a>
                     <span class="price-label" style="text-align: right;"> RM {{ item.cpu.price|convert_to_myr }}</span>
 
-                <p><strong>GPU:</strong> <a href="{% url 'gpu_detail' item.gpu.id %}">{{ item.gpu.name }} - {{ item.gpu.chipset }}</a> <span class="price-label"> RM {{ item.cpu.price|convert_to_myr }}</span></p>
+                <p><strong>GPU:</strong> <a href="{% url 'gpu_detail' item.gpu.id %}">{{ item.gpu.name }} - {{item.gpu.chipset }}</a> 
+                    <span class="price-label"> RM {{ item.gpu.price|convert_to_myr }}</span>
+                </p>
 
-                <p><strong>RAM:</strong> 32GB Corsair Vengeance <span class="price-label">RM 149.99</span></p>
+                <p><strong>RAM:</strong> <a href="{% url 'ram_detail' item.ram.id %}">{{ item.ram.name }}</a> 
+                    <span class="price-label"> RM {{ item.ram.price|convert_to_myr }}</span></p>
 
-                <p><strong>Storage:</strong> 1TB Samsung 970 EVO SSD <span class="price-label">RM 149.99</span></p>
+                <p><strong>Motherboard:</strong> <a href="{% url 'mboard_detail' item.mboard.id %}">{{ item.mboard.name }}</a>
+                    <span class="price-label"> RM {{ item.mboard.price|convert_to_myr }}</span>
+                </p>
 
-                <p><strong>Motherboard:</strong> ASUS ROG Strix Z390-E <span class="price-label">RM 199.99</span></p>
+                <p><strong>Power Supply:</strong> <a href="{% url 'psu_detail' item.psu.id %}">{{ item.psu.name }}</a>
+                    <span class="price-label"> RM {{ item.psu.price|convert_to_myr }}</span>
+                </p>
+
+                <p><strong>Storage:</strong> <a href="{% url 'storage_detail' item.storage.id %}">{{ item.storage.name }}</a>
+                    <span class="price-label"> RM {{ item.storage.price|convert_to_myr }}</span>
+                </p>
+
+                <p><strong>Chassis:</strong> <a href="{% url 'case_detail' item.case.id %}">{{ item.case.name }}</a>
+                    <span class="price-label"> RM {{ item.case.price|convert_to_myr }}</span>
+                </p>
 
             </div>
             <div class="order-actions">
                 <form method="POST" action="{% url 'add_to_cart' item.id %}">
                     {% csrf_token %}
-                    <button type="submit" class="repurchase-button" name="repurchase-button" value="completed">Repurchase</button>
+                    <button type="submit" class="repurchase-button" name="repurchase-button"
+                        value="completed">Repurchase</button>
                 </form>
             </div>
             <div class="rate-section">
@@ -96,15 +112,15 @@
             </div>
 
             <div class="order-date">Order Date: {{ item.order_date }}</div>
-            
+
         </div>
 
-    {% endfor %}
-    {% else %}
-    <p class="empty-cart-message">No Completed Order</p>
-    {% endif %}
+        {% endfor %}
+        {% else %}
+        <p class="empty-cart-message">No Completed Order</p>
+        {% endif %}
 
-</div>
+    </div>
 
 </body>
 
@@ -208,7 +224,8 @@
         font-weight: bold;
     }
 
-    .total-price, .order-date {
+    .total-price,
+    .order-date {
         text-align: right;
         font-weight: bold;
     }
@@ -217,52 +234,52 @@
             color: gold;
         } */
 
-        .fa-star.unchecked {
-            color: white;
-            /* Unfilled star color */
-        }
+    .fa-star.unchecked {
+        color: white;
+        /* Unfilled star color */
+    }
 
-        .rating-order-list li {
-            float: right;
-            color: #ddd;
-            padding: 10px 5px;
-        }
+    .rating-order-list li {
+        float: right;
+        color: #ddd;
+        padding: 10px 5px;
+    }
 
-        .rating-order-list li:hover,
-        .rating-order-list li:hover~li {
-            color: orange;
-        }
+    .rating-order-list li:hover,
+    .rating-order-list li:hover~li {
+        color: orange;
+    }
 
-        .rating-order-list {
-            display: inline-block;
-            list-style: none;
-        }
+    .rating-order-list {
+        display: inline-block;
+        list-style: none;
+    }
 
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+    }
 
-        table {
-            width: 80%;
-            margin: 0 auto;
-            border-collapse: collapse;
-            background-color: #fff;
-        }
+    table {
+        width: 80%;
+        margin: 0 auto;
+        border-collapse: collapse;
+        background-color: #fff;
+    }
 
-        .empty-cart-message {
-            text-align: center;
-            font-size: 18px;
-            margin-top: 20px;
-        }
+    .empty-cart-message {
+        text-align: center;
+        font-size: 18px;
+        margin-top: 20px;
+    }
 
-        .checkout-button {
-            display: block;
-            text-align: center;
-            margin-top: 20px;
-        }
+    .checkout-button {
+        display: block;
+        text-align: center;
+        margin-top: 20px;
+    }
 </style>
 
 

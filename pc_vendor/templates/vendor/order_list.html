@@ -3,7 +3,9 @@
 
 {% block content %}
     <h2>Vendor Order List</h2>
-  
+    
+    <a href="{% url 'vendor_completed_order' %}" class="completed-orders">Completed Orders</a>
+
     <form method="get">
         <label for="order_id">Search for Order Number:</label>
         <input type="text" id="order_id" name="order_id" placeholder="Search Order Number">
@@ -14,7 +16,7 @@
         {% if purchased_items %}
             {% for order in purchased_items %}
                 <li class="order-item">
-                    <a href="{% url 'vendor_order_detail' order.id %}">Order #{{ order.id }}</a>
+                    <a href="{% url 'vendor_order_detail' order.id %}">Order #{{ order.id }}
                     <span class="order-status">
                         {% if order.ready_pickup %}
                             {% if order.is_completed %}
@@ -27,6 +29,7 @@
                         {% endif %}
                     </span>
                     <span class="order-placed">Order Placed: {{ order.order_date }}</span>
+                </a>
                 </li>
             {% endfor %}
         {% else %}
@@ -39,8 +42,6 @@
             </li>
         {% endif %}
     </ul>
-    
-    <a href="{% url 'vendor_completed_order' %}" class="completed-orders">Completed Orders</a>
 
 <style>
   /* vendor/templates/vendor/order_list.css */
