@@ -21,6 +21,12 @@
     background-color: #F44336;
     color: white;
   }
+
+  .messages .info {
+    border-radius: 5px;
+    background-color: #3c58f5;
+    color: white;
+  }
   
     .icon {
       display: inline-block;

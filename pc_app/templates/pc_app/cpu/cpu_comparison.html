@@ -23,9 +23,9 @@
                 <td>{{ cpu1.core_clock }} GHz</td>
             </tr>
             <tr>
-                <td>Max Turbo Clock <span class="icon"
+                <th>Max Turbo Clock <span class="icon"
                         data-hover-text="The maximum clock speed the cores can reach under load"
-                        title="Hover for More Info">&#9432;</span></td>
+                        title="Hover for More Info">&#9432;</span></th>
                 <td>{{ cpu1.boost_clock }} GHz</td>
             </tr>
             <tr>
@@ -35,21 +35,21 @@
                 <td>{{ cpu1.graphics }}</td>
             </tr>
             <tr>
-                <td>Thermal Design Power <span class="icon"
-                        data-hover-text="The maximum amount of power the device is designed to consume and dissipate as heat"
-                        title="Hover for More Info">&#9432;</span></td>
+                <th>Thermal Design Power <span class="icon"
+                        data-hover-text="The maximum amount of power the cpu is designed to consume and dissipate as heat"
+                        title="Hover for More Info">&#9432;</span></th>
                 <td>{{ cpu1.tdp }}</td>
             </tr>
             <tr>
                 <td>Multithreading <span class="icon"
-                        data-hover-text="Indicates whether the device supports simultaneous multithreading, which can improve multitasking and performance"
+                        data-hover-text="Indicates whether the cpu supports simultaneous multithreading, which can improve multitasking and performance"
                         title="Hover for More Info">&#9432;</span></td>
                 <td>{% if cpu1.smt %}Yes{% else %}No{% endif %}</td>
             </tr>
             <tr>
-                <td>Socket <span class="icon"
-                        data-hover-text="The type of CPU socket or interface used for connecting the device to the motherboard"
-                        title="Hover for More Info">&#9432;</span></td>
+                <th>Socket <span class="icon"
+                        data-hover-text="The type of CPU socket or interface used for connecting the cpu to the motherboard"
+                        title="Hover for More Info">&#9432;</span></th>
                 <td>{{ cpu1.socket }}</td>
             </tr>
             <tr>
@@ -67,8 +67,8 @@
         <h3><a href="{% url 'cpu_detail' cpu2.pk %}">CPU: {{ cpu2.name }}</a></h3>
         <table>
             <tr>
-                <td>Cores <span class="icon" data-hover-text="The number of processing cores"
-                        title="Hover for More Info">&#9432;</span></td>
+                <th>Cores <span class="icon" data-hover-text="The number of processing cores"
+                        title="Hover for More Info">&#9432;</span></th>
                 <td>{{ cpu2.core_count }}</td>
             </tr>
             <tr>
@@ -77,9 +77,9 @@
                 <td>{{ cpu2.core_clock }} GHz</td>
             </tr>
             <tr>
-                <td>Max Turbo Clock <span class="icon"
+                <th>Max Turbo Clock <span class="icon"
                         data-hover-text="The maximum clock speed the cores can reach under load"
-                        title="Hover for More Info">&#9432;</span></td>
+                        title="Hover for More Info">&#9432;</span></th>
                 <td>{{ cpu2.boost_clock }} GHz</td>
             </tr>
             <tr>
@@ -89,21 +89,21 @@
                 <td>{{ cpu2.graphics }}</td>
             </tr>
             <tr>
-                <td>Thermal Design Power <span class="icon"
-                        data-hover-text="The maximum amount of power the device is designed to consume and dissipate as heat"
-                        title="Hover for More Info">&#9432;</span></td>
+                <th>Thermal Design Power <span class="icon"
+                        data-hover-text="The maximum amount of power the cpu is designed to consume and dissipate as heat"
+                        title="Hover for More Info">&#9432;</span></th>
                 <td>{{ cpu2.tdp }}</td>
             </tr>
             <tr>
                 <td>Multithreading <span class="icon"
-                        data-hover-text="Indicates whether the device supports simultaneous multithreading, which can improve multitasking and performance"
+                        data-hover-text="Indicates whether the cpu supports simultaneous multithreading, which can improve multitasking and performance"
                         title="Hover for More Info">&#9432;</span></td>
                 <td>{% if cpu2.smt %}Yes{% else %}No{% endif %}</td>
             </tr>
             <tr>
-                <td>Socket <span class="icon"
-                        data-hover-text="The type of CPU socket or interface used for connecting the device to the motherboard"
-                        title="Hover for More Info">&#9432;</span></td>
+                <th>Socket <span class="icon"
+                        data-hover-text="The type of CPU socket or interface used for connecting the cpu to the motherboard"
+                        title="Hover for More Info">&#9432;</span></th>
                 <td>{{ cpu2.socket }}</td>
             </tr>
             <tr>

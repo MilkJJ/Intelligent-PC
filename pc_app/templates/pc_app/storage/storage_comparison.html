@@ -1,0 +1,94 @@
+{% extends 'pc_app/base.html' %}
+{% block title %}{{ storage1.name }} vs {{ storage2.name }}{% endblock %}
+{% block content %}
+{% load custom_filters %}
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/comparison.css' %}">
+
+<h3>Storage Drive Comparison</h3>
+
+<div class="comp-container">
+    <div class="comp-box">
+        <h3><a href="{% url 'storage_detail' storage1.pk %}">Storage Drive: {{ storage1.name }}</a></h3>
+        <table>
+            <tr>
+                <td>Capacity <span class="icon" data-hover-text="The storage capacity of the drive, measured in gigabytes (GB)" title="Hover for More Info">&#9432;</span></td>
+                <td>{{ storage1.capacity }} GB</td>
+              </tr>
+              <tr>
+                <td>Type <span class="icon" data-hover-text="The type of storage drive (e.g., HDD for Hard Disk Drive, SSD for Solid State Drive)" title="Hover for More Info">&#9432;</span></td>
+                <td>{{ storage1.type }}</td>
+              </tr>
+              <tr>
+                <td>Cache <span class="icon" data-hover-text="The size of the drive's cache, which helps improve data transfer speeds" title="Hover for More Info">&#9432;</span></td>
+                <td>{{ storage1.cache }}</td>
+              </tr>
+              <tr>
+                <td>Form Factor <span class="icon" data-hover-text="The physical size and shape of the drive, which affects compatibility with your system or enclosure" title="Hover for More Info">&#9432;</span></td>
+                <td>{{ storage1.form_factor }}</td>
+              </tr>
+              <tr>
+                <td>Interface <span class="icon" data-hover-text="The connection interface for the drive (e.g., SATA, NVMe) used to connect it to your motherboard" title="Hover for More Info">&#9432;</span></td>
+                <td>{{ storage1.interface }}</td>
+              </tr>
+              <tr>
+                <td>Price Per GB <span class="icon" data-hover-text="The cost of the drive per gigabyte, helping you evaluate the value for your storage needs" title="Hover for More Info">&#9432;</span></td>
+                <td>RM {{ storage1.price_per_gb }}</td>
+              </tr>
+              <tr>
+                <td>Price</td>
+                <td>RM {{ storage1.price|convert_to_myr }}</td>
+              </tr>
+        </table>
+        <div class="button-container"><button class="select-button"
+                onclick="selectComponent('storage', '{{ storage1.id }}')">Select for Customization</button></div>
+    </div>
+
+    <div class="vs-divider">VS</div>
+
+    <div class="comp-box">
+        <h3><a href="{% url 'storage_detail' storage2.pk %}">Storage Drive: {{ storage2.name }}</a></h3>
+        <table>
+            <tr>
+                <td>Capacity <span class="icon" data-hover-text="The storage capacity of the drive, measured in gigabytes (GB)" title="Hover for More Info">&#9432;</span></td>
+                <td>{{ storage2.capacity }} GB</td>
+              </tr>
+              <tr>
+                <td>Type <span class="icon" data-hover-text="The type of storage drive (e.g., HDD for Hard Disk Drive, SSD for Solid State Drive)" title="Hover for More Info">&#9432;</span></td>
+                <td>{{ storage2.type }}</td>
+              </tr>
+              <tr>
+                <td>Cache <span class="icon" data-hover-text="The size of the drive's cache, which helps improve data transfer speeds" title="Hover for More Info">&#9432;</span></td>
+                <td>{{ storage2.cache }}</td>
+              </tr>
+              <tr>
+                <td>Form Factor <span class="icon" data-hover-text="The physical size and shape of the drive, which affects compatibility with your system or enclosure" title="Hover for More Info">&#9432;</span></td>
+                <td>{{ storage2.form_factor }}</td>
+              </tr>
+              <tr>
+                <td>Interface <span class="icon" data-hover-text="The connection interface for the drive (e.g., SATA, NVMe) used to connect it to your motherboard" title="Hover for More Info">&#9432;</span></td>
+                <td>{{ storage2.interface }}</td>
+              </tr>
+              <tr>
+                <td>Price Per GB <span class="icon" data-hover-text="The cost of the drive per gigabyte, helping you evaluate the value for your storage needs" title="Hover for More Info">&#9432;</span></td>
+                <td>RM {{ storage2.price_per_gb }}</td>
+              </tr>
+              <tr>
+                <td>Price</td>
+                <td>RM {{ storage2.price|convert_to_myr }}</td>
+              </tr>
+        </table>
+        <div class="button-container"><button class="select-button"
+                onclick="selectComponent('storage', '{{ storage2.id }}')">Select for Customization</button></div>
+
+    </div>
+</div>
+
+<div class="divider"></div>
+
+<h3>Storage Drive Chart</h3>
+<div class="image-container"><img src="data:image/png;base64,{{ chart }}" alt="Storage Drive Comparison Chart"></div>
+
+
+{% endblock %}

@@ -1,0 +1,86 @@
+{% extends 'pc_app/base.html' %}
+{% block title %}{{ case1.name }} vs {{ case2.name }}{% endblock %}
+{% block content %}
+{% load custom_filters %}
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/comparison.css' %}">
+
+<h3>Chassis Comparison</h3>
+
+<div class="comp-container">
+    <div class="comp-box">
+        <h3><a href="{% url 'case_detail' case1.pk %}">Chassis: {{ case1.name }}</a></h3>
+        <table>
+            <tr>
+                <td>Type <span class="icon" data-hover-text="The type of chassis, indicating its design and size (e.g., ATX, Micro ATX, Mini-ITX)" title="Hover for More Info">&#9432;</span></td>
+                <td>{{ case1.type }}</td>
+              </tr>
+              <tr>
+                <td>Color </td>
+                <td>{{ case1.color }}</td>
+              </tr>
+              <tr>
+                <td>Side Panel <span class="icon" data-hover-text="Details regarding the side panel, whether it's solid, transparent, or has special features like tempered glass" title="Hover for More Info">&#9432;</span></td>
+                <td>{{ case1.side_panel }} GHz</td>
+              </tr>
+              <tr>
+                <td>External 5.25" Bays <span class="icon" data-hover-text="The number of external 5.25-inch drive bays for optical drives or other peripherals" title="Hover for More Info">&#9432;</span></td>
+                <td>{{ case1.external_525_bays }}</td>
+              </tr>
+              <tr>
+                <td>Internal 3.5" Bays <span class="icon" data-hover-text="The number of internal 3.5-inch drive bays for hard drives or SSDs" title="Hover for More Info">&#9432;</span></td>
+                <td>{{ case1.internal_35_bays }}</td>
+              </tr>
+              <tr>
+                <td>Price</td>
+                <td>RM {{ case1.price|convert_to_myr }}</td>
+              </tr>
+        </table>
+        <div class="button-container"><button class="select-button"
+                onclick="selectComponent('case', '{{ case1.id }}')">Select for Customization</button></div>
+    </div>
+
+    <div class="vs-divider">VS</div>
+
+    <div class="comp-box">
+        <h3><a href="{% url 'case_detail' case2.pk %}">Chassis: {{ case2.name }}</a></h3>
+        <table>
+            <tr>
+                <td>Type <span class="icon" data-hover-text="The type of chassis, indicating its design and size (e.g., ATX, Micro ATX, Mini-ITX)" title="Hover for More Info">&#9432;</span></td>
+                <td>{{ case2.type }}</td>
+              </tr>
+              <tr>
+                <td>Color </td>
+                <td>{{ case2.color }}</td>
+              </tr>
+              <tr>
+                <td>Side Panel <span class="icon" data-hover-text="Details regarding the side panel, whether it's solid, transparent, or has special features like tempered glass" title="Hover for More Info">&#9432;</span></td>
+                <td>{{ case2.side_panel }} GHz</td>
+              </tr>
+              <tr>
+                <td>External 5.25" Bays <span class="icon" data-hover-text="The number of external 5.25-inch drive bays for optical drives or other peripherals" title="Hover for More Info">&#9432;</span></td>
+                <td>{{ case2.external_525_bays }}</td>
+              </tr>
+              <tr>
+                <td>Internal 3.5" Bays <span class="icon" data-hover-text="The number of internal 3.5-inch drive bays for hard drives or SSDs" title="Hover for More Info">&#9432;</span></td>
+                <td>{{ case2.internal_35_bays }}</td>
+              </tr>
+              <tr>
+                <td>Price</td>
+                <td>RM {{ case2.price|convert_to_myr }}</td>
+              </tr>
+        </table>
+        <div class="button-container"><button class="select-button"
+                onclick="selectComponent('case', '{{ case2.id }}')">Select for Customization</button></div>
+
+    </div>
+</div>
+
+<div class="divider"></div>
+
+<h3>Chassis Chart</h3>
+<div class="image-container"><img src="data:image/png;base64,{{ chart }}" alt="Chassis Comparison Chart"></div>
+
+
+{% endblock %}

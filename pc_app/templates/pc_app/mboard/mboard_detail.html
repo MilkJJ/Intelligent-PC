@@ -35,45 +35,33 @@
         </div>
         {% endif %}
         <br>
-        <!-- <h1>Motherboard Details</h1>
-<p>Motherboard: {{ mboard.name }}</p>
-<p>Form Factor: {{ mboard.form_factor }}</p>
-<p>Socket: {{ mboard.socket }}</p>
-<p>Max Memory: {{ mboard.max_memory }}</p>
-<p>Memory Slots: {{ mboard.memory_slots }}</p>
-<p>Price: {{ mboard.price }}</p>
-<p>Color: {{ mboard.color }}</p> -->
-
+        
         <table>
           <thead>
             <tr>
-              <th>Model</th>
+              <th>Model <span class="icon" data-hover-text="The name or model of the motherboard" title="Hover for More Info">&#9432;</span></th>
               <th>{{ mboard.name }}</th>
             </tr>
           </thead>
           <tr>
-            <td>Chipset <span class="icon" data-hover-text="" title="Hover for More Info">&#9432;</span></td>
-            <td>{{ mboard.chipset }}</td>
+            <td>Form Factor <span class="icon" data-hover-text="The physical size and shape of the motherboard, which affects its compatibility with PC cases" title="Hover for More Info">&#9432;</span></td>
+            <td>{{ mboard.form_factor }}</td>
           </tr>
           <tr>
-            <td>VRAM <span class="icon" data-hover-text="" title="Hover for More Info">&#9432;</span></td>
-            <td>{{ mboard.memory }} Gb</td>
+            <td>Socket <span class="icon" data-hover-text="The CPU socket type that determines which processors are compatible with the motherboard" title="Hover for More Info">&#9432;</span></td>
+            <td>{{ mboard.socket }}</td>
           </tr>
           <tr>
-            <td>Core Clock <span class="icon" data-hover-text="" title="Hover for More Info">&#9432;</span></td>
-            <td>{{ mboard.core_clock }} GHz</td>
+            <td>Maximum Memory Supported <span class="icon" data-hover-text="The physical size and shape of the motherboard, which affects its compatibility with PC cases" title="Hover for More Info">&#9432;</span></td>
+            <td>{{ mboard.max_memory }} GHz</td>
           </tr>
           <tr>
-            <td>Boost Clock <span class="icon" data-hover-text="" title="Hover for More Info">&#9432;</span></td>
-            <td>{{ mboard.boost_clock }}</td>
+            <td>Memory Slots <span class="icon" data-hover-text="The number of slots available for installing RAM modules (DIMMs)" title="Hover for More Info">&#9432;</span></td>
+            <td>{{ mboard.memory_slots }}</td>
           </tr>
           <tr>
-            <td>Color <span class="icon" data-hover-text="" title="Hover for More Info">&#9432;</span></td>
+            <td>Color </td>
             <td>{{ mboard.color }}</td>
-          </tr>
-          <tr>
-            <td>Length <span class="icon" data-hover-text="" title="Hover for More Info">&#9432;</span></td>
-            <td>{{ mboard.length }}</td>
           </tr>
           <tr>
             <td>Price</td>

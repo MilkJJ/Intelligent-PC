@@ -78,7 +78,7 @@ def find_cpu_upgrade(request, proc_info, cpu_budget):
         messages.success(request, "You're on Desktop!")
     else:
         # Variable does not start with either "LGA" or "AM"
-        messages.error(
+        messages.info(
             request, "You are using laptop, it may not recommend accurate upgrades!")
 
     try:

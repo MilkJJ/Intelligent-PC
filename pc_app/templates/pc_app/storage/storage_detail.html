@@ -39,33 +39,33 @@
         <table>
           <thead>
             <tr>
-              <th>Model</th>
+              <th>Model <span class="icon" data-hover-text="The name or model of the storage drive" title="Hover for More Info">&#9432;</span></th>
               <th>{{ storage.name }}</th>
             </tr>
           </thead>
           <tr>
-            <td>Chipset <span class="icon" data-hover-text="" title="Hover for More Info">&#9432;</span></td>
-            <td>{{ storage.chipset }}</td>
+            <td>Capacity <span class="icon" data-hover-text="The storage capacity of the drive, measured in gigabytes (GB)" title="Hover for More Info">&#9432;</span></td>
+            <td>{{ storage.capacity }} GB</td>
           </tr>
           <tr>
-            <td>VRAM <span class="icon" data-hover-text="" title="Hover for More Info">&#9432;</span></td>
-            <td>{{ storage.memory }} Gb</td>
+            <td>Type <span class="icon" data-hover-text="The type of storage drive (e.g., HDD for Hard Disk Drive, SSD for Solid State Drive)" title="Hover for More Info">&#9432;</span></td>
+            <td>{{ storage.type }}</td>
           </tr>
           <tr>
-            <td>Core Clock <span class="icon" data-hover-text="" title="Hover for More Info">&#9432;</span></td>
-            <td>{{ storage.core_clock }} GHz</td>
+            <td>Cache <span class="icon" data-hover-text="The size of the drive's cache, which helps improve data transfer speeds" title="Hover for More Info">&#9432;</span></td>
+            <td>{{ storage.cache }}</td>
           </tr>
           <tr>
-            <td>Boost Clock <span class="icon" data-hover-text="" title="Hover for More Info">&#9432;</span></td>
-            <td>{{ storage.boost_clock }}</td>
+            <td>Form Factor <span class="icon" data-hover-text="The physical size and shape of the drive, which affects compatibility with your system or enclosure" title="Hover for More Info">&#9432;</span></td>
+            <td>{{ storage.form_factor }}</td>
           </tr>
           <tr>
-            <td>Color <span class="icon" data-hover-text="" title="Hover for More Info">&#9432;</span></td>
-            <td>{{ storage.color }}</td>
+            <td>Interface <span class="icon" data-hover-text="The connection interface for the drive (e.g., SATA, NVMe) used to connect it to your motherboard" title="Hover for More Info">&#9432;</span></td>
+            <td>{{ storage.interface }}</td>
           </tr>
           <tr>
-            <td>Length <span class="icon" data-hover-text="" title="Hover for More Info">&#9432;</span></td>
-            <td>{{ storage.length }}</td>
+            <td>Price Per GB <span class="icon" data-hover-text="The cost of the drive per gigabyte, helping you evaluate the value for your storage needs" title="Hover for More Info">&#9432;</span></td>
+            <td>RM {{ storage.price_per_gb }}</td>
           </tr>
           <tr>
             <td>Price</td>

@@ -5,11 +5,11 @@
 
 <div class="col-sm-12">
   <div class="titleheader">
-    <h3 class="h2header text-center">RAM ({{ cases|length }})</h3>
+    <h3 class="h2header text-center">Chassis ({{ cases|length }})</h3>
     <a href="#" id="sortToggle" onclick="toggleSorting()">Sort A to Z</a>
     <form method="get" action="{% url 'case_list' %}">
-      <label for="search_query">RAM Model:</label>
-      <input type="text" name="search_query" placeholder="Search RAM Model...">
+      <label for="search_query">Chassis Model:</label>
+      <input type="text" name="search_query" placeholder="Search Chassis Model...">
 
       <button type="submit">Search</button>
       <button type="button" onclick="resetSearch()">Reset</button>
@@ -54,7 +54,7 @@
           <p>RM{{ case.price|convert_to_myr }}</p>
           <button class="select-button" onclick="selectComponent('case', '{{ case.id }}')">Add</button>
       </div>
-      {% if forloop.counter|divisibleby:5 and not forloop.last %} <!-- Create a new row after every 5 RAMs -->
+      {% if forloop.counter|divisibleby:5 and not forloop.last %} <!-- Create a new row after every 5 Chassiss -->
     </div>
     <div class="component-row">
       {% endif %}

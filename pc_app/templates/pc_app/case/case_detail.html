@@ -38,33 +38,29 @@
         <table>
           <thead>
             <tr>
-              <th>Model</th>
+              <th>Model <span class="icon" data-hover-text="The name or model of the PC chassis/case" title="Hover for More Info">&#9432;</span></th>
               <th>{{ case.name }}</th>
             </tr>
           </thead>
           <tr>
-            <td>Chipset <span class="icon" data-hover-text="" title="Hover for More Info">&#9432;</span></td>
-            <td>{{ case.chipset }}</td>
+            <td>Type <span class="icon" data-hover-text="The type of chassis, indicating its design and size (e.g., ATX, Micro ATX, Mini-ITX)" title="Hover for More Info">&#9432;</span></td>
+            <td>{{ case.type }}</td>
           </tr>
           <tr>
-            <td>VRAM <span class="icon" data-hover-text="" title="Hover for More Info">&#9432;</span></td>
-            <td>{{ case.memory }} Gb</td>
-          </tr>
-          <tr>
-            <td>Core Clock <span class="icon" data-hover-text="" title="Hover for More Info">&#9432;</span></td>
-            <td>{{ case.core_clock }} GHz</td>
-          </tr>
-          <tr>
-            <td>Boost Clock <span class="icon" data-hover-text="" title="Hover for More Info">&#9432;</span></td>
-            <td>{{ case.boost_clock }}</td>
-          </tr>
-          <tr>
-            <td>Color <span class="icon" data-hover-text="" title="Hover for More Info">&#9432;</span></td>
+            <td>Color </td>
             <td>{{ case.color }}</td>
           </tr>
           <tr>
-            <td>Length <span class="icon" data-hover-text="" title="Hover for More Info">&#9432;</span></td>
-            <td>{{ case.length }}</td>
+            <td>Side Panel <span class="icon" data-hover-text="Details regarding the side panel, whether it's solid, transparent, or has special features like tempered glass" title="Hover for More Info">&#9432;</span></td>
+            <td>{{ case.side_panel }} GHz</td>
+          </tr>
+          <tr>
+            <td>External 5.25" Bays <span class="icon" data-hover-text="The number of external 5.25-inch drive bays for optical drives or other peripherals" title="Hover for More Info">&#9432;</span></td>
+            <td>{{ case.external_525_bays }}</td>
+          </tr>
+          <tr>
+            <td>Internal 3.5" Bays <span class="icon" data-hover-text="The number of internal 3.5-inch drive bays for hard drives or SSDs" title="Hover for More Info">&#9432;</span></td>
+            <td>{{ case.internal_35_bays }}</td>
           </tr>
           <tr>
             <td>Price</td>

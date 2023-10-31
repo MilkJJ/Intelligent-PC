@@ -1,0 +1,85 @@
+{% extends 'pc_app/base.html' %}
+{% block title %}{{ mboard1.name }} vs {{ mboard2.name }}{% endblock %}
+{% block content %}
+{% load custom_filters %}
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/comparison.css' %}">
+
+<h3>Motherboard Comparison</h3> 
+
+<div class="comp-container">
+    <div class="comp-box">
+        <h3><a href="{% url 'mboard_detail' mboard1.pk %}">Motherboard: {{ mboard1.name }}</a></h3>
+        <table>
+          <tr>
+            <td>Form Factor <span class="icon" data-hover-text="The physical size and shape of the motherboard, which affects its compatibility with PC cases" title="Hover for More Info">&#9432;</span></td>
+            <td>{{ mboard1.form_factor }}</td>
+          </tr>
+          <tr>
+            <td>Socket <span class="icon" data-hover-text="The CPU socket type that determines which processors are compatible with the motherboard" title="Hover for More Info">&#9432;</span></td>
+            <td>{{ mboard1.socket }}</td>
+          </tr>
+          <tr>
+            <td>Maximum Memory Supported <span class="icon" data-hover-text="The physical size and shape of the motherboard, which affects its compatibility with PC cases" title="Hover for More Info">&#9432;</span></td>
+            <td>{{ mboard1.max_memory }} GHz</td>
+          </tr>
+          <tr>
+            <td>Memory Slots <span class="icon" data-hover-text="The number of slots available for installing RAM modules (DIMMs)" title="Hover for More Info">&#9432;</span></td>
+            <td>{{ mboard1.memory_slots }}</td>
+          </tr>
+          <tr>
+            <td>Color </td>
+            <td>{{ mboard1.color }}</td>
+          </tr>
+          <tr>
+            <td>Price</td>
+            <td>RM {{ mboard1.price|convert_to_myr }}</td>
+          </tr>
+        </table>
+        <div class="button-container"><button class="select-button"
+                onclick="selectComponent('mboard', '{{ mboard1.id }}')">Select for Customization</button></div>
+    </div>
+
+    <div class="vs-divider">VS</div>
+
+    <div class="comp-box">
+        <h3><a href="{% url 'mboard_detail' mboard2.pk %}">Motherboard: {{ mboard2.name }}</a></h3>
+        <table>
+          <tr>
+            <td>Form Factor <span class="icon" data-hover-text="The physical size and shape of the motherboard, which affects its compatibility with PC cases" title="Hover for More Info">&#9432;</span></td>
+            <td>{{ mboard2.form_factor }}</td>
+          </tr>
+          <tr>
+            <td>Socket <span class="icon" data-hover-text="The CPU socket type that determines which processors are compatible with the motherboard" title="Hover for More Info">&#9432;</span></td>
+            <td>{{ mboard2.socket }}</td>
+          </tr>
+          <tr>
+            <td>Maximum Memory Supported <span class="icon" data-hover-text="The physical size and shape of the motherboard, which affects its compatibility with PC cases" title="Hover for More Info">&#9432;</span></td>
+            <td>{{ mboard2.max_memory }} GHz</td>
+          </tr>
+          <tr>
+            <td>Memory Slots <span class="icon" data-hover-text="The number of slots available for installing RAM modules (DIMMs)" title="Hover for More Info">&#9432;</span></td>
+            <td>{{ mboard2.memory_slots }}</td>
+          </tr>
+          <tr>
+            <td>Color </td>
+            <td>{{ mboard2.color }}</td>
+          </tr>
+          <tr>
+            <td>Price</td>
+            <td>RM {{ mboard2.price|convert_to_myr }}</td>
+          </tr>
+        </table>
+        <div class="button-container"><button class="select-button"
+                onclick="selectComponent('mboard', '{{ mboard2.id }}')">Select for Customization</button></div>
+    </div>
+</div>
+
+<div class="divider"></div>
+
+<h3>Motherboard Chart</h3>
+<div class="image-container"><img src="data:image/png;base64,{{ chart }}" alt="Motherboard Comparison Chart"></div>
+
+
+{% endblock %}

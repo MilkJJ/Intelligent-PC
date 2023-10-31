@@ -1,30 +1,93 @@
 {% extends 'pc_app/base.html' %}
-
-{% block title %}{{ gpu.brand }} - {{ gpu.model }}{% endblock %}
-
+{% block title %}{{ gpu1.name }} vs {{ gpu2.name }}{% endblock %}
 {% block content %}
-
 {% load custom_filters %}
+{% load static %}
 
-<h1>Comparison</h1>
-<h2>GPU 1:</h2>
-<p>Name: {{ gpu1.name }}</p>
-<p>Chipset: {{ gpu1.chipset }}</p>
-<p>VRAM: {{ gpu1.memory }}</p>
-<p>Core Clock: {{ gpu1.core_clock }}</p>
-<p>Boost Clock: {{ gpu1.boost_clock }}</p>
-<p>Price: {{ gpu1.price|convert_to_myr }}</p>
-<p>Color: {{ gpu1.color }}</p>
-<p>Length: {{ gpu1.length }}</p>
+<link rel="stylesheet" type="text/css" href="{% static 'css/comparison.css' %}">
 
-<h2>GPU 2:</h2>
-<p>Name: {{ gpu2.name }}</p>
-<p>Chipset: {{ gpu2.chipset }}</p>
-<p>VRAM: {{ gpu2.memory }}</p>
-<p>Core Clock: {{ gpu2.core_clock }}</p>
-<p>Boost Clock: {{ gpu2.boost_clock }}</p>
-<p>Price: {{ gpu2.price|convert_to_myr }}</p>
-<p>Color: {{ gpu2.color }}</p>
-<p>Length: {{ gpu2.length }}</p>
+<h3>GPU Comparison</h3> 
+
+<div class="comp-container">
+    <div class="comp-box">
+        <h3><a href="{% url 'gpu_detail' gpu1.pk %}">GPU: {{ gpu1.name }}</a></h3>
+        <table>
+            <tr>
+                <td>Chipset <span class="icon" data-hover-text="The GPU chipset or architecture, which defines its capabilities and features" title="Hover for More Info">&#9432;</span></td>
+                <td>{{ gpu1.chipset }}</td>
+              </tr>
+              <tr>
+                <td>VRAM <span class="icon" data-hover-text="The amount of video memory (VRAM) the GPU has for storing textures and data" title="Hover for More Info">&#9432;</span></td>
+                <td>{{ gpu1.memory }} GB</td>
+              </tr>
+              <tr>
+                <td>Core Clock <span class="icon" data-hover-text="The base clock speed of the GPU's processing cores" title="Hover for More Info">&#9432;</span></td>
+                <td>{{ gpu1.core_clock }} GHz</td>
+              </tr>
+              <tr>
+                <td>Boost Clock <span class="icon" data-hover-text="The maximum clock speed the GPU can reach under heavy workloads" title="Hover for More Info">&#9432;</span></td>
+                <td>{{ gpu1.boost_clock }} Ghz </td>
+              </tr>
+              <tr>
+                <td>Color</td>
+                <td>{{ gpu1.color }}</td>
+              </tr>
+              <tr>
+                <td>Length <span class="icon" data-hover-text="The physical length or size of the GPU, which can be important for fitting into your PC case or chassis" title="Hover for More Info">&#9432;</span></td>
+                <td>{{ gpu1.length }}</td>
+              </tr>
+              <tr>
+                <td>Price</td>
+                <td>RM {{ gpu1.price|convert_to_myr }}</td>
+              </tr>
+        </table>
+        <div class="button-container"><button class="select-button"
+                onclick="selectComponent('gpu', '{{ gpu1.id }}')">Select for Customization</button></div>
+    </div>
+
+    <div class="vs-divider">VS</div>
+
+    <div class="comp-box">
+        <h3><a href="{% url 'gpu_detail' gpu2.pk %}">GPU: {{ gpu2.name }}</a></h3>
+        <table>
+            <tr>
+                <td>Chipset <span class="icon" data-hover-text="The GPU chipset or architecture, which defines its capabilities and features" title="Hover for More Info">&#9432;</span></td>
+                <td>{{ gpu2.chipset }}</td>
+              </tr>
+              <tr>
+                <td>VRAM <span class="icon" data-hover-text="The amount of video memory (VRAM) the GPU has for storing textures and data" title="Hover for More Info">&#9432;</span></td>
+                <td>{{ gpu2.memory }} GB</td>
+              </tr>
+              <tr>
+                <td>Core Clock <span class="icon" data-hover-text="The base clock speed of the GPU's processing cores" title="Hover for More Info">&#9432;</span></td>
+                <td>{{ gpu2.core_clock }} GHz</td>
+              </tr>
+              <tr>
+                <td>Boost Clock <span class="icon" data-hover-text="The maximum clock speed the GPU can reach under heavy workloads" title="Hover for More Info">&#9432;</span></td>
+                <td>{{ gpu2.boost_clock }} Ghz </td>
+              </tr>
+              <tr>
+                <td>Color</td>
+                <td>{{ gpu2.color }}</td>
+              </tr>
+              <tr>
+                <td>Length <span class="icon" data-hover-text="The physical length or size of the GPU, which can be important for fitting into your PC case or chassis" title="Hover for More Info">&#9432;</span></td>
+                <td>{{ gpu2.length }}</td>
+              </tr>
+              <tr>
+                <td>Price</td>
+                <td>RM {{ gpu2.price|convert_to_myr }}</td>
+              </tr>
+        </table>
+        <div class="button-container"><button class="select-button"
+                onclick="selectComponent('gpu', '{{ gpu2.id }}')">Select for Customization</button></div>
+    </div>
+</div>
+
+<div class="divider"></div>
+
+<h3>GPU Chart</h3>
+<div class="image-container"><img src="data:image/png;base64,{{ chart }}" alt="GPU Comparison Chart"></div>
+
 
 {% endblock %}

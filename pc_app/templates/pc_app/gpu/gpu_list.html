@@ -1,39 +1,63 @@
 {% extends 'pc_app/base.html' %}
-
-{% block title %}{{ gpu.brand }} - {{ gpu.model }}{% endblock %}
-
+{% block title %}{{ gpu.name }}{% endblock %}
 {% block content %}
-
 {% load custom_filters %}
 
 <div class="col-sm-12">
   <div class="titleheader">
-    <h3 class="h2header text-center">Graphics Card ({{ gpus|length }})</h3>
-    <a href="?sort_by=name">A to Z</a>
-    <a href="?sort_by=-name">Z to A</a>
+    <h3 class="h2header text-center">GPU ({{ gpus|length }})</h3>
+    <a href="#" id="sortToggle" onclick="toggleSorting()">Sort A to Z</a>
+    <form method="get" action="{% url 'gpu_list' %}">
+      <label for="search_query">GPU Model:</label>
+      <input type="text" name="search_query" placeholder="Search GPU Model...">
+      
+    <input type="number" name="min_price" id="min_price" min="1" style="width: 50px;" placeholder="Min Price">
+    <input type="number" name="max_price" id="max_price" min="1" style="width: 50px;" placeholder="Max Price">
+
+      <button type="submit">Search</button>
+      <button type="button" onclick="resetSearch()">Reset</button>
+    </form>
   </div>
 
-<input type="text" id="gpuSearch" onkeyup="filterGpus()" placeholder="Search GPUs...">
-<input type="number" id="minPrice" placeholder="Min Price">
-<input type="number" id="maxPrice" placeholder="Max Price">
-<button onclick="toggleSort()">Price Sort</button>
-<br>
-
-<!-- <div class="container"> -->
-
-  <div id="gpuList"> <!-- Add id="cpuList" to the container div -->
+  <div class="pagination">
+    <span class="step-links">
+      {% if page_obj.has_previous %}
+      <a href="?page=1">&laquo; First</a>
+      <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+      {% endif %}
+  
+      <span class="current-page">
+        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+      </span>
+  
+      {% if page_obj.has_next %}
+      <a href="?page={{ page_obj.next_page_number }}">Next</a>
+      <a href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+      {% endif %}
+    </span>
+  </div>
+  
+  <div id="gpuList"> <!-- Add id="gpuList" to the container div -->
     <div class="component-row">
-      {% for gpu in gpus %}
+      {% for gpu in page_obj %}
       <div class="component-box text-center">
-        <div class="coverpage">
-          <img src="https://media.hswstatic.com/eyJidWNrZXQiOiJjb250ZW50Lmhzd3N0YXRpYy5jb20iLCJrZXkiOiJnaWZcL2dyYXBoaWNzLWNhcmQtdXBkYXRlMS5qcGciLCJlZGl0cyI6eyJyZXNpemUiOnsid2lkdGgiOjgyOH19fQ==" 
-          width="130" height="90">
-        </div>
-        <a href="{% url 'gpu_detail' gpu.pk %}">{{ gpu.name }} - {{ gpu.chipset }}</a>
-        <p>{{ gpu.price|convert_to_myr }}</p>
-        <button class="select-button" onclick="selectComponent('gpu', '{{ gpu.id }}')">Add</button>
+        <a href="{% url 'gpu_detail' gpu.pk %}">
+          <div class="coverpage">
+            {% if gpu.name|lower|slice:"0:3" == "amd" %}
+            <img src="https://www.amd.com/system/files/2020-06/amd-default-social-image-1200x628.jpg" width="100"
+              height="100"> <!-- Replace with the actual path to AMD image -->
+            {% elif gpu.name|lower|slice:"0:5" == "intel" %}
+            <img src="https://www.intel.com/content/dam/logos/logo-energyblue-1x1.png" width="100" height="100">
+            <!-- Replace with the actual path to Intel image -->
+            {% else %}
+            <img src="default-image.png"> <!-- Add a default image path if needed -->
+            {% endif %}
+          </div>
+          <p><a href="{% url 'gpu_detail' gpu.pk %}">{{ gpu.name }}</a></p>
+          <p>RM{{ gpu.price|convert_to_myr }}</p>
+          <button class="select-button" onclick="selectComponent('gpu', '{{ gpu.id }}')">Add</button>
       </div>
-      {% if forloop.counter|divisibleby:5 and not forloop.last %} <!-- Create a new row after every 5 CPUs -->
+      {% if forloop.counter|divisibleby:5 and not forloop.last %} <!-- Create a new row after every 5 GPUs -->
     </div>
     <div class="component-row">
       {% endif %}
@@ -41,61 +65,22 @@
     </div>
   </div>
 
-<script>
-  let sortDirection = 'asc'; // Default sorting direction
+  <script>
+    var ascending = true;
 
-  function toggleSort() {
-    if (sortDirection === 'asc') {
-      sortDirection = 'desc';
-    } else {
-      sortDirection = 'asc';
+    function toggleSorting() {
+      ascending = !ascending;
+      var sortDirection = ascending ? 'name' : '-name';
+      document.getElementById('sortToggle').innerText = ascending ? 'Sort A to Z' : 'Sort Z to A';
+      var url = window.location.href.split('?')[0] + '?sort_by=' + sortDirection;
+      window.location.href = url;
     }
-    filterGpus(); // Reapply existing filters after sorting
-  }
 
-  function filterGpus() {
-    var input, filter, minPrice, maxPrice, ul, li, a, i, txtValue, price;
-    input = document.getElementById('gpuSearch');
-    filter = input.value.toUpperCase();
-    minPrice = parseFloat(document.getElementById('minPrice').value) || 0;
-    maxPrice = parseFloat(document.getElementById('maxPrice').value) || Infinity;
-    ul = document.getElementById('gpuList');
-    li = ul.getElementsByClassName('component-row');
 
-    var gpuArray = Array.from(li);
-
-    gpuArray.sort(function(a, b) {
-      var priceA = parseFloat(a.querySelector('p').textContent.replace('RM ', ''));
-      var priceB = parseFloat(b.querySelector('p').textContent.replace('RM ', ''));
-
-      if (sortDirection === 'asc') {
-        return priceA - priceB;
-      } else if (sortDirection === 'desc') {
-        return priceB - priceA;
-      } else {
-        return 0;
-      }
-    });
-
-    for (i = 0; i < gpuArray.length; i++) {
-      a = gpuArray[i].getElementsByTagName('a')[0];
-      txtValue = a.textContent || a.innerText;
-      price = parseFloat(gpuArray[i].querySelector('p').textContent.replace('RM ', ''));
-
-      if (
-        txtValue.toUpperCase().indexOf(filter) > -1 &&
-        price >= minPrice &&
-        price <= maxPrice
-      ) {
-        gpuArray[i].style.display = '';
-      } else {
-        gpuArray[i].style.display = 'none';
-      }
-
-      ul.appendChild(gpuArray[i]); // Reorder the elements in the DOM
+    function resetSearch() {
+      document.querySelector('input[name="search_query"]').value = '';
+      document.querySelector('form').submit();
     }
-  }
-</script>
+  </script>
 
-
-{% endblock %}
+  {% endblock %}

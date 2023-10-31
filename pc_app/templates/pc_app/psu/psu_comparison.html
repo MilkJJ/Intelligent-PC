@@ -1,0 +1,86 @@
+{% extends 'pc_app/base.html' %}
+{% block title %}{{ psu1.name }} vs {{ psu2.name }}{% endblock %}
+{% block content %}
+{% load custom_filters %}
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/comparison.css' %}">
+
+<h3>Power Supply Comparison</h3>
+
+<div class="comp-container">
+    <div class="comp-box">
+        <h3><a href="{% url 'psu_detail' psu1.pk %}">Power Supply: {{ psu1.name }}</a></h3>
+        <table>
+            <tr>
+                <td>Type <span class="icon" data-hover-text="The type of power supply, indicating its form factor and usage (e.g., ATX, SFX, server-grade)" title="Hover for More Info">&#9432;</span></td>
+                <td>{{ psu1.type }}</td>
+              </tr>
+              <tr>
+                <td>Efficiency <span class="icon" data-hover-text="Information about the PSU's energy efficiency rating, typically expressed as a percentage (e.g., 80 PLUS Bronze, Gold, Platinum)" title="Hover for More Info">&#9432;</span></td>
+                <td>{{ psu1.efficiency }}</td>
+              </tr>
+              <tr>
+                <td>Wattage <span class="icon" data-hover-text="The maximum power output in watts that the PSU can deliver to your components" title="Hover for More Info">&#9432;</span></td>
+                <td>{{ psu1.wattage }}</td>
+              </tr>
+              <tr>
+                <td>Modular <span class="icon" data-hover-text="Indicates whether the PSU has modular cables that can be disconnected, aiding cable management" title="Hover for More Info">&#9432;</span></td>
+                <td>{{ psu1.modular }}</td>
+              </tr>
+              <tr>
+                <td>Color </td>
+                <td>{{ psu1.color }}</td>
+              </tr>
+              <tr>
+                <td>Price</td>
+                <td>RM {{ psu1.price|convert_to_myr }}</td>
+              </tr>
+        </table>
+        <div class="button-container"><button class="select-button"
+                onclick="selectComponent('psu', '{{ psu1.id }}')">Select for Customization</button></div>
+    </div>
+
+    <div class="vs-divider">VS</div>
+
+    <div class="comp-box">
+        <h3><a href="{% url 'psu_detail' psu2.pk %}">Power Supply: {{ psu2.name }}</a></h3>
+        <table>
+            <tr>
+                <td>Type <span class="icon" data-hover-text="The type of power supply, indicating its form factor and usage (e.g., ATX, SFX, server-grade)" title="Hover for More Info">&#9432;</span></td>
+                <td>{{ psu2.type }}</td>
+              </tr>
+              <tr>
+                <td>Efficiency <span class="icon" data-hover-text="Information about the PSU's energy efficiency rating, typically expressed as a percentage (e.g., 80 PLUS Bronze, Gold, Platinum)" title="Hover for More Info">&#9432;</span></td>
+                <td>{{ psu2.efficiency }}</td>
+              </tr>
+              <tr>
+                <td>Wattage <span class="icon" data-hover-text="The maximum power output in watts that the PSU can deliver to your components" title="Hover for More Info">&#9432;</span></td>
+                <td>{{ psu2.wattage }}</td>
+              </tr>
+              <tr>
+                <td>Modular <span class="icon" data-hover-text="Indicates whether the PSU has modular cables that can be disconnected, aiding cable management" title="Hover for More Info">&#9432;</span></td>
+                <td>{{ psu2.modular }}</td>
+              </tr>
+              <tr>
+                <td>Color </td>
+                <td>{{ psu2.color }}</td>
+              </tr>
+              <tr>
+                <td>Price</td>
+                <td>RM {{ psu2.price|convert_to_myr }}</td>
+              </tr>
+        </table>
+        <div class="button-container"><button class="select-button"
+                onclick="selectComponent('psu', '{{ psu2.id }}')">Select for Customization</button></div>
+
+    </div>
+</div>
+
+<div class="divider"></div>
+
+<h3>Power Supply Chart</h3>
+<div class="image-container"><img src="data:image/png;base64,{{ chart }}" alt="Power Supply Comparison Chart"></div>
+
+
+{% endblock %}

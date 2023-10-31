@@ -24,7 +24,7 @@
         }
 
         .cart-container {
-            max-width: 1200px;
+            max-width: 1000px;
             margin: 20px auto;
             background-color: #fff;
             padding: 20px;
@@ -37,7 +37,7 @@
             border: 1px solid #ddd;
             border-radius: 5px;
             padding: 10px;
-            margin:20px;
+            margin: 20px;
         }
 
         .cart-item {
@@ -105,11 +105,43 @@
                         Other Build
                         {% endif %}</div>
                     <div class="cart-item-description">
-                        <img src="{% static 'images/component-logo/cpu.png' %}" width="50" height="50">: 
-                        <a href="{% url 'cpu_detail' item.cpu.id %}">{{ item.cpu.name }}</a></img>
-                        <p>GPU: <a href="{% url 'gpu_detail' item.gpu.id %}">{{ item.gpu.name }}</a></p>
-                        <p>Motherboard: <a href="{% url 'mboard_detail' item.mboard.id %}">{{ item.mboard.name }}</a>
-                        </p>
+                        <div><img src="{% static 'images/component-logo/cpu.png' %}" width="50" height="50">CPU :
+                            <a href="{% url 'cpu_detail' item.cpu.id %}">{{ item.cpu.name }}</a></img>
+                            RM {{item.cpu.price|convert_to_myr }}
+                        </div> 
+
+                        <div>
+                            <img src="{% static 'images/component-logo/gpu.png' %}" width="50" height="50">GPU :
+                            <a href="{% url 'gpu_detail' item.gpu.id %}">{{ item.gpu.name }}</a></img>
+                            RM {{item.gpu.price|convert_to_myr }}
+                        </div>
+                        <div>
+                            <img src="{% static 'images/component-logo/mboard.png' %}" width="50"
+                                height="50">Motherboard :
+                            <a href="{% url 'mboard_detail' item.mboard.id %}">{{ item.mboard.name }}</a></img>
+                            RM {{item.mboard.price|convert_to_myr }}
+                        </div>
+                        <div>
+                            <img src="{% static 'images/component-logo/ram.png' %}" width="50" height="50">RAM :
+                            <a href="{% url 'ram_detail' item.ram.id %}">{{ item.ram.name }}</a></img>
+                            RM {{item.ram.price|convert_to_myr }}
+                        </div>
+                        <div>
+                            <img src="{% static 'images/component-logo/storage.png' %}" width="50" height="50">Storage :
+                            <a href="{% url 'storage_detail' item.storage.id %}">{{ item.storage.name }}</a></img>
+                            RM {{item.storage.price|convert_to_myr }}
+                        </div>
+                        <div>
+                            <img src="{% static 'images/component-logo/psu.png' %}" width="50" height="50">PSU :
+                            <a href="{% url 'psu_detail' item.psu.id %}">{{ item.psu.name }}</a></img>
+                            RM {{item.psu.price|convert_to_myr }}
+                        </div>
+                        <div>
+                            <img src="{% static 'images/component-logo/case.png' %}" width="50" height="50">Chassis :
+                            <a href="{% url 'case_detail' item.case.id %}">{{ item.case.name }}</a></img>
+                            RM {{item.case.price|convert_to_myr }}
+                        </div>
+
                     </div>
                     <div class="cart-item-price">RM {{ item.total_price|convert_to_myr }}</div>
                 </div>

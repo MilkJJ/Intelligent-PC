@@ -38,7 +38,7 @@
         <table>
           <thead>
             <tr>
-              <th>Model</th>
+              <th>Model <span class="icon" data-hover-text="The name or model of the Central processing unit (CPU)" title="Hover for More Info">&#9432;</span></th>
               <th>{{ cpu.name }}</th>
             </tr>
           </thead>
@@ -59,15 +59,15 @@
             <td>{{ cpu.graphics }}</td>
           </tr>
           <tr>
-            <td>Thermal Design Power <span class="icon" data-hover-text="The maximum amount of power the device is designed to consume and dissipate as heat" title="Hover for More Info">&#9432;</span></td>
+            <td>Thermal Design Power <span class="icon" data-hover-text="The maximum amount of power the cpu is designed to consume and dissipate as heat" title="Hover for More Info">&#9432;</span></td>
             <td>{{ cpu.tdp }}</td>
           </tr>
           <tr>
-            <td>Multithreading <span class="icon" data-hover-text="Indicates whether the device supports simultaneous multithreading, which can improve multitasking and performance" title="Hover for More Info">&#9432;</span></td>
+            <td>Multithreading <span class="icon" data-hover-text="Indicates whether the cpu supports simultaneous multithreading, which can improve multitasking and performance" title="Hover for More Info">&#9432;</span></td>
             <td>{% if cpu.smt %}Yes{% else %}No{% endif %}</td>
           </tr>
           <tr>
-            <td>Socket <span class="icon" data-hover-text="The type of CPU socket or interface used for connecting the device to the motherboard" title="Hover for More Info">&#9432;</span></td>
+            <td>Socket <span class="icon" data-hover-text="The type of CPU socket or interface used for connecting the cpu to the motherboard" title="Hover for More Info">&#9432;</span></td>
             <td>{{ cpu.socket }}</td>
           </tr>
           <tr>

@@ -1,0 +1,110 @@
+{% extends 'pc_app/base.html' %}
+{% block title %}{{ ram1.name }} vs {{ ram2.name }}{% endblock %}
+{% block content %}
+{% load custom_filters %}
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/comparison.css' %}">
+
+<h3>RAM Comparison</h3>
+
+<div class="comp-container">
+    <div class="comp-box">
+        <h3><a href="{% url 'ram_detail' ram1.pk %}">RAM: {{ ram1.name }}</a></h3>
+        <table>
+            <tr>
+                <td>DDR Type <span class="icon" data-hover-text="The DDR (Double Data Rate) type, indicating the generation and technology of the RAM (e.g., DDR3, DDR4, DDR5)" title="Hover for More Info">&#9432;</span></td>
+                <td>{{ ram1.ddr_type }}</td>
+              </tr>
+              <tr>
+                <td>Speed <span class="icon" data-hover-text="The clock speed of the RAM modules, typically measured in megahertz (MHz)" title="Hover for More Info">&#9432;</span></td>
+                <td>{{ ram1.speed_mhz }} Mhz</td>
+              </tr>
+              <tr>
+                <td>Modules <span class="icon" data-hover-text="The quantity of individual RAM modules included in the kit" title="Hover for More Info">&#9432;</span></td>
+                <td>x {{ ram1.num_modules }}</td>
+              </tr>
+              <tr>
+                <td>Memory Size <span class="icon" data-hover-text="The total capacity of the RAM in gigabytes (GB)" title="Hover for More Info">&#9432;</span></td>
+                <td>{{ ram1.memory_size }} GB</td>
+              </tr>
+              <tr>
+                <td>Price per GB <span class="icon" data-hover-text="The cost of RAM per gigabyte, helping you assess the value for your money" title="Hover for More Info">&#9432;</span></td>
+                <td>RM {{ ram1.price_per_gb }}</td>
+              </tr>
+              <tr>
+                <td>Color </td>
+                <td>{{ ram1.color }}</td>
+              </tr>
+              <tr>
+                <td>First Word Latency <span class="icon" data-hover-text="The time delay in nanoseconds for the RAM to access the first word of data" title="Hover for More Info">&#9432;</span></td>
+                <td>{{ ram1.first_word_latency }}</td>
+              </tr>
+              <tr>
+                <td>CAS Latency <span class="icon" data-hover-text="The CAS (Column Address Strobe) latency, representing the time it takes to read data from a column in RAM" title="Hover for More Info">&#9432;</span></td>
+                <td>{{ ram1.cas_latency }}</td>
+              </tr>
+              <tr>
+                <td>Price</td>
+                <td>RM {{ ram1.price|convert_to_myr }}</td>
+              </tr>
+        </table>
+        <div class="button-container"><button class="select-button"
+                onclick="selectComponent('ram', '{{ ram1.id }}')">Select for Customization</button></div>
+    </div>
+
+    <div class="vs-divider">VS</div>
+
+    <div class="comp-box">
+        <h3><a href="{% url 'ram_detail' ram2.pk %}">RAM: {{ ram2.name }}</a></h3>
+        <table>
+            <tr>
+                <td>DDR Type <span class="icon" data-hover-text="The DDR (Double Data Rate) type, indicating the generation and technology of the RAM (e.g., DDR3, DDR4, DDR5)" title="Hover for More Info">&#9432;</span></td>
+                <td>{{ ram2.ddr_type }}</td>
+              </tr>
+              <tr>
+                <td>Speed <span class="icon" data-hover-text="The clock speed of the RAM modules, typically measured in megahertz (MHz)" title="Hover for More Info">&#9432;</span></td>
+                <td>{{ ram2.speed_mhz }} Mhz</td>
+              </tr>
+              <tr>
+                <td>Modules <span class="icon" data-hover-text="The quantity of individual RAM modules included in the kit" title="Hover for More Info">&#9432;</span></td>
+                <td>x {{ ram2.num_modules }}</td>
+              </tr>
+              <tr>
+                <td>Memory Size <span class="icon" data-hover-text="The total capacity of the RAM in gigabytes (GB)" title="Hover for More Info">&#9432;</span></td>
+                <td>{{ ram2.memory_size }} GB</td>
+              </tr>
+              <tr>
+                <td>Price per GB <span class="icon" data-hover-text="The cost of RAM per gigabyte, helping you assess the value for your money" title="Hover for More Info">&#9432;</span></td>
+                <td>RM {{ ram2.price_per_gb }}</td>
+              </tr>
+              <tr>
+                <td>Color </td>
+                <td>{{ ram2.color }}</td>
+              </tr>
+              <tr>
+                <td>First Word Latency <span class="icon" data-hover-text="The time delay in nanoseconds for the RAM to access the first word of data" title="Hover for More Info">&#9432;</span></td>
+                <td>{{ ram2.first_word_latency }}</td>
+              </tr>
+              <tr>
+                <td>CAS Latency <span class="icon" data-hover-text="The CAS (Column Address Strobe) latency, representing the time it takes to read data from a column in RAM" title="Hover for More Info">&#9432;</span></td>
+                <td>{{ ram2.cas_latency }}</td>
+              </tr>
+              <tr>
+                <td>Price</td>
+                <td>RM {{ ram2.price|convert_to_myr }}</td>
+              </tr>
+        </table>
+        <div class="button-container"><button class="select-button"
+                onclick="selectComponent('ram', '{{ ram2.id }}')">Select for Customization</button></div>
+
+    </div>
+</div>
+
+<div class="divider"></div>
+
+<h3>RAM Chart</h3>
+<div class="image-container"><img src="data:image/png;base64,{{ chart }}" alt="RAM Comparison Chart"></div>
+
+
+{% endblock %}

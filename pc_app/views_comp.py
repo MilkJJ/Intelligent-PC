@@ -81,13 +81,13 @@ def cpu_detail(request, pk):
                                 rates = pivot_table.ratings
                                 messages.success(request, 'Sucessfully rated this CPU!')
                             else:
-                                messages.success(request, 'CPU already reated!')
+                                messages.info(request, 'CPU already reated!')
                         else:
-                            messages.error(request, 'Purchase CPU before Rating!')
+                            messages.info(request, 'Purchase CPU before Rating!')
                     else:
-                        messages.error(request, 'Purchase CPU before Rating!')
+                        messages.info(request, 'Purchase CPU before Rating!')
                 except CartItem.DoesNotExist:
-                    messages.error(request, 'Purchase CPU before Rating!')
+                    messages.info(request, 'Purchase CPU before Rating!')
 
     else:
         rating_form = CPUPivotTableForm()
@@ -425,7 +425,7 @@ def ram_detail(request, pk):
     else:
         rating_form = RAMPivotTableForm()
 
-    return render(request, 'pc_app/cpu/cpu_detail.html', {'ram': ram, 'other_rams': other_rams, 'rating_form': rating_form, 'rate': int(rates)})
+    return render(request, 'pc_app/ram/ram_detail.html', {'ram': ram, 'other_rams': other_rams, 'rating_form': rating_form, 'rate': int(rates)})
 
 
 def ram_comparison(request, pk1, pk2):

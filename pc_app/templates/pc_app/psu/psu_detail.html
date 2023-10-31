@@ -39,33 +39,29 @@
         <table>
           <thead>
             <tr>
-              <th>Model</th>
+              <th>Model <span class="icon" data-hover-text="The name or model of the power supply unit (PSU)" title="Hover for More Info">&#9432;</span></th>
               <th>{{ psu.name }}</th>
             </tr>
           </thead>
           <tr>
-            <td>Chipset <span class="icon" data-hover-text="" title="Hover for More Info">&#9432;</span></td>
-            <td>{{ psu.chipset }}</td>
+            <td>Type <span class="icon" data-hover-text="The type of power supply, indicating its form factor and usage (e.g., ATX, SFX, server-grade)" title="Hover for More Info">&#9432;</span></td>
+            <td>{{ psu.type }}</td>
           </tr>
           <tr>
-            <td>VRAM <span class="icon" data-hover-text="" title="Hover for More Info">&#9432;</span></td>
-            <td>{{ psu.memory }} Gb</td>
+            <td>Efficiency <span class="icon" data-hover-text="Information about the PSU's energy efficiency rating, typically expressed as a percentage (e.g., 80 PLUS Bronze, Gold, Platinum)" title="Hover for More Info">&#9432;</span></td>
+            <td>{{ psu.efficiency }}</td>
           </tr>
           <tr>
-            <td>Core Clock <span class="icon" data-hover-text="" title="Hover for More Info">&#9432;</span></td>
-            <td>{{ psu.core_clock }} GHz</td>
+            <td>Wattage <span class="icon" data-hover-text="The maximum power output in watts that the PSU can deliver to your components" title="Hover for More Info">&#9432;</span></td>
+            <td>{{ psu.wattage }}</td>
           </tr>
           <tr>
-            <td>Boost Clock <span class="icon" data-hover-text="" title="Hover for More Info">&#9432;</span></td>
-            <td>{{ psu.boost_clock }}</td>
+            <td>Modular <span class="icon" data-hover-text="Indicates whether the PSU has modular cables that can be disconnected, aiding cable management" title="Hover for More Info">&#9432;</span></td>
+            <td>{{ psu.modular }}</td>
           </tr>
           <tr>
-            <td>Color <span class="icon" data-hover-text="" title="Hover for More Info">&#9432;</span></td>
+            <td>Color </td>
             <td>{{ psu.color }}</td>
-          </tr>
-          <tr>
-            <td>Length <span class="icon" data-hover-text="" title="Hover for More Info">&#9432;</span></td>
-            <td>{{ psu.length }}</td>
           </tr>
           <tr>
             <td>Price</td>
