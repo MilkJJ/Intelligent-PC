@@ -24,43 +24,70 @@
         <h2>Completed Order History</h2>
     </header>
 
-    <div class="link-container">
-        <p><a href="{% url 'ongoing_order' %}">Ongoing Orders</a></p>
-    </div>
-
     <div class="complete-container">
+        <p><a href="{% url 'ongoing_order' %}">Ongoing Orders</a></p>
+
         {% if shipped_items %}
         {% for item in shipped_items %}
         <div class="order-card">
-            <p class="order-status">Order #{{ item.id }} Status: Completed</p>
+            <p class="order-status" style="font-size: 20px;">Order #{{ item.id }} <span
+                    style="float: right; color: green;">Completed</span></p>
+            <p style="font-size: 14px;">{{ item.order_date }}</p>
+
             <div class="order-details">
-                <p><strong>CPU:</strong> <a href="{% url 'cpu_detail' item.cpu.id %}">{{ item.cpu.name }}</a>
-                    <span class="price-label" style="text-align: right;"> RM {{ item.cpu.price|convert_to_myr }}</span>
-
-                <p><strong>GPU:</strong> <a href="{% url 'gpu_detail' item.gpu.id %}">{{ item.gpu.name }} - {{item.gpu.chipset }}</a> 
-                    <span class="price-label"> RM {{ item.gpu.price|convert_to_myr }}</span>
-                </p>
-
-                <p><strong>RAM:</strong> <a href="{% url 'ram_detail' item.ram.id %}">{{ item.ram.name }}</a> 
-                    <span class="price-label"> RM {{ item.ram.price|convert_to_myr }}</span></p>
-
-                <p><strong>Motherboard:</strong> <a href="{% url 'mboard_detail' item.mboard.id %}">{{ item.mboard.name }}</a>
-                    <span class="price-label"> RM {{ item.mboard.price|convert_to_myr }}</span>
-                </p>
-
-                <p><strong>Power Supply:</strong> <a href="{% url 'psu_detail' item.psu.id %}">{{ item.psu.name }}</a>
-                    <span class="price-label"> RM {{ item.psu.price|convert_to_myr }}</span>
-                </p>
-
-                <p><strong>Storage:</strong> <a href="{% url 'storage_detail' item.storage.id %}">{{ item.storage.name }}</a>
-                    <span class="price-label"> RM {{ item.storage.price|convert_to_myr }}</span>
-                </p>
-
-                <p><strong>Chassis:</strong> <a href="{% url 'case_detail' item.case.id %}">{{ item.case.name }}</a>
-                    <span class="price-label"> RM {{ item.case.price|convert_to_myr }}</span>
-                </p>
+                <table>
+                    <tr>
+                        <th>Component</th>
+                        <th>Model</th>
+                        <th>Price</th>
+                    </tr>
+                    <tr>
+                        <td>CPU</td>
+                        <td><a href="{% url 'cpu_detail' item.cpu.id %}">{{ item.cpu.name }}</a></td>
+                        <td>RM {{item.cpu.price|convert_to_myr}}</td>
+                    </tr>
+                    <tr>
+                        <td>GPU</td>
+                        <td><a href="{% url 'gpu_detail' item.gpu.id %}">{{ item.gpu.name }}</a></td>
+                        <td>RM {{item.gpu.price|convert_to_myr}}</td>
+                    </tr>
+                    <tr>
+                        <td>RAM</td>
+                        <td><a href="{% url 'ram_detail' item.ram.id %}">{{ item.ram.name }}</a></td>
+                        <td>RM {{item.ram.price|convert_to_myr}}</td>
+                    </tr>
+                    <tr>
+                        <td>Motherboard</td>
+                        <td><a href="{% url 'mboard_detail' item.ram.id %}">{{ item.mboard.name }}</a></td>
+                        <td>RM {{item.mboard.price|convert_to_myr}}</td>
+                    </tr>
+                    <tr>
+                        <td>PSU</td>
+                        <td><a href="{% url 'psu_detail' item.psu.id %}">{{ item.psu.name }}</a></td>
+                        <td>RM {{item.psu.price|convert_to_myr}}</td>
+                    </tr>
+                    <tr>
+                        <td>Storage</td>
+                        <td><a href="{% url 'storage_detail' item.storage.id %}">{{ item.storage.name }}</a></td>
+                        <td>RM {{item.storage.price|convert_to_myr}}</td>
+                    </tr>
+                    <tr>
+                        <td>Chassis</td>
+                        <td><a href="{% url 'case_detail' item.case.id %}">{{ item.case.name }}</a></td>
+                        <td>RM {{item.case.price|convert_to_myr}}</td>
+                    </tr>
+                    <tr>
+                        <th>Total Price</th>
+                        <th></th>
+                        <th>RM {{ item.total_price|convert_to_myr }}</th>
+                    </tr>
+                </table>
 
             </div>
+
+            <div class="divider"></div>
+
+
             <div class="order-actions">
                 <form method="POST" action="{% url 'add_to_cart' item.id %}">
                     {% csrf_token %}
@@ -68,12 +95,12 @@
                         value="completed">Repurchase</button>
                 </form>
             </div>
+
             <div class="rate-section">
                 {% if not item.order_rating %}
-                Rate this build!
                 <form method="post" action="{% url 'rate_order' item.id %}">
                     {% csrf_token %}
-                    <label class="rate-label" for="" style="color: black;">Rating:</label>
+                    <label class="rate-label" for="" style="color: black;">Rate Build: </label>
                     <!-- Hidden input field to store the rating value -->
                     <input type="hidden" name="orderRating" id="order_ratingInput" size="5" />
 
@@ -107,14 +134,9 @@
                 {% endif %}
             </div>
 
-            <div class="total-price">
-                Total Price: RM {{ item.total_price|convert_to_myr }}
-            </div>
-
-            <div class="order-date">Order Date: {{ item.order_date }}</div>
-
         </div>
 
+        <div class="divider"></div>
         {% endfor %}
         {% else %}
         <p class="empty-cart-message">No Completed Order</p>
@@ -149,6 +171,17 @@
 </script>
 
 <style>
+    .divider {
+        height: 1px;
+        /* Set the height of the line */
+        background-color: #d5d5d5;
+        /* Set the color of the line */
+        margin: 20px 0;
+        /* Adjust margin as needed */
+        border: none;
+        /* Remove any borders */
+    }
+
     body {
         font-family: Arial, sans-serif;
         background-color: #f4f4f4;
@@ -161,11 +194,12 @@
         color: #fff;
         text-align: center;
         padding: 1rem;
+        max-width: 1100px;
     }
 
     .complete-container {
-        max-width: 960px;
-        margin: 2rem auto;
+        max-width: 1100px;
+        /* margin: 2rem auto; */
         padding: 1rem;
         background-color: #fff;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -194,7 +228,7 @@
     }
 
     .order-actions {
-        margin-top: 1rem;
+        display: inline-block;
     }
 
     .repurchase-button {
@@ -207,7 +241,7 @@
     }
 
     .rate-section {
-        margin-top: 1rem;
+        float: right;
     }
 
     .rate-label {
@@ -221,12 +255,6 @@
     }
 
     .price-label {
-        font-weight: bold;
-    }
-
-    .total-price,
-    .order-date {
-        text-align: right;
         font-weight: bold;
     }
 

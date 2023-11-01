@@ -316,8 +316,8 @@ def ongoing_order_view(request):
 
         # Create a ToastNotifier instance and send the notification
         toaster = ToastNotifier()
-        toaster.show_toast("ORDER READY TO PICK UP",
-                           notification_message, duration=5)
+        # toaster.show_toast("ORDER READY TO PICK UP",
+        #                    notification_message, duration=0)
 
     return render(request, 'pc_app/ongoing-order.html', {'purchased_items': purchased_items})
 

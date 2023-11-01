@@ -4,91 +4,255 @@
 
 {% load custom_filters %}
 
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cart</title>
-    <style>
+    <title>Pending Order History</title>
 
-        table {
-            width: 80%;
-            margin: 0 auto;
-            border-collapse: collapse;
-            background-color: #fff;
-        }
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        .empty-cart-message {
-            text-align: center;
-            font-size: 18px;
-            margin-top: 20px;
-        }
-
-        .checkout-button {
-            display: block;
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .link-container {
-            display: inline-block;
-            margin-right: 20px;
-            /* Adjust the margin as needed for spacing */
-        }
-    </style>
 </head>
 
 <body>
-    <h1>Ongoing Orders</h1>
+    <header>
+        <h2>Pending Order History</h2>
+    </header>
 
-    <div class="link-container">
+    <div class="complete-container">
         <p><a href="{% url 'completed_order' %}">Completed Orders</a></p>
-    </div>
+        
+        {% if purchased_items %}
+        {% for item in purchased_items %}
 
-    {% if purchased_items %}
-    {% for item in purchased_items %}
-    <table>
-        <thead>
-            <tr>
-                <th>PC BUILD</th>
-                <th>Price</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td><a href="{% url 'cpu_detail' item.cpu.id %}">{{ item.cpu.name }}</a></td>
-                <td>{{ item.cpu.price|convert_to_myr }}</td>
-            </tr>
-            <tr>
-                <td>{{ item.gpu.chipset }}</td>
-                <td>{{ item.gpu.price|convert_to_myr }}</td>
-            </tr>
-            <tr>
-                <td>Total Price:</td>
-                <td>{{ item.total_price|convert_to_myr }}</td>
-            </tr>
-            <tr>
-                {% if item.ready_pickup %}
-                <td>Order #{{ item.id }} Status: Ready to Pick up</td>
-                <td><a href="https://maps.app.goo.gl/NGa7twqsRdXr4RbC7" target="_blank">
-                        <img src="https://t3.ftcdn.net/jpg/03/89/41/20/360_F_389412076_Q7PfDcEUUNdxe4r6OMS9DTzAv9xNiThz.jpg"
-                            width="80" height="80" /></a>
-                <p>Pick Up Point</p>
-                </td>
-                {% else %}
-                <td>Order #{{ item.id }} Status</td>
-                <td>Not Ready</td>
-                {% endif %}
-            </tr>
-        </tbody>
-    </table>
-    {% endfor %}
-    {% else %}
-    <p class="empty-cart-message">No On-going Order</p>
-    {% endif %}
+        <div class="order-card">
+            {% if item.ready_pickup %}
+            <p class="order-status" style="font-size: 20px;">Order #{{ item.id }}
+                <a style="float: right;" href="https://maps.app.goo.gl/NGa7twqsRdXr4RbC7" target="_blank">
+                    <img src="https://t3.ftcdn.net/jpg/03/89/41/20/360_F_389412076_Q7PfDcEUUNdxe4r6OMS9DTzAv9xNiThz.jpg"
+                        width="80" height="80" />
+            <p style="color: rgb(0, 64, 203);">Ready To Pick Up</p></a>
+            </p>
+            <p style="font-size: 14px;">{{ item.order_date }}</p>
+
+
+            {% else %}
+            <p class="order-status" style="font-size: 20px;">Order #{{ item.id }} <span
+                    style="float: right; color: rgb(179, 207, 0);">Preparing</span></p>
+            <p style="font-size: 14px;">{{ item.order_date }}</p>
+            {% endif %}
+
+
+            <div class="order-details">
+                <table>
+                    <tr>
+                        <th>Component</th>
+                        <th>Model</th>
+                        <th>Price</th>
+                    </tr>
+                    <tr>
+                        <td>CPU</td>
+                        <td><a href="{% url 'cpu_detail' item.cpu.id %}">{{ item.cpu.name }}</a></td>
+                        <td>RM {{item.cpu.price|convert_to_myr}}</td>
+                    </tr>
+                    <tr>
+                        <td>GPU</td>
+                        <td><a href="{% url 'gpu_detail' item.gpu.id %}">{{ item.gpu.name }}</a></td>
+                        <td>RM {{item.gpu.price|convert_to_myr}}</td>
+                    </tr>
+                    <tr>
+                        <td>RAM</td>
+                        <td><a href="{% url 'ram_detail' item.ram.id %}">{{ item.ram.name }}</a></td>
+                        <td>RM {{item.ram.price|convert_to_myr}}</td>
+                    </tr>
+                    <tr>
+                        <td>Motherboard</td>
+                        <td><a href="{% url 'mboard_detail' item.ram.id %}">{{ item.mboard.name }}</a></td>
+                        <td>RM {{item.mboard.price|convert_to_myr}}</td>
+                    </tr>
+                    <tr>
+                        <td>PSU</td>
+                        <td><a href="{% url 'psu_detail' item.psu.id %}">{{ item.psu.name }}</a></td>
+                        <td>RM {{item.psu.price|convert_to_myr}}</td>
+                    </tr>
+                    <tr>
+                        <td>Storage</td>
+                        <td><a href="{% url 'storage_detail' item.storage.id %}">{{ item.storage.name }}</a></td>
+                        <td>RM {{item.storage.price|convert_to_myr}}</td>
+                    </tr>
+                    <tr>
+                        <td>Chassis</td>
+                        <td><a href="{% url 'case_detail' item.case.id %}">{{ item.case.name }}</a></td>
+                        <td>RM {{item.case.price|convert_to_myr}}</td>
+                    </tr>
+                    <tr>
+                        <th>Total Price</th>
+                        <th></th>
+                        <th>RM {{ item.total_price|convert_to_myr }}</th>
+                    </tr>
+                </table>
+
+            </div>
+
+            <div class="divider"></div>
+        </div>
+        <div class="divider"></div>
+
+            {% endfor %}
+
+            {% else %}
+            <p class="empty-cart-message">No Pending Order</p>
+            {% endif %}
+
+        
+
 </body>
 
 </html>
+
+<style>
+    .divider {
+        height: 1px;
+        /* Set the height of the line */
+        background-color: #d5d5d5;
+        /* Set the color of the line */
+        margin: 20px 0;
+        /* Adjust margin as needed */
+        border: none;
+        /* Remove any borders */
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+    }
+
+    header {
+        background-color: #333;
+        color: #fff;
+        text-align: center;
+        padding: 1rem;
+        max-width: 1100px;
+    }
+
+    .complete-container {
+        max-width: 1100px;
+        padding: 1rem;
+        background-color: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border-radius: 5px;
+    }
+
+    .order-card {
+        border: 1px solid #ddd;
+        margin: 1rem;
+        padding: 1rem;
+        border-radius: 5px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .order-status {
+        font-weight: bold;
+    }
+
+    .order-details {
+        margin-top: 1rem;
+        max-width: 1000px;
+    }
+
+    .order-details p {
+        margin: 0;
+    }
+
+    .order-actions {
+        display: inline-block;
+    }
+
+    .repurchase-button {
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .rate-section {
+        float: right;
+    }
+
+    .rate-label {
+        font-weight: bold;
+    }
+
+    .rate-select {
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 5px;
+    }
+
+    .price-label {
+        font-weight: bold;
+    }
+
+    /* .fa-star.checked {
+            color: gold;
+        } */
+
+    .fa-star.unchecked {
+        color: white;
+        /* Unfilled star color */
+    }
+
+    .rating-order-list li {
+        float: right;
+        color: #ddd;
+        padding: 10px 5px;
+    }
+
+    .rating-order-list li:hover,
+    .rating-order-list li:hover~li {
+        color: orange;
+    }
+
+    .rating-order-list {
+        display: inline-block;
+        list-style: none;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+    }
+
+    table {
+        width: 80%;
+        margin: 0 auto;
+        border-collapse: collapse;
+        background-color: #fff;
+    }
+
+    .empty-cart-message {
+        text-align: center;
+        font-size: 18px;
+        margin-top: 20px;
+    }
+
+    .checkout-button {
+        display: block;
+        text-align: center;
+        margin-top: 20px;
+    }
+</style>
+
+
 {% endblock %}

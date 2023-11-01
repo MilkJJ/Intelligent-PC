@@ -30,26 +30,26 @@
         <tr>
             <td><a href="{% url 'ram_list' %}"><img src="{% static 'images/component-logo/ram.png' %}" width="50" height="50"></img>
                 RAM</a></td>
-            <td><span id="selectedRAM"></span>Select a RAM</td>
+            <td><span id="selectedRAM">Select a RAM</span></td>
         </tr>
         <tr>
             <td><a href="{% url 'psu_list' %}"><img src="{% static 'images/component-logo/psu.png' %}" width="50" height="50"></img>
                 PSU</a></td>
-            <td><span id="selectedPSU"></span>Select a Power Supply</td>
+            <td><span id="selectedPSU">Select a Power Supply</span></td>
         </tr>
         <tr>
             <td><a href="{% url 'storage_list' %}"><img src="{% static 'images/component-logo/storage.png' %}" width="50" height="50"></img>
                 Storage</a></td>
-            <td><span id="selectedStorage"></span>Select a Storage Drive</td>
+            <td><span id="selectedStorage">Select a Storage Drive</span></td>
         </tr>
         <tr>
             <td><a href="{% url 'case_list' %}"><img src="{% static 'images/component-logo/case.png' %}" width="50" height="50"></img>
                 PC Case</a></td>
-            <td><span id="selectedCase"></span>Select a Chassis</td>
+            <td><span id="selectedCase">Select a Chassis</span></td>
         </tr>
         <tr>
             <td>Total Price:</td>
-            <td><span id="totalPrice"></span></td>
+            <td><span id="totalPrice">$$</span></td>
         </tr>
     </tbody>
 </table>
@@ -60,8 +60,9 @@
 
 <style>
     h3 {
+        margin-top: 10px;
         text-align: center;
-        margin-bottom: 20px;
+        margin-bottom: 10px;
     }
 
     table {

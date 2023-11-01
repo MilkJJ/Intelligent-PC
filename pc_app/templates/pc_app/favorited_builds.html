@@ -1,6 +1,7 @@
 {% extends 'pc_app/base.html' %}
-
 {% block content %}
+{% load custom_filters %}
+{% load static %}
 
   <!DOCTYPE html>
   <html>
@@ -8,22 +9,61 @@
       <title>Favorited PC Builds</title>
   </head>
   <body>
-      <h1>Favorited PC Builds</h1>
+      <h2>Favorited PC Builds</h2>
       {% if favorited_builds %}
       <ul class="pc-builds-list">
           {% for build in favorited_builds %}
               <li class="pc-build">
-                  <h2>{{ build.title }}</h2>
-                  <ul class="pc-specs">
-                      <li><strong>CPU:</strong> {{ build.cpu }}</li>
-                      <li><strong>GPU:</strong> {{ build.gpu }}</li>
-                      <li><strong>Motherboard:</strong> {{ build.mboard.name }}</li>
-                      <li><strong>RAM:</strong> {{ build.ram }}</li>
-                      <li><strong>Storage:</strong> {{ build.storage }}</li>
-                      <li><strong>PSU:</strong> {{ build.psu }}</li>
-                      <li><strong>Case:</strong> {{ build.case }}</li>
-                      <li><strong>Total:</strong> {{ build.total_price }}</li>
-                  </ul>
+                <img src="{% static 'images/fav_build.png' %}" width="500" height="500" style="display: inline-block;"></img>
+
+                  <h2>{{ build.id }}</h2>
+                  <table>
+                    <tr>
+                        <th>Component</th>
+                        <th>Model</th>
+                        <th>Price</th>
+                    </tr>
+                    <tr>
+                        <td>CPU</td>
+                        <td><a href="{% url 'cpu_detail' build.cpu.id %}">{{ build.cpu }}</a></td>
+                        <td>RM {{build.cpu.price|convert_to_myr}}</td>
+                    </tr>
+                    <tr>
+                        <td>GPU</td>
+                        <td><a href="{% url 'gpu_detail' build.gpu.id %}">{{ build.gpu }}</a></td>
+                        <td>RM {{build.gpu.price|convert_to_myr}}</td>
+                    </tr>
+                    <tr>
+                        <td>RAM</td>
+                        <td><a href="{% url 'ram_detail' build.ram.id %}">{{ build.ram }}</a></td>
+                        <td>RM {{build.ram.price|convert_to_myr}}</td>
+                    </tr>
+                    <tr>
+                        <td>Motherboard</td>
+                        <td><a href="{% url 'mboard_detail' build.ram.id %}">{{ build.mboard }}</a></td>
+                        <td>RM {{build.mboard.price|convert_to_myr}}</td>
+                    </tr>
+                    <tr>
+                        <td>PSU</td>
+                        <td><a href="{% url 'psu_detail' build.psu.id %}">{{ build.psu }}</a></td>
+                        <td>RM {{build.psu.price|convert_to_myr}}</td>
+                    </tr>
+                    <tr>
+                        <td>Storage</td>
+                        <td><a href="{% url 'storage_detail' build.storage.id %}">{{ build.storage }}</a></td>
+                        <td>RM {{build.storage.price|convert_to_myr}}</td>
+                    </tr>
+                    <tr>
+                        <td>Chassis</td>
+                        <td><a href="{% url 'case_detail' build.case.id %}">{{ build.case }}</a></td>
+                        <td>RM {{build.case.price|convert_to_myr}}</td>
+                    </tr>
+                    <tr>
+                        <th>Total Price</th>
+                        <th></th>
+                        <th>RM {{ build.total_price|convert_to_myr }}</th>
+                    </tr>
+                </table>
                   <div class="actions">
                     <form method="POST" action="{% url 'add_to_cart' build.id %}">
                       {% csrf_token %}
@@ -52,12 +92,12 @@ h1 {
 .pc-builds-list {
     list-style: none;
     padding: 0;
+    max-width: 1100px;
 }
 
 .pc-build {
     background-color: #fff;
     border: 1px solid #ccc;
-    margin: 20px;
     padding: 20px;
     box-shadow: 2px 2px 5px #888;
 }
