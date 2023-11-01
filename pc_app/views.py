@@ -123,7 +123,7 @@ def add_to_cart(request, build_id=None):
     # Add to cart from Favourite Page
     if request.method == 'POST':
         if build_id:
-            repurchase = request.POST.get('repurchase-button')
+            repurchase = request.POST.get('repurchase-button', None)
 
             if repurchase == 'completed':
                 build = CartItem.objects.get(
@@ -171,6 +171,9 @@ def add_to_cart(request, build_id=None):
         if created:
             response_data = {'success': True,
                              'message': "Item added to cart successfully!"}
+            
+            return redirect('cart_items')
+        
         else:
             response_data = {'success': False,
                              'message': "Item is already in your cart!"}

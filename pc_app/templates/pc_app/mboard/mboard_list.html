@@ -37,7 +37,7 @@
     </span>
   </div>
 
-  <div id="mboardList"> <!-- Add id="mboardList" to the container div -->
+  <div id="mboardList" style="max-width: 1100px;"> <!-- Add id="mboardList" to the container div -->
     <div class="component-row">
       {% for mboard in page_obj %}
       <div class="component-box text-center">
@@ -55,7 +55,7 @@
           </div>
           <p><a href="{% url 'mboard_detail' mboard.pk %}">{{ mboard.name }}</a></p>
           <p>RM{{ mboard.price|convert_to_myr }}</p>
-          <button class="select-button" onclick="selectComponent('mboard', '{{ mboard.id }}')">Add</button>
+          <button class="select-button" onclick="selectComponent('motherboard', '{{ mboard.id }}')">Add</button>
       </div>
       {% if forloop.counter|divisibleby:5 and not forloop.last %} <!-- Create a new row after every 5 Motherboards -->
     </div>

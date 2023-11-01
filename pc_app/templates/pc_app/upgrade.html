@@ -12,6 +12,8 @@
 </head>
 
 <body>
+    <h2>PC Component Upgrade</h2>
+    
     <form method="post">
         {% csrf_token %}
         <h1>Enter Your Budget</h1>
@@ -32,15 +34,15 @@
         <h1>Your Hardware Specifications</h1>
         <div class="specs">
             <div class="hardware">
-                <h2>CPU</h2>
+                <h4>CPU</h4>
                 <p>Current: {{ proc_info }}</p>
             </div>
             <div class="hardware">
-                <h2>GPU</h2>
+                <h4>GPU</h4>
                     <p>Current: {{ gpu_info }}</p>
             </div>
             <div class="hardware">
-                <h2>RAM</h2>
+                <h4>RAM</h4>
                 {% if ram_count > 1 %}
                 <p>Current: {{ ram_gb|multiply:ram_count }} GB ({{ ram_gb }}GB + {{ ram_speed}}Mhz) x{{ram_count}}</p>
                 {% else %}
@@ -52,7 +54,7 @@
         <h1>Upgrade Suggestions</h1>
         <div class="upgrade">
                 <div class="hardware">
-                    <h2>CPU</h2>
+                    <h4>CPU</h4>
                     {% if cpu_upgrade %}
                     <a href="{% url 'cpu_detail' cpu_upgrade.pk %}"><p>Suggested Upgrade: {{ cpu_upgrade }}</p></a>
                     {% else %}
@@ -60,7 +62,7 @@
                     {% endif %}
                 </div>
                 <div class="hardware">
-                    <h2>GPU</h2>
+                    <h4>GPU</h4>
                     {% if gpu_upgrade %}
                     <a href="{% url 'gpu_detail' gpu_upgrade.pk %}"><p>Suggested Upgrade: {{ gpu_upgrade }}</p></a>
                     {% else %}
@@ -69,7 +71,7 @@
                
                 </div>
                 <div class="hardware">
-                    <h2>RAM</h2>
+                    <h4>RAM</h4>
                     {% if ram_upgrade %}
                     <a href="{% url 'ram_detail' ram_upgrade.pk %}"><p>Suggested Upgrade: {{ ram_upgrade.name }} ({{ram_upgrade.memory_size }}GB + {{ram_upgrade.speed_mhz}}Mhz)
                         x{{ram_upgrade.num_modules }}</p></a>
@@ -133,11 +135,6 @@ h1 {
     margin: 10px;
     width: 300px;
     height: 130px;
-}
-
-h2 {
-    font-size: 18px;
-    margin-bottom: 10px;
 }
 
 p {

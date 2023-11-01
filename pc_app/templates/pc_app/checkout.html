@@ -16,47 +16,56 @@
         <h2>PC Build Checkout</h2>
     </header>
     <br>
+
+    Check your items / Select payment / Select Delivery / Before placing Order
     <div class="checkout-container">
         <div class="checkout">
             {% for cart_item in cart_items %}
-            <div class="checkout-item">
+            <div class="checkout-item" style="padding: 20px">
                 <div class="item-details">
                     <table>
-                        <h4>PC Build {{ forloop.counter }}</h4>
+                        <h4>In-Cart PC Build {{ forloop.counter }}</h4>
+                        <tr>
+                            <th>Component</th>
+                            <th>Model</th>
+                        </tr>
                         <tr>
                             <td>CPU</td>
-                            <td>{{ cart_item.cpu.name }}</td>
+                            <td>{{ cart_item.cpu }}</td>
                         </tr>
                         <tr>
                             <td>GPU</td>
-                            <td>{{ cart_item.gpu.name }}</td>
+                            <td>{{ cart_item.gpu }}</td>
                         </tr>
                         <tr>
                             <td>RAM</td>
-                            <td>{{ cart_item.ram.name }}</td>
+                            <td>{{ cart_item.ram }}</td>
                         </tr>
                         <tr>
                             <td>Motherboard</td>
-                            <td>{{ cart_item.mboard.name }}</td>
+                            <td>{{ cart_item.mboard }}</td>
                         </tr>
                         <tr>
                             <td>PSU</td>
-                            <td>{{ cart_item.psu.name }}</td>
+                            <td>{{ cart_item.psu }}</td>
                         </tr>
                         <tr>
                             <td>Storage</td>
-                            <td>{{ cart_item.storage.name }}</td>
+                            <td>{{ cart_item.storage }}</td>
                         </tr>
                         <tr>
                             <td>Chassis</td>
-                            <td>{{ cart_item.case.name }}</td>
+                            <td>{{ cart_item.case }}</td>
+                        </tr>
+                        <tr>
+                            <th>Total</th>
+                            <th>RM {{ cart_item.total_price|floatformat:2 }}</th>
                         </tr>
                     </table>
                 </div>
-                <div class="item-price">Total: RM {{ cart_item.total_price|floatformat:2 }}</div>
-
-                {% endfor %}
             </div>
+            <div class="divider" style="height: 1px; background-color: #d5d5d5; border: none;"></div>
+                {% endfor %}
         </div>
 
         <br>
@@ -83,8 +92,9 @@
             </div>
 
             <button type="submit">Place Order</button>
-        </form>
+            </form>
         </div>
+
     </div>
 </body>
 
@@ -104,6 +114,9 @@
 </script>
 
 <style>
+    h4{
+        margin-bottom: 10px;
+    }
     header {
         background-color: #333;
         color: #fff;
@@ -124,16 +137,8 @@
         padding: 10px;
     }
 
-    body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        background-color: #f2f2f2;
-    }
-
     .checkout-container {
-        max-width: 800px;
-        margin: 0 auto;
+        max-width: 1100px;
         padding: 20px;
         background-color: #fff;
     }
@@ -143,7 +148,6 @@
     }
 
     .checkout-item {
-        display: flex;
         justify-content: space-between;
         margin-bottom: 10px;
     }
@@ -151,6 +155,7 @@
     .item-details {
         flex-grow: 1;
         font-size: 14px;
+        border-radius: 5px;
     }
 
     .payment-method {
@@ -173,6 +178,7 @@
         padding: 10px 20px;
         background-color: #007bff;
         color: #fff;
+        border-radius: 10px;
         border: none;
         cursor: pointer;
     }

@@ -3,7 +3,6 @@
 {% block content %}
 {% load custom_filters %}
 
-<div class="col-sm-12">
   <div class="titleheader">
     <h3 class="h2header text-center">Chassis ({{ cases|length }})</h3>
     <a href="#" id="sortToggle" onclick="toggleSorting()">Sort A to Z</a>
@@ -34,7 +33,7 @@
     </span>
   </div>
   
-  <div id="caseList"> <!-- Add id="caseList" to the container div -->
+  <div id="caseList" style="max-width: 1100px;"> <!-- Add id="caseList" to the container div -->
     <div class="component-row">
       {% for case in page_obj %}
       <div class="component-box text-center">

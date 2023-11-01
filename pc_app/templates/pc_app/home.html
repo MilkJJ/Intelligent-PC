@@ -11,15 +11,18 @@
 </head>
 
 <body>
+  <header style="margin-bottom: 20px;">
+    <h3>PC Build Recommendation</h3>
+  </header>
   <form action="{% url 'home' %}" method="post">
     {% csrf_token %}
-    <label for="min_budget">Min Budget:</label>
-    <input type="number" id="min_budget" name="min_budget">
+    <!-- <label for="min_budget">Min Budget:</label>
+    <input type="number" id="min_budget" name="min_budget"> -->
 
     <label for="max_budget">Max Budget:</label>
     <input type="number" id="max_budget" name="max_budget" required>
-
-    <label for="preferred">Select Your Use Case Preference:</label>
+    
+    <label for="preferred">Use Case Preference:</label>
     <select id="preferred" name="preferred" required>
       <option value="">-- --</option>
       <option value="gaming">Gaming</option>
@@ -32,7 +35,6 @@
   </form>
 
 
-  <h3>PC Build Recommendation</h3>
   <div class="recommended-builds-container">
     {% if metadata_builds %}
     <div class="recommended-build">
@@ -96,36 +98,41 @@
 
 {% if rated_items %}
 
-<ul class="rating-container">
-  <div class="rating-header"><h3>Ratings by other users!</h3></div>
-
+<h3>Ratings by other users!</h3>
+<div class="rating-container">
   {% for item in rated_items|reverse_queryset %}
-  <li class="rating-column">
+  <div class="rating-column">
     <div class="profile-container">
+
       <div class="profile-picture-container">
-          {% if item.user.profile.profile_picture %}
-              <img class="profile-picture" src="{{ user.profile.profile_picture.url }}" alt="PFP">
-          {% else %}
-              <img class="profile-picture" src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="Default PFP">
-          {% endif %}
+        {% if item.user.profile.profile_picture %}
+        <img class="profile-picture" src="{{ user.profile.profile_picture.url }}" alt="PFP">
+        {% else %}
+        <img class="profile-picture"
+          src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
+          alt="Default PFP">
+        {% endif %}
       </div>
+
       <div class="username">
-          {{ item.user.username }}
+        {{ item.user.username }}
       </div>
-  </div>
-    
-  <div class="rating-total-price">RM{{ item.total_price|convert_to_myr }}</div>
-  
+
+    </div>
+
+    <div class="rating-total-price">RM{{ item.total_price|convert_to_myr }}</div>
+    <div class="rating-date">{{item.order_rating.date_added}}</div>
+
+
     <a href="{% url 'item_detail' item.id %}">
       {% if 'amd' in item.cpu.name|lower %}
-      AMD Build 
+      AMD Build
       {% elif 'intel' in item.cpu.name|lower %}
       Intel Build
       {% else %}
       Other Build
       {% endif %}
     </a>
-
 
     <div class="star-rating">
       <span class="fa fa-star {% if item.latest_rating >= 1 %}checked{% endif %}"></span>
@@ -137,18 +144,19 @@
 
     {{ item.latest_comment|default:"No comments yet" }}<br>
 
-    <div class="rating-date">{{item.order_rating.date_added}}</div>
 
-  </li>
+  </div>
+    {% if forloop.counter|divisibleby:3 %} {# Close the row and start a new one after every 3 items #}
+  </div> <!-- rating-column -->
+  <div class="rating-container">
+    {% endif %}
+    {% endfor %}
+  </div>
+</div>
 
-  {% if forloop.counter|divisibleby:3 %} {# Close the row and start a new one after every 3 items #}
-</ul>
-<ul class="rating-container">
-  {% endif %}
-  {% endfor %}
-</ul>
+
 {% else %}
-<p>No rated items yet.</p>
+<p>No rated builds yet!</p>
 {% endif %}
 
 </html>
@@ -171,9 +179,10 @@
 
 
 <style>
-  .rating-total-price{
-    float:right;
+  .rating-total-price {
+    float: right;
   }
+
   .comment-bracker {
     border: 1px solid #c2c2c2;
   }
@@ -181,23 +190,29 @@
   .profile-container {
     display: flex;
     align-items: center;
-}
+  }
 
-.profile-picture-container {
-    margin-right: 10px; /* Optional spacing between profile picture and username */
-}
+  .profile-picture-container {
+    margin-right: 10px;
+    /* Optional spacing between profile picture and username */
+  }
 
-.profile-picture {
-    max-width: 50px; /* Adjust the size as needed */
-    max-height: 50px; /* Adjust the size as needed */
-}
-.username {
-    font-size: 16px; /* Adjust the font size as needed */
-}
-.rating-date {
-  font-size: 12px;
-  color: rgb(68, 68, 68);
-}
+  .profile-picture {
+    max-width: 50px;
+    /* Adjust the size as needed */
+    max-height: 50px;
+    /* Adjust the size as needed */
+  }
+
+  .username {
+    font-size: 16px;
+    /* Adjust the font size as needed */
+  }
+
+  .rating-date {
+    font-size: 12px;
+    color: rgb(68, 68, 68);
+  }
 
   .profile-picture-container {
     display: flex;
@@ -209,18 +224,19 @@
   }
 
   .rating-container {
-    display: flex;
     flex-wrap: wrap;
     justify-content: flex-start;
+    display:flex;
     /* space-between;*/
-    list-style: none;
     padding: 0;
   }
 
   .rating-column {
     flex-basis: calc(33.33% - 20px);
     margin: 10px;
+    max-width: 350px;
     padding: 10px;
+    border-radius: 5px;
     border: 1px solid #ddd;
   }
 
@@ -239,12 +255,12 @@
 
   .recommended-build {
     border: 1px solid #ccc;
-    padding: 10px;
-    margin: 0;
+    border-radius: 5px;
+    padding: 20px;
+    margin: 10px;
     flex: 0 0 calc(33.33% - 20px);
     /* Adjust the width of each build to fit three builds in a row with spacing */
     box-sizing: border-box;
-    /* Include padding and border in the width calculation */
   }
 </style>
 

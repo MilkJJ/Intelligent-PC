@@ -11,12 +11,34 @@
   <body>
       <h2>Favorited PC Builds</h2>
       {% if favorited_builds %}
-      <ul class="pc-builds-list">
-          {% for build in favorited_builds %}
-              <li class="pc-build">
-                <img src="{% static 'images/fav_build.png' %}" width="500" height="500" style="display: inline-block;"></img>
+      <div class="pc-builds-list">
+          {% for build in favorited_builds|reverse_queryset %}
+              <div class="pc-build" style="display: flex;">
 
-                  <h2>{{ build.id }}</h2>
+                <div style="padding: 30px;">
+                <img src="{% static 'images/fav_build.png' %}" width="200" height="200"></img>
+
+                {% if cpu.name|lower|slice:"0:3" == "amd" %}
+                  <h3>AMD Build #{{ build.id }}</h3>
+                  {% else %}
+                  <h3>Intel Build #{{ build.id }}</h3>
+                  {% endif %}
+
+                  <div class="actions" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                    <form method="POST" action="{% url 'add_to_cart' build.id %}">
+                      {% csrf_token %}
+                      <button type="submit">Add to Cart</button>
+                    </form>
+                    <br>
+                    <form method="POST" action="{% url 'delete_favorited_build' build.id %}">
+                      {% csrf_token %}
+                      <button type="submit">Unfavourite <i class="fas fa-heart-broken"></i></button>
+                    </form>
+                  </div>
+
+                  </div>
+
+                  <div style="margin-top: 20px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 5px;">
                   <table>
                     <tr>
                         <th>Component</th>
@@ -64,20 +86,11 @@
                         <th>RM {{ build.total_price|convert_to_myr }}</th>
                     </tr>
                 </table>
-                  <div class="actions">
-                    <form method="POST" action="{% url 'add_to_cart' build.id %}">
-                      {% csrf_token %}
-                      <button type="submit">Add to Cart</button>
-                    </form>
-          
-                    <form method="POST" action="{% url 'delete_favorited_build' build.id %}">
-                      {% csrf_token %}
-                      <button type="submit">Unfavourite <i class="fas fa-heart-broken"></i></button>
-                    </form>
-                  </div>
-              </li>
+                </div>
+
+            </div>
           {% endfor %}
-      </ul>
+        </div>
       {% else %}
       <p>You have no favorited builds.</p>
     {% endif %}
@@ -90,25 +103,17 @@ h1 {
 }
 
 .pc-builds-list {
-    list-style: none;
-    padding: 0;
-    max-width: 1100px;
+    padding: 10px;
 }
 
 .pc-build {
     background-color: #fff;
     border: 1px solid #ccc;
+    border-radius: 3px;
     padding: 20px;
+    max-width: 1050px;
+    margin-bottom: 20px;
     box-shadow: 2px 2px 5px #888;
-}
-
-.pc-specs {
-    list-style: none;
-    padding: 0;
-}
-
-.pc-specs li {
-    margin: 5px 0;
 }
 
 </style>

@@ -21,7 +21,7 @@
 
 <body>
     <header>
-        <h2>Pending Order History</h2>
+        <h2>Pending PC Build Order History</h2>
     </header>
 
     <div class="complete-container">
@@ -43,7 +43,7 @@
 
             {% else %}
             <p class="order-status" style="font-size: 20px;">Order #{{ item.id }} <span
-                    style="float: right; color: rgb(179, 207, 0);">Preparing</span></p>
+                    style="float: right; color: rgb(207, 197, 0);">Preparing</span></p>
             <p style="font-size: 14px;">{{ item.order_date }}</p>
             {% endif %}
 
@@ -145,7 +145,7 @@
     .complete-container {
         max-width: 1100px;
         padding: 1rem;
-        background-color: #fff;
+        background-color: #f4f3f3;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         border-radius: 5px;
     }
@@ -156,6 +156,7 @@
         padding: 1rem;
         border-radius: 5px;
         box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        background-color: white;
     }
 
     .order-status {
@@ -165,6 +166,8 @@
     .order-details {
         margin-top: 1rem;
         max-width: 1000px;
+        border-radius: 5px;
+        border: 1px solid #ddd;
     }
 
     .order-details p {

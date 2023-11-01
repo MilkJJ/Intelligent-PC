@@ -21,7 +21,7 @@ def HomePage(request):
             OrderRating.objects.filter(order_item=models.OuterRef(
                 'pk')).order_by('-date_added').values('comment')[:1]
         )
-    )[:9]
+    )[:9] # Only get 9 ratings displayed
 
     users = User.objects.all()
     recommended_builds = []
@@ -170,30 +170,34 @@ def HomePage(request):
 
         knn_recommended_builds = []
 
-        # KNN MODEL FOR COMPONENT METADATA
-        # Get component recommendations within their respective budgets
-        recommended_cpus = recommend_ratings_components(knn_cpus)
-        recommended_gpus = recommend_ratings_components(knn_gpus)
-        recommended_motherboards = recommend_ratings_components(knn_motherboards)
-        recommended_rams = recommend_ratings_components(knn_rams)
-        recommended_storages = recommend_ratings_components(knn_storages)
-        recommended_psus = recommend_ratings_components(knn_psus)
-        recommended_cases = recommend_ratings_components(knn_cases)
+        if knn_cpus and knn_gpus and knn_rams and knn_motherboards and knn_storages and knn_psus and knn_cases:
+            # KNN MODEL FOR COMPONENT METADATA
+            # Get component recommendations within their respective budgets
+            recommended_cpus = recommend_ratings_components(knn_cpus)
+            recommended_gpus = recommend_ratings_components(knn_gpus)
+            recommended_motherboards = recommend_ratings_components(knn_motherboards)
+            recommended_rams = recommend_ratings_components(knn_rams)
+            recommended_storages = recommend_ratings_components(knn_storages)
+            recommended_psus = recommend_ratings_components(knn_psus)
+            recommended_cases = recommend_ratings_components(knn_cases)
 
-        # RATINGS RECOMMENDATION
-        # 3 USE CASE SCENARIO
-        for mboard in recommended_motherboards:
-            for cpu in recommended_cpus:
-                for gpu in recommended_gpus:
-                    for ram in recommended_rams:
-                        for storage in recommended_storages:
-                            for psu in recommended_psus:
-                                for case in recommended_cases:
-                                    recommended_build = {'cpu': cpu, 'gpu': gpu, 'mboard': mboard, 'ram': ram, 'psu':psu ,
-                                                                        'storage': storage,'case': case}
-                                    knn_recommended_builds.append(recommended_build)
+            # RATINGS RECOMMENDATION
+            # 3 USE CASE SCENARIO
+            for mboard in recommended_motherboards:
+                for cpu in recommended_cpus:
+                    for gpu in recommended_gpus:
+                        for ram in recommended_rams:
+                            for storage in recommended_storages:
+                                for psu in recommended_psus:
+                                    for case in recommended_cases:
+                                        recommended_build = {'cpu': cpu, 'gpu': gpu, 'mboard': mboard, 'ram': ram, 'psu':psu ,
+                                                                            'storage': storage,'case': case}
+                                        knn_recommended_builds.append(recommended_build)
 
-        random.shuffle(knn_recommended_builds)
+            random.shuffle(knn_recommended_builds)
+
+        else:
+            knn_recommended_builds = []
 
     else:
         metadata_builds = []
