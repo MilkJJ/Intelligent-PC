@@ -11,13 +11,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cart</title>
     <style>
-        .cart-item-description{
+        .cart-item-description {
             margin-top: 1rem;
             margin-bottom: 1rem;
-        max-width: 1000px;
-        border-radius: 5px;
-        border: 1px solid #ddd;
+            max-width: 1000px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
         }
+
         .empty-cart-message {
             text-align: center;
             font-size: 18px;
@@ -163,7 +164,7 @@
                         </table>
 
                     </div>
-                    
+
                 </div>
                 <form method="POST" action="{% url 'remove_from_cart' item.id %}">
                     {% csrf_token %}

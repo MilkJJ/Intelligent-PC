@@ -171,8 +171,8 @@ def add_to_cart(request, build_id=None):
         if created:
             response_data = {'success': True,
                              'message': "Item added to cart successfully!"}
-            
-            return redirect('cart_items')
+            if build_id:
+                return redirect('cart_items')
         
         else:
             response_data = {'success': False,

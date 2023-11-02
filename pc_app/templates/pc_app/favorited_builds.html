@@ -27,12 +27,12 @@
                   <div class="actions" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
                     <form method="POST" action="{% url 'add_to_cart' build.id %}">
                       {% csrf_token %}
-                      <button type="submit">Add to Cart</button>
+                      <button type="submit" id="add-to-cart-butt">Add to Cart</button>
                     </form>
                     <br>
                     <form method="POST" action="{% url 'delete_favorited_build' build.id %}">
                       {% csrf_token %}
-                      <button type="submit">Unfavourite <i class="fas fa-heart-broken"></i></button>
+                      <button type="submit" id="unfavourite-build">Unfavourite <i class="fas fa-heart-broken"></i></button>
                     </form>
                   </div>
 
@@ -96,7 +96,22 @@
     {% endif %}
   </body>
   </html>
+<script>
+  document.getElementById('add-to-cart-butt').addEventListener('click', function () {
+            // Display an alert when the button is pressed
+            alert('PC Build added to cart successfully!');
+        });
 
+      document.addEventListener('DOMContentLoaded', function () {
+        var completeOrderButton = document.getElementById('unfavourite-build');
+
+        completeOrderButton.addEventListener('click', function (e) {
+            if (!confirm('Are you sure you want to unfavourite this build?')) {
+                e.preventDefault(); // Cancel the form submission
+            }
+        });
+    });
+</script>
 <style>
 h1 {
     color: #333;

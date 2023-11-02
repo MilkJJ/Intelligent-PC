@@ -22,9 +22,9 @@
         <div class="checkout">
             {% for cart_item in cart_items %}
             <div class="checkout-item" style="padding: 20px">
+                <h4>In-Cart PC Build {{ forloop.counter }}</h4>
                 <div class="item-details">
                     <table>
-                        <h4>In-Cart PC Build {{ forloop.counter }}</h4>
                         <tr>
                             <th>Component</th>
                             <th>Model</th>
@@ -156,6 +156,7 @@
         flex-grow: 1;
         font-size: 14px;
         border-radius: 5px;
+        border: 1px solid #ddd;
     }
 
     .payment-method {
