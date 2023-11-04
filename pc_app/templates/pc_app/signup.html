@@ -54,7 +54,6 @@
         }
 
         form {
-            height: 600px;
             width: 450px;
             background-color: rgba(255, 255, 255, 0.13);
             position: absolute;
@@ -76,8 +75,15 @@
             border: none;
         }
 
-        form h3 {
-            font-size: 32px;
+        form h2{
+            font-size: 30px;
+            font-weight: 500;
+            line-height: 42px;
+            text-align: center;
+        }
+
+        form h3{
+            font-size: 23px;
             font-weight: 500;
             line-height: 42px;
             text-align: center;
@@ -107,7 +113,8 @@
         }
 
         button {
-            margin-top: 14px;
+            margin-top: 30px;
+            margin-bottom: 20px;
             width: 100%;
             background-color: #ffffff;
             color: #080710;
@@ -148,9 +155,10 @@
         .error-messages {
             color: #ffd6d6;
             /* Set the text color to red */
-            background-color: rgb(249, 93, 93);
+            background-color: rgb(255, 70, 70);
             /* Optional: Set a light background color */
             padding: 10px;
+            font-size: 14px;
             /* Optional: Add some padding for better appearance */
             border: 1px solid #ffd6d6;
             /* Optional: Add a border around the messages */
@@ -158,6 +166,10 @@
             /* Optional: Round the corners of the border */
             margin-top: 10px;
             /* Optional: Add some space above the messages */
+        }
+
+        a{
+           font-size: 14px;
         }
     </style>
 </head>
@@ -168,6 +180,7 @@
         <div class="shape"></div>
     </div>
     <form action="" method="post">
+        <h2>Intelligent PC Builder</h2>
         <h3>Signup Here</h3>
 
         {% csrf_token %}

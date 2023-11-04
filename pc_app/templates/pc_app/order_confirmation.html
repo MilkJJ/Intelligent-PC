@@ -3,6 +3,7 @@
 {% block content %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -39,6 +40,7 @@
         }
     </style>
 </head>
+
 <body>
     <h1>Order Confirmation</h1>
 
@@ -47,10 +49,18 @@
     </div>
 
     <div class="thank-you-message">
-        <p>Thank you for your purchase. Your items will be shipped shortly.</p>
+        <p>Thank you for your purchase. You will be notified when the items are ready to pick up.</p>
     </div>
 
     <a href="{% url 'home' %}" class="back-to-home-link">Back to Home</a>
 </body>
+
 </html>
+
+<script>
+        history.pushState(null, null, location.href);
+        window.onpopstate = function () {
+            history.go(1);
+        };
+</script>
 {% endblock %}

@@ -25,7 +25,7 @@
     </header>
 
     <div class="complete-container">
-        <p><a href="{% url 'ongoing_order' %}">Ongoing Orders</a></p>
+        <p><a href="{% url 'ongoing_order' %}">Pending Orders</a></p>
 
         {% if shipped_items %}
         {% for item in shipped_items %}
@@ -96,7 +96,7 @@
                 </form>
             </div>
 
-            <div class="rate-section">
+            <div class="rate-section" style="float: right;">
                 {% if not item.order_rating %}
                 <form method="post" action="{% url 'rate_order' item.id %}">
                     {% csrf_token %}
@@ -133,6 +133,7 @@
                 <strong>Comment</strong>: {{item.order_rating.comment}}
                 {% endif %}
             </div>
+
 
         </div>
 
@@ -215,9 +216,9 @@
         box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
     }
 
-    .order-status {
+    /* .order-status {
         font-weight: bold;
-    }
+    } */
 
     .order-details {
         margin-top: 1rem;
@@ -241,10 +242,6 @@
         padding: 10px 20px;
         border-radius: 5px;
         cursor: pointer;
-    }
-
-    .rate-section {
-        float: right;
     }
 
     .rate-label {

@@ -9,7 +9,9 @@
     </div>
 {% endif %}
 
-<!-- upload.html -->
+<h2>Upload components data</h2>
+<p>Components will be added to respective database based on the CSV header/columns.</p>
+<p>Unknown CSV columns combo will be rejected.</p>
 <div class="upload-form-container">
     <form method="post" enctype="multipart/form-data" class="upload-form">
         {% csrf_token %}

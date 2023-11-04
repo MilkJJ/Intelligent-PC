@@ -99,7 +99,7 @@
             </select>
 
             <div id="star-rating">
-              Re-rate:
+              Rate:
               <ul class="btn btn-light list-inline rating-list">
                 <li onclick="updateRating(5)" data-order-rating="5"><i class="fa fa-star" id="star-5"
                     title="Rate 5"></i>
@@ -119,7 +119,7 @@
               </ul>
             </div>
 
-            <button type="submit" name="cpu_rating_form">Rate</button>
+            <button type="submit" id="rate-button" name="cpu_rating_form">Rate</button>
           </form>
 
           <button class="select-button" onclick="selectComponent('cpu', '{{ cpu.id }}')">Add to Customize</button>

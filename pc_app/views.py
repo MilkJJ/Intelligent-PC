@@ -1,6 +1,7 @@
 from win10toast import ToastNotifier
 from django.conf import settings
-import numpy as np
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
@@ -22,6 +23,8 @@ from reportlab.lib.pagesizes import letter
 from io import BytesIO
 from datetime import datetime
 from django.template.defaultfilters import floatformat
+from django.core.mail import EmailMessage
+from django.views.decorators.cache import never_cache
 
 # Create your views here.
 from django.shortcuts import render, redirect
@@ -201,7 +204,7 @@ def remove_from_cart(request, cart_item_id):
     # Redirect back to the favorited_builds page
     return redirect('cart_items')
 
-
+@never_cache
 def checkout(request):
     # Get cart items for the user
     cart_items = CartItem.objects.filter(user=request.user, is_purchased=False)
@@ -218,7 +221,7 @@ def checkout(request):
 
     return render(request, 'pc_app/checkout.html', context)
 
-
+@never_cache
 def place_order(request):
     if request.method == 'POST':
         # Update the cart items to mark them as purchased
@@ -249,10 +252,15 @@ def place_order(request):
 
         # Create a table for order summary
         for cart_item in cart_items:
-            data = [[f"Order #{cart_item.id}", 'Build'],
-                    ['CPU', cart_item.cpu.name],
-                    ['GPU', cart_item.gpu.name],
-                    ['Total Price', cart_item.total_price]]
+            data = [[f"Order #{cart_item.id}", 'Build', 'Price'],
+                    ['CPU', cart_item.cpu.name, f"${cart_item.cpu.price}"],
+                    ['GPU', cart_item.gpu.name, f"${cart_item.gpu.price}"],
+                    ['RAM', cart_item.ram.name, f"${cart_item.ram.price}"],
+                    ['Motherbaord', cart_item.mboard.name, f"${cart_item.mboard.price}"],
+                    ['Storage', cart_item.storage.name, f"${cart_item.storage.price}"],
+                    ['Power Supply', cart_item.psu.name, f"${cart_item.psu.price}"],
+                    ['Chassis', cart_item.case.name, f"${cart_item.case.price}"],
+                    ['Total Price', '', f"${cart_item.total_price}"]]
 
             # Create the table style
             table_style = [('BACKGROUND', (0, 0), (-1, 0), colors.grey),
@@ -276,27 +284,28 @@ def place_order(request):
         # Close the buffer and return the PDF as a response
         buffer.seek(0)
 
-        # !! REMOVE FROM HERE !!
-        # Create an HttpResponse with the PDF content
-        response = HttpResponse(buffer.read(), content_type='application/pdf')
+        # # !! SAVE PDF TO DEVICE !!
+        # # Create an HttpResponse with the PDF content
+        # response = HttpResponse(buffer.read(), content_type='application/pdf')
 
-        # Set the content-disposition header to prompt for download
-        response['Content-Disposition'] = 'attachment; filename="purchase_confirmation.pdf"'
+        # # Set the content-disposition header to prompt for download
+        # response['Content-Disposition'] = 'attachment; filename="purchase_confirmation.pdf"'
 
-        return response
+        # return response
 
-        # Send the PDF as an email attachment
-        # subject = 'Purchase Confirmation'
-        # message = 'Thank you for your purchase. Please find your purchase confirmation attached.'
-        # from_email = settings.EMAIL_HOST_USER #'your_email@example.com' Replace with your email
-        # recipient_list = [request.user.email]  # Use the user's email
+        #Send the PDF as an email attachment
+        subject = 'Purchase Confirmation'
+        message = 'Thank you for your purchase. Please find your purchase confirmation attached.'
+        from_email = settings.EMAIL_HOST_USER #'your_email@example.com' Replace with your email
+        recipient_list = [request.user.email]  # Use the user's email
 
-        # email = EmailMessage(subject, message, from_email, recipient_list)
-        # email.attach('purchase_confirmation.pdf', buffer.read(),
-        #              'application/pdf')  # Attach the in-memory PDF
-        # email.send()
+        email = EmailMessage(subject, message, from_email, recipient_list)
+        email.attach('purchase_confirmation.pdf', buffer.read(),
+                     'application/pdf')  # Attach the in-memory PDF
+        email.send()
 
         # Redirect to an order confirmation page
+        #return HttpResponseRedirect(reverse('order_confirmation'))
         return render(request, 'pc_app/order_confirmation.html')
 
 
@@ -319,8 +328,8 @@ def ongoing_order_view(request):
 
         # Create a ToastNotifier instance and send the notification
         toaster = ToastNotifier()
-        # toaster.show_toast("ORDER READY TO PICK UP",
-        #                    notification_message, duration=0)
+        toaster.show_toast("ORDER READY TO PICK UP",
+                           notification_message, duration=1)
 
     return render(request, 'pc_app/ongoing-order.html', {'purchased_items': purchased_items})
 
@@ -404,8 +413,8 @@ def delete_favorited_build(request, build_id):
         favorited_build.delete()
 
         # Display a success message that the build has been deleted
-        messages.success(
-            request, 'The build has been removed from your favorites.')
+        # messages.success(
+        #     request, 'The build has been removed from your favorites.')
     except FavouritedPC.DoesNotExist:
         # Display an error message if the build does not exist or does not belong to the current user
         messages.error(
@@ -446,7 +455,7 @@ def LoginPage(request):
 
         if not username or not password:
             # Check if either username or password is empty
-            messages.error(request, "Both username and password are required.")
+            messages.error(request, "Both Username and Password are required!")
         else:
             user = authenticate(request, username=username, password=password)
 
@@ -564,11 +573,11 @@ def reset_password(request, token):
             user_id = request.POST.get('user_id')
 
             if user_id is None:
-                messages.success(request, 'No user id found!')
+                messages.info(request, 'No user id found!')
                 return redirect(f'/reset-password/{token}/')
 
             if new_password != confirm_password:
-                messages.success(request, 'Password does not match!')
+                messages.error(request, 'Password does not match!')
                 return redirect(f'/reset-password/{token}/')
 
             user_obj = profile_obj.user
@@ -598,8 +607,8 @@ def ForgotPassword(request):
             user_obj = User.objects.get(email=email)
             print(user_obj)
         except User.DoesNotExist:
-            messages.error(request, 'No user found with this email address!')
-            return redirect('/forgot-password/')
+            # Replace the following line with JavaScript alert
+            return render(request, 'pc_app/forgot-password.html', {'error_message': 'No user found with this email address!'})
 
         # Generate a unique token for password reset
         token = str(uuid.uuid4())
@@ -615,8 +624,8 @@ def ForgotPassword(request):
         # Send an email with the password reset link
         send_forget_password_mail(email, token)
 
-        messages.success(
-            request, 'An email has been sent with instructions to reset your password.')
-        return redirect('/forgot-password/')
+        # Replace the following line with JavaScript alert
+        return render(request, 'pc_app/forgot-password.html', {'success_message': 'An email has been sent with instructions to reset your password.'})
 
     return render(request, 'pc_app/forgot-password.html')
+

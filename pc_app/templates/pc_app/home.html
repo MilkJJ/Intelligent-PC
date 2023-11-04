@@ -1,6 +1,7 @@
 {% extends 'pc_app/base.html' %}
 {% block content %}
 {% load custom_filters %}
+{% load static %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -11,20 +12,18 @@
 </head>
 
 <body>
-  <header style="margin-bottom: 20px;">
-    <h3>PC Build Recommendation</h3>
-  </header>
-  <form action="{% url 'home' %}" method="post">
+    <h3>PC Build Recommendation</h3><br>
+  <form action="{% url 'home' %}" method="post" style="margin-left: 170px;">
     {% csrf_token %}
     <!-- <label for="min_budget">Min Budget:</label>
     <input type="number" id="min_budget" name="min_budget"> -->
 
     <label for="max_budget">Max Budget:</label>
-    <input type="number" id="max_budget" name="max_budget" required>
-    
+    <input type="number" id="max_budget" name="max_budget" placeholder="2000" value="2000" required>
+
     <label for="preferred">Use Case Preference:</label>
     <select id="preferred" name="preferred" required>
-      <option value="">-- --</option>
+      <!-- <option value="">-- --</option> -->
       <option value="gaming">Gaming</option>
       <option value="content_creation">Content Creation</option>
       <option value="general">General Use</option>
@@ -34,61 +33,87 @@
     <button type="submit" name="build_type" value="Intel">Intel Build</button>
   </form>
 
-
   <div class="recommended-builds-container">
     {% if metadata_builds %}
     <div class="recommended-build">
-      {% for build in metadata_builds %}
-      {% if forloop.counter <= 1 %} <p><strong>Build 1:</strong></p>
-        <p><strong>CPU:</strong> {{ build.cpu.name }}</p>
-        <p><strong>GPU:</strong> {{ build.gpu.name }} + {{ build.gpu.chipset }}</p>
-        <p><strong>Motherboard:</strong> {{ build.mboard.name }}</p>
-        <p><strong>RAM:</strong> {{ build.ram.name }}</p>
-        <p><strong>Storage:</strong> {{ build.storage.name }}</p>
-        <p><strong>Power Supply:</strong> {{ build.psu.name }}</p>
-        <p><strong>Chassis:</strong> {{ build.case.name }}</p>
-        <button class="select-button"
-          onclick="selectAllComponents('{{ build.cpu.id }}', '{{ build.gpu.id }}', '{{ build.mboard.id }}', '{{ build.ram.id }}', '{{ build.psu.id }}', '{{ build.storage.id }}', '{{ build.case.id }}')">Copy
-          Build</button>
-        {% endif %}
-        {% endfor %}
-    </div>
-
-    {% if knn_rating_builds %}
-    <div class="recommended-build">
-      {% for rating_build in knn_rating_builds %}
-      {% if forloop.counter <= 1 %} <p><strong>Build 2:</strong></p>
-        <p><strong>CPU:</strong> {{ rating_build.cpu.name }}</p>
-        <p><strong>GPU:</strong> {{ rating_build.gpu.name }} - {{ rating_build.gpu.chipset }}</p>
-        <p><strong>Motherboard:</strong> {{ rating_build.mboard.name }}</p>
-        <p><strong>RAM:</strong> {{ rating_build.ram.name }}</p>
-        <p><strong>Storage:</strong> {{ rating_build.storage.name }}</p>
-        <p><strong>Power Supply:</strong> {{ rating_build.psu.name }}</p>
-        <p><strong>Chassis:</strong> {{ rating_build.case.name }}</p>
-        <button class="select-button"
-          onclick="selectAllComponents('{{ rating_build.cpu.id }}', '{{ rating_build.gpu.id }}', '{{ rating_build.mboard.id }}', '{{ rating_build.ram.id }}', '{{ rating_build.psu.id }}', '{{ rating_build.storage.id }}', '{{ rating_build.case.id }}')">Copy
-          Build</button>
-        {% endif %}
-        {% endfor %}
-    </div>
-    {% endif %}
-
-    <!-- Display 2 ratings builds if metadata does not exist -->
-    {% elif knn_rating_builds %}
-    <div class="recommended-build">
-      {% for recommended_build in knn_rating_builds %}
-      {% if forloop.counter <= 2 %} <p><strong>Build 2:</strong></p>
-        <p><strong>CPU:</strong> {{ recommended_build.cpu.name }}</p>
-        <p><strong>GPU:</strong> {{ recommended_build.gpu.name }} - {{ recommended_build.gpu.chipset }}</p>
-        <p><strong>Motherboard:</strong> {{ recommended_build.mboard.name }}</p>
-        {% endif %}
-        {% endfor %}
+      <table>
+        <h3>Recommended Builds</h3>
+        <thead>
+          <tr>
+            <th></th>
+            <th style="text-align: center;">
+              <div>
+                <img src="{% static 'images/pc_rec_image.png' %}" width="150" height="150"
+                  style="display: block; margin: 0 auto;"></img>
+                Build 1
+              </div>
+            </th>
+            <th style="text-align: center;">
+              <div>
+                <img src="{% static 'images/pc_rec_image.png' %}" width="150" height="150"
+                  style="display: block; margin: 0 auto;"></img>
+                Build 2
+              </div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="odd-row">
+            <td style="font-weight: bold;">CPU</td>
+            <td>{{ metadata_builds.0.cpu }}</td>
+            <td>{{ knn_rating_builds.0.cpu }}</td>
+          </tr>
+          <tr class="even-row">
+            <th>GPU</th>
+            <td>{{ metadata_builds.0.gpu }}</td>
+            <td>{{ knn_rating_builds.0.gpu }}</td>
+          </tr>
+          <tr class="odd-row">
+            <td style="font-weight: bold;">Motherboard</td>
+            <td>{{ metadata_builds.0.mboard }}</td>
+            <td>{{ knn_rating_builds.0.mboard }}</td>
+          </tr>
+          <tr class="even-row">
+            <th>RAM</th>
+            <td>{{ metadata_builds.0.ram }}</td>
+            <td>{{ knn_rating_builds.0.ram }}</td>
+          </tr>
+          <tr class="odd-row">
+            <td style="font-weight: bold;">Storage</td>
+            <td>{{ metadata_builds.0.storage }}</td>
+            <td>{{ knn_rating_builds.0.storage }}</td>
+          </tr>
+          <tr class="even-row">
+            <th>Power Supply</th>
+            <td>{{ metadata_builds.0.psu }}</td>
+            <td>{{ knn_rating_builds.0.psu }}</td>
+          </tr>
+          <tr class="odd-row">
+            <td style="font-weight: bold;">Chassis</td>
+            <td>{{ metadata_builds.0.case }}</td>
+            <td>{{ knn_rating_builds.0.case }}</td>
+          </tr>
+          <tr class="even-row">
+            <th>Total Price</th>
+            <td class="price">${{ metadata_builds.0.total_price }}</td>
+            <td class="price">${{ knn_rating_builds.0.total_price }}</td>
+          </tr>
+          <tr class="odd-row">
+            <td style="font-weight: bold;">Customize</t>
+            <td><button class="customize-button"
+                onclick="selectAllComponents('{{ metadata_builds.0.cpu.id }}', '{{ metadata_builds.0.gpu.id }}', '{{ metadata_builds.0.mboard.id }}', '{{ metadata_builds.0.ram.id }}', '{{ metadata_builds.0.psu.id }}', '{{ metadata_builds.0.storage.id }}', '{{ metadata_builds.0.case.id }}')"><i class="fas fa-wrench"></i>  Customize
+                this build</button></td>
+            <td><button class="customize-button"
+                onclick="selectAllComponents('{{ knn_rating_builds.0.cpu.id }}', '{{ knn_rating_builds.0.gpu.id }}', '{{ knn_rating_builds.0.mboard.id }}', '{{ knn_rating_builds.0.ram.id }}', '{{ knn_rating_builds.0.psu.id }}', '{{ knn_rating_builds.0.storage.id }}', '{{ knn_rating_builds.0.case.id }}')"><i class="fas fa-wrench"></i>  Customize
+                this build</button></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
     {% else %}
-    <p>No Build found within this budget!</p>
+    <div class="recommended-build" style="text-align: center;">Input Budget & Use case preference to get Recommendation</div>
 
-    <!-- Endif for `if metadata_builds` -->
     {% endif %}
   </div>
 </body>
@@ -97,7 +122,7 @@
 
 
 {% if rated_items %}
-
+<br><br><br>
 <h3>Ratings by other users!</h3>
 <div class="rating-container">
   {% for item in rated_items|reverse_queryset %}
@@ -146,12 +171,12 @@
 
 
   </div>
-    {% if forloop.counter|divisibleby:3 %} {# Close the row and start a new one after every 3 items #}
-  </div> <!-- rating-column -->
-  <div class="rating-container">
-    {% endif %}
-    {% endfor %}
-  </div>
+  {% if forloop.counter|divisibleby:3 %} {# Close the row and start a new one after every 3 items #}
+</div> <!-- rating-column -->
+<div class="rating-container">
+  {% endif %}
+  {% endfor %}
+</div>
 </div>
 
 
@@ -179,6 +204,56 @@
 
 
 <style>
+  /* Define the styles for odd and even rows */
+.odd-row {
+  background-color: #ffffff;
+}
+
+.even-row {
+  background-color: #f2f2f2;
+}
+
+/* Additional styling for table headers */
+th {
+  background-color: #333; /* Header background color */
+  text-align: center; /* Center-align header text */
+}
+
+/* Style the customize buttons */
+.customize-button {
+  background-color: #007bff; /* Button background color */
+  color: #fff; /* Button text color */
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+  /* Price font */
+.price {
+  font-family: sans-serif;
+  font-weight: 600;
+  color: #29b948;
+}
+
+/* Button style */
+.customize-button {
+  background-color: #F9C528;
+  border: 1px solid #F9C528;
+  border-radius: 5px;
+  padding: 10px 20px;
+  color: white;
+  font-family: sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.customize-button:hover {
+  background-color: #F7B916;
+  border-color: #F7B916;
+}
+
+
   .rating-total-price {
     float: right;
   }
@@ -226,9 +301,10 @@
   .rating-container {
     flex-wrap: wrap;
     justify-content: flex-start;
-    display:flex;
+    display: flex;
     /* space-between;*/
     padding: 0;
+    margin-bottom: 40px;
   }
 
   .rating-column {
@@ -241,12 +317,13 @@
   }
 
   .recommended-builds-container {
-    display: flex;
     flex-wrap: wrap;
+    width: 80%;
+    margin: 0 auto;
+    font-size: 14px;
     /* Allow wrapping to the next line */
     gap: 20px;
     /* Adjust the spacing between recommended builds */
-    max-width: 200%;
     /* Ensure the container doesn't exceed its parent's width */
     overflow-x: auto;
     /* Enable horizontal scrolling if needed */
@@ -258,7 +335,8 @@
     border-radius: 5px;
     padding: 20px;
     margin: 10px;
-    flex: 0 0 calc(33.33% - 20px);
+    /* flex: 0 0 calc(33.33% - 20px); */
+    max-width: 900px;
     /* Adjust the width of each build to fit three builds in a row with spacing */
     box-sizing: border-box;
   }

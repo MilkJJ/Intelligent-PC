@@ -3,125 +3,132 @@
 {% load custom_filters %}
 {% load static %}
 
-  <!DOCTYPE html>
-  <html>
-  <head>
-      <title>Favorited PC Builds</title>
-  </head>
-  <body>
-      <h2>Favorited PC Builds</h2>
-      {% if favorited_builds %}
-      <div class="pc-builds-list">
-          {% for build in favorited_builds|reverse_queryset %}
-              <div class="pc-build" style="display: flex;">
+<!DOCTYPE html>
+<html>
 
-                <div style="padding: 30px;">
-                <img src="{% static 'images/fav_build.png' %}" width="200" height="200"></img>
+<head>
+  <title>Favorited PC Builds</title>
+</head>
 
-                {% if cpu.name|lower|slice:"0:3" == "amd" %}
-                  <h3>AMD Build #{{ build.id }}</h3>
-                  {% else %}
-                  <h3>Intel Build #{{ build.id }}</h3>
-                  {% endif %}
+<body>
+  <h2>Favorited PC Builds</h2>
+  {% if favorited_builds %}
+  <div class="pc-builds-list">
+    {% for build in favorited_builds|reverse_queryset %}
+    <div class="pc-build" style="display: flex;">
 
-                  <div class="actions" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                    <form method="POST" action="{% url 'add_to_cart' build.id %}">
-                      {% csrf_token %}
-                      <button type="submit" id="add-to-cart-butt">Add to Cart</button>
-                    </form>
-                    <br>
-                    <form method="POST" action="{% url 'delete_favorited_build' build.id %}">
-                      {% csrf_token %}
-                      <button type="submit" id="unfavourite-build">Unfavourite <i class="fas fa-heart-broken"></i></button>
-                    </form>
-                  </div>
+      <div style="padding: 30px;">
+        <img src="{% static 'images/fav_build.png' %}" width="200" height="200"></img>
 
-                  </div>
+        {% if cpu.name|lower|slice:"0:3" == "amd" %}
+        <h3>AMD Build #{{ build.id }}</h3>
+        {% else %}
+        <h3>Intel Build #{{ build.id }}</h3>
+        {% endif %}
 
-                  <div style="margin-top: 20px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 5px;">
-                  <table>
-                    <tr>
-                        <th>Component</th>
-                        <th>Model</th>
-                        <th>Price</th>
-                    </tr>
-                    <tr>
-                        <td>CPU</td>
-                        <td><a href="{% url 'cpu_detail' build.cpu.id %}">{{ build.cpu }}</a></td>
-                        <td>RM {{build.cpu.price|convert_to_myr}}</td>
-                    </tr>
-                    <tr>
-                        <td>GPU</td>
-                        <td><a href="{% url 'gpu_detail' build.gpu.id %}">{{ build.gpu }}</a></td>
-                        <td>RM {{build.gpu.price|convert_to_myr}}</td>
-                    </tr>
-                    <tr>
-                        <td>RAM</td>
-                        <td><a href="{% url 'ram_detail' build.ram.id %}">{{ build.ram }}</a></td>
-                        <td>RM {{build.ram.price|convert_to_myr}}</td>
-                    </tr>
-                    <tr>
-                        <td>Motherboard</td>
-                        <td><a href="{% url 'mboard_detail' build.ram.id %}">{{ build.mboard }}</a></td>
-                        <td>RM {{build.mboard.price|convert_to_myr}}</td>
-                    </tr>
-                    <tr>
-                        <td>PSU</td>
-                        <td><a href="{% url 'psu_detail' build.psu.id %}">{{ build.psu }}</a></td>
-                        <td>RM {{build.psu.price|convert_to_myr}}</td>
-                    </tr>
-                    <tr>
-                        <td>Storage</td>
-                        <td><a href="{% url 'storage_detail' build.storage.id %}">{{ build.storage }}</a></td>
-                        <td>RM {{build.storage.price|convert_to_myr}}</td>
-                    </tr>
-                    <tr>
-                        <td>Chassis</td>
-                        <td><a href="{% url 'case_detail' build.case.id %}">{{ build.case }}</a></td>
-                        <td>RM {{build.case.price|convert_to_myr}}</td>
-                    </tr>
-                    <tr>
-                        <th>Total Price</th>
-                        <th></th>
-                        <th>RM {{ build.total_price|convert_to_myr }}</th>
-                    </tr>
-                </table>
-                </div>
-
-            </div>
-          {% endfor %}
+        <div class="actions"
+          style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+          <form method="POST" action="{% url 'add_to_cart' build.id %}">
+            {% csrf_token %}
+            <button type="submit" id="add-to-cart-butt">Add to Cart</button>
+          </form>
+          <br>
+          <form method="POST" action="{% url 'delete_favorited_build' build.id %}">
+            {% csrf_token %}
+            <button type="submit" id="unfavourite-build">Unfavourite <i class="fas fa-heart-broken"></i></button>
+          </form>
         </div>
-      {% else %}
-      <p>You have no favorited builds.</p>
-    {% endif %}
-  </body>
-  </html>
+
+      </div>
+
+      <div style="margin-top: 20px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 5px;">
+        <table>
+          <tr>
+            <th>Component</th>
+            <th>Model</th>
+            <th>Price</th>
+          </tr>
+          <tr>
+            <td>CPU</td>
+            <td><a href="{% url 'cpu_detail' build.cpu.id %}">{{ build.cpu }}</a></td>
+            <td>RM {{build.cpu.price|convert_to_myr}}</td>
+          </tr>
+          <tr>
+            <td>GPU</td>
+            <td><a href="{% url 'gpu_detail' build.gpu.id %}">{{ build.gpu }}</a></td>
+            <td>RM {{build.gpu.price|convert_to_myr}}</td>
+          </tr>
+          <tr>
+            <td>RAM</td>
+            <td><a href="{% url 'ram_detail' build.ram.id %}">{{ build.ram }}</a></td>
+            <td>RM {{build.ram.price|convert_to_myr}}</td>
+          </tr>
+          <tr>
+            <td>Motherboard</td>
+            <td><a href="{% url 'mboard_detail' build.mboard.id %}">{{ build.mboard }}</a></td>
+            <td>RM {{build.mboard.price|convert_to_myr}}</td>
+          </tr>
+          <tr>
+            <td>PSU</td>
+            <td><a href="{% url 'psu_detail' build.psu.id %}">{{ build.psu }}</a></td>
+            <td>RM {{build.psu.price|convert_to_myr}}</td>
+          </tr>
+          <tr>
+            <td>Storage</td>
+            <td><a href="{% url 'storage_detail' build.storage.id %}">{{ build.storage }}</a></td>
+            <td>RM {{build.storage.price|convert_to_myr}}</td>
+          </tr>
+          <tr>
+            <td>Chassis</td>
+            <td><a href="{% url 'case_detail' build.case.id %}">{{ build.case }}</a></td>
+            <td>RM {{build.case.price|convert_to_myr}}</td>
+          </tr>
+          <tr>
+            <th>Total Price</th>
+            <th></th>
+            <th>RM {{ build.total_price|convert_to_myr }}</th>
+          </tr>
+        </table>
+      </div>
+
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p>You have no favorited builds.</p>
+  {% endif %}
+</body>
+
+</html>
 <script>
   document.getElementById('add-to-cart-butt').addEventListener('click', function () {
-            // Display an alert when the button is pressed
-            alert('PC Build added to cart successfully!');
-        });
+    // Display an alert when the button is pressed
+    alert('PC Build added to cart successfully!');
+  });
 
-      document.addEventListener('DOMContentLoaded', function () {
-        var completeOrderButton = document.getElementById('unfavourite-build');
+  document.addEventListener('DOMContentLoaded', function () {
+    var completeOrderButton = document.getElementById('unfavourite-build');
 
-        completeOrderButton.addEventListener('click', function (e) {
-            if (!confirm('Are you sure you want to unfavourite this build?')) {
-                e.preventDefault(); // Cancel the form submission
-            }
-        });
+    completeOrderButton.addEventListener('click', function (e) {
+      if (!confirm('Are you sure you want to unfavourite this build?')) {
+        e.preventDefault(); // Cancel the form submission
+      } else {
+        alert('PC Build has been unfavourited!');
+      }
     });
+  });
+
 </script>
 <style>
-h1 {
+  h1 {
     color: #333;
-}
+  }
 
-.pc-builds-list {
+  .pc-builds-list {
     padding: 10px;
-}
+  }
 
-.pc-build {
+  .pc-build {
     background-color: #fff;
     border: 1px solid #ccc;
     border-radius: 3px;
@@ -129,8 +136,7 @@ h1 {
     max-width: 1050px;
     margin-bottom: 20px;
     box-shadow: 2px 2px 5px #888;
-}
-
+  }
 </style>
 
 {% endblock %}

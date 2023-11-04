@@ -175,7 +175,7 @@
 
 
         {% endfor %}
-        <a href="{% url 'checkout' %}" class="checkout-button">Proceed to Checkout</a>
+        <a href="{% url 'checkout' %}" id="checkout-button" class="checkout-button">Proceed to Checkout</a>
     </div>
     {% else %}
     <p class="empty-cart-message">Your cart is empty!</p>
@@ -190,6 +190,16 @@
 
         completeOrderButton.addEventListener('click', function (e) {
             if (!confirm('Are you sure you want to remove this item from cart?')) {
+                e.preventDefault(); // Cancel the form submission
+            }
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var checkoutOrderButton = document.getElementById('checkout-button');
+
+        checkoutOrderButton.addEventListener('click', function (e) {
+            if (!confirm('Proceed to checkout?')) {
                 e.preventDefault(); // Cancel the form submission
             }
         });

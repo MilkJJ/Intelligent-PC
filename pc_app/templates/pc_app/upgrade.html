@@ -24,39 +24,42 @@
 
     {% if messages %}
     {% for message in messages %}
-    <div class="alert alert-info">
-        {{message}}
+    <div class="alert alert-info" style="max-width: 1100px;">
+        {{ message }}
     </div>
     {% endfor %}
     {% endif %}
     
     <div class="upgrade-container">
-        <h1>Your Hardware Specifications</h1>
-        <div class="specs">
-            <div class="hardware">
-                <h4>CPU</h4>
-                <p>Current: {{ proc_info }}</p>
+        <div class="specs-upgrade">
+            <div class="specs">
+                <h1>Your Hardware Specs</h1>
+                <div class="hardware">
+                    <h4>Current CPU</h4>
+                    <p>{{ proc_info }}</p>
+                </div>
+                <div class="hardware">
+                    <h4>Current GPU</h4>
+                    <p>{{ gpu_info }}</p>
+                </div>
+                <div class="hardware">
+                    <h4>Current RAM</h4>
+                    {% if ram_count > 1 %}
+                    <p>{{ ram_gb|multiply:ram_count }} GB ({{ ram_gb }}GB + {{ ram_speed }}Mhz) x{{ ram_count }}</p>
+                    {% else %}
+                    <p>{{ ram_gb }} GB + {{ ram_speed }}Mhz x{{ ram_count }}</p>
+                    {% endif %}
+                </div>
             </div>
-            <div class="hardware">
-                <h4>GPU</h4>
-                    <p>Current: {{ gpu_info }}</p>
-            </div>
-            <div class="hardware">
-                <h4>RAM</h4>
-                {% if ram_count > 1 %}
-                <p>Current: {{ ram_gb|multiply:ram_count }} GB ({{ ram_gb }}GB + {{ ram_speed}}Mhz) x{{ram_count}}</p>
-                {% else %}
-                <p>Current: {{ ram_gb }} GB + {{ ram_speed }}Mhz x{{ram_count}}</p>
-                {% endif %}
-            </div>
-        </div>
 
-        <h1>Upgrade Suggestions</h1>
-        <div class="upgrade">
+            <div class="vs-divider"></div>
+
+            <div class="upgrade">
+                <h1>Upgrade Suggestions</h1>
                 <div class="hardware">
                     <h4>CPU</h4>
                     {% if cpu_upgrade %}
-                    <a href="{% url 'cpu_detail' cpu_upgrade.pk %}"><p>Suggested Upgrade: {{ cpu_upgrade }}</p></a>
+                    <a href="{% url 'cpu_detail' cpu_upgrade.pk %}"><p>{{ cpu_upgrade }}</p></a>
                     {% else %}
                     <p>No CPU found with the set budget!</p>
                     {% endif %}
@@ -64,21 +67,23 @@
                 <div class="hardware">
                     <h4>GPU</h4>
                     {% if gpu_upgrade %}
-                    <a href="{% url 'gpu_detail' gpu_upgrade.pk %}"><p>Suggested Upgrade: {{ gpu_upgrade }}</p></a>
+                    <a href="{% url 'gpu_detail' gpu_upgrade.pk %}"><p>{{ gpu_upgrade }}</p></a>
                     {% else %}
                     <p>No GPU found with the set budget!</p>
                     {% endif %}
-               
                 </div>
                 <div class="hardware">
                     <h4>RAM</h4>
                     {% if ram_upgrade %}
-                    <a href="{% url 'ram_detail' ram_upgrade.pk %}"><p>Suggested Upgrade: {{ ram_upgrade.name }} ({{ram_upgrade.memory_size }}GB + {{ram_upgrade.speed_mhz}}Mhz)
-                        x{{ram_upgrade.num_modules }}</p></a>
-                        {% else %}
-                        <p>No RAM found with the set budget!</p>
-                        {% endif %}
+                    <a href="{% url 'ram_detail' ram_upgrade.pk %}">
+                        <p>{{ ram_upgrade.name }} ({{ ram_upgrade.memory_size }}GB + {{ ram_upgrade.speed_mhz }}Mhz)
+                            x{{ ram_upgrade.num_modules }}</p>
+                    </a>
+                    {% else %}
+                    <p>No RAM found with the set budget!</p>
+                    {% endif %}
                 </div>
+            </div>
         </div>
     </div>
     <br>
@@ -88,44 +93,45 @@
 </html>
 
 <style>
-    /* Define styles for the info message */
+    .hardware h4 {
+        font-size: 20px;
+    }
+/* Define styles for the info message */
 .alert.alert-info {
-    background-color: #007BFF; /* Background color */
-    color: #FFF; /* Text color */
-    padding: 10px; /* Padding around the message */
-    border-radius: 5px; /* Rounded corners */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Box shadow for depth */
-    font-size: 16px; /* Font size */
+    background-color: #007BFF;
+    color: #FFF;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    font-size: 16px;
 }
 
-/* You can add additional styles as needed, such as text alignment, font family, etc. */
-
-
 .upgrade-container {
-    max-width: 1100px;
-    margin: 20 auto;
+    max-width: 900px;
+    /* margin: auto; */
     background-color: #fff;
     padding: 20px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     border-radius: 5px;
-    /* text-align: center; */
 }
-
 
 h1 {
     font-size: 24px;
     margin-top: 20px;
 }
 
-.specs, .upgrade {
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    /* border: 1px solid #818181; */
-    padding: 20px;
+.specs-upgrade {
+    display: flex;
+    justify-content:center;
 }
 
+.specs, .upgrade {
+    display: inline-flex;
+    flex-direction: column;
+    border: 1px solid #818181;
+    padding: 20px;
+    margin: 20px;
+}
 
 .hardware {
     background-color: #f9f9f9;
@@ -140,6 +146,5 @@ h1 {
 p {
     font-size: 16px;
 }
-
 </style>
 {% endblock %}

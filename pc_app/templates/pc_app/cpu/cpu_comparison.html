@@ -8,7 +8,7 @@
 
 <h3>CPU Comparison</h3>
 
-<div class="comp-container">
+<div class="comp-container" style="max-width: 1100px;">
     <div class="comp-box">
         <h3><a href="{% url 'cpu_detail' cpu1.pk %}">CPU: {{ cpu1.name }}</a></h3>
         <table>
@@ -120,7 +120,7 @@
 <div class="divider"></div>
 
 <h3>CPU Chart</h3>
-<div class="image-container"><img src="data:image/png;base64,{{ chart }}" alt="CPU Comparison Chart"></div>
+<div class="image-container" style="max-width: 1100px; margin-bottom: 40px;"><img src="data:image/png;base64,{{ chart }}" alt="CPU Comparison Chart"></div>
 
 
 {% endblock %}

@@ -14,18 +14,18 @@
             <!-- <div class="col-sm-3"> -->
             <!-- User Navigation -->
             <div class="pull-right">
-                <ul class="navbar-nav">
+                <ul class="navbar-nav" style="margin-top: 25px;">
                     {% if request.user.is_authenticated %}
                     <li class="dropdown profile">
                         <a href="#">Your Orders<i class="fa fa-angle-down"></i></a>
                         <ul role="menu" class="sub-menu">
-                            <li><a href="{% url 'ongoing_order' %}"></i>Ongoing</a></li>
+                            <li><a href="{% url 'ongoing_order' %}"></i>Pending</a></li>
                             <li><a href="{% url 'completed_order' %}"></i>Completed</a></li>
                         </ul>
                     </li>
 
                     <li class="dropdown profile">
-                        <a href="{% url 'upgrade' %}">Upgrade</a>
+                        <a href="{% url 'upgrade' %}">Upgrade <i class="fas fa-wrench"></i></a>
                     </li>
 
                     <li class="cart">
@@ -33,24 +33,10 @@
                             <span class="totalcart" id="gettotalcart">[{{ favorited_builds|length }}]</span>
                         </a>
                     </li>
-
-                    <li class="cart">
-                        <a href="{% url 'cart_items' %}">Cart
-                            <span class="totalcart" id="gettotalcart">[{{ cart_items|length }}]</span>
-                        </a>
-                    </li>
-
-                    <li class="dropdown profile">
-                        <a href="#">Welcome, {{ request.user.username }} <i class="fa fa-angle-down"></i></a>
-                        <ul role="menu" class="sub-menu">
-                            <li><a href="/profile/"><i class="fa fa-user"></i> Profile</a></li>
-                            <li><a href="{% url 'logout' %}"><i class="fa fa-sign-out"></i> Sign Out</a></li>
-                        </ul>
-                    </li>
-
+                    
                     {% if user.is_superuser %}
                     <li class="cart">
-                        <a href="{% url 'vendor_order_list' %}">PC Orders</a>
+                        <a href="{% url 'vendor_order_list' %}">Manage Order</a>
                     </li>
 
                     <li class="cart">
@@ -63,22 +49,22 @@
                         <a href="{% url 'login' %}"><i class="fa fa-sign-in"></i> Sign In</a>
                     </li>
                     {% endif %}
+                    
+                    <li class="cart">
+                        <a href="{% url 'cart_items' %}"><i class="fas fa-shopping-cart"></i>
+                            <span class="totalcart" id="gettotalcart">[{{ cart_items|length }}]</span>
+                        </a>
+                    </li>
+                    
+                    <li class="dropdown profile">
+                        <a href="#">Welcome, {{ request.user.username }} <i class="fa fa-angle-down"></i></a>
+                        <ul role="menu" class="sub-menu">
+                            <li><a href="/profile/"><i class="fa fa-user"></i> Profile</a></li>
+                            <li><a href="{% url 'logout' %}"><i class="fa fa-sign-out"></i> Sign Out</a></li>
+                        </ul>
+                    </li>
+
                 </ul>
-
-
-                <!-- Search Box -->
-                <!-- <div class="col-sm-6">
-                        
-                        <div class="pull-right">
-                            <form action="" method="GET">
-                                <div class="input-group search_box">
-                                    <input type="text" class="form-control" placeholder="Search" name="q"
-                                        value="{{ search }}">
-                                    <button class="btn btn-primary" type="submit"><i class="fa fa-search"></i></button>
-                                </div>
-                            </form>
-                        </div>
-                    </div> -->
 
             </div>
         </div>

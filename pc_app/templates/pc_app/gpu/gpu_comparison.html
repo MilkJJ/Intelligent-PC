@@ -13,7 +13,7 @@
         <h3><a href="{% url 'gpu_detail' gpu1.pk %}">GPU: {{ gpu1.name }}</a></h3>
         <table>
             <tr>
-                <td>Chipset <span class="icon" data-hover-text="The GPU chipset or architecture, which defines its capabilities and features" title="Hover for More Info">&#9432;</span></td>
+                <th>Chipset <span class="icon" data-hover-text="The GPU chipset or architecture, which defines its capabilities and features" title="Hover for More Info">&#9432;</span></th>
                 <td>{{ gpu1.chipset }}</td>
               </tr>
               <tr>
@@ -21,7 +21,7 @@
                 <td>{{ gpu1.memory }} GB</td>
               </tr>
               <tr>
-                <td>Core Clock <span class="icon" data-hover-text="The base clock speed of the GPU's processing cores" title="Hover for More Info">&#9432;</span></td>
+                <th>Core Clock <span class="icon" data-hover-text="The base clock speed of the GPU's processing cores" title="Hover for More Info">&#9432;</span></th>
                 <td>{{ gpu1.core_clock }} GHz</td>
               </tr>
               <tr>
@@ -29,7 +29,7 @@
                 <td>{{ gpu1.boost_clock }} Ghz </td>
               </tr>
               <tr>
-                <td>Color</td>
+                <th>Color</th>
                 <td>{{ gpu1.color }}</td>
               </tr>
               <tr>
@@ -37,7 +37,7 @@
                 <td>{{ gpu1.length }}</td>
               </tr>
               <tr>
-                <td>Price</td>
+                <th>Price</th>
                 <td>RM {{ gpu1.price|convert_to_myr }}</td>
               </tr>
         </table>
@@ -51,7 +51,7 @@
         <h3><a href="{% url 'gpu_detail' gpu2.pk %}">GPU: {{ gpu2.name }}</a></h3>
         <table>
             <tr>
-                <td>Chipset <span class="icon" data-hover-text="The GPU chipset or architecture, which defines its capabilities and features" title="Hover for More Info">&#9432;</span></td>
+                <th>Chipset <span class="icon" data-hover-text="The GPU chipset or architecture, which defines its capabilities and features" title="Hover for More Info">&#9432;</span></td>
                 <td>{{ gpu2.chipset }}</td>
               </tr>
               <tr>
@@ -59,7 +59,7 @@
                 <td>{{ gpu2.memory }} GB</td>
               </tr>
               <tr>
-                <td>Core Clock <span class="icon" data-hover-text="The base clock speed of the GPU's processing cores" title="Hover for More Info">&#9432;</span></td>
+                <th>Core Clock <span class="icon" data-hover-text="The base clock speed of the GPU's processing cores" title="Hover for More Info">&#9432;</span></td>
                 <td>{{ gpu2.core_clock }} GHz</td>
               </tr>
               <tr>
@@ -67,7 +67,7 @@
                 <td>{{ gpu2.boost_clock }} Ghz </td>
               </tr>
               <tr>
-                <td>Color</td>
+                <th>Color</td>
                 <td>{{ gpu2.color }}</td>
               </tr>
               <tr>
@@ -75,7 +75,7 @@
                 <td>{{ gpu2.length }}</td>
               </tr>
               <tr>
-                <td>Price</td>
+                <th>Price</td>
                 <td>RM {{ gpu2.price|convert_to_myr }}</td>
               </tr>
         </table>

@@ -65,7 +65,7 @@
   <h4>Update Phone No.</h4>
   {% csrf_token %}
   {{ phone_number_form.as_p }}
-  <button type="submit">Update</button>
+  <button type="submit" id="update-phone-no">Update</button>
 </form>
 
 
@@ -85,7 +85,7 @@
 <form method="post" id="password-change-form" style="display: none;"> <!-- action="{% url 'change_password' %}" -->
   {% csrf_token %}
   {{ password_change_form.as_p }}
-  <button type="submit">Change Password</button>
+  <button type="submit" id="password-change-butt">Change Password</button>
 </form>
 
 </div>
@@ -101,6 +101,17 @@
 </style>
 
 <script>
+  document.getElementById('update-phone-no').addEventListener('click', function () {
+    // Display an alert when the button is pressed
+    alert('Phone number updated successfully!');
+  });
+
+  document.getElementById('password-change-butt').addEventListener('click', function () {
+    // Display an alert when the button is pressed
+    alert('Password changed successfully!');
+  });
+
+
   document.getElementById("profile-picture-input").addEventListener("change", function () {
     const fileInput = this;
     if (fileInput.files && fileInput.files[0]) {

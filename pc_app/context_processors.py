@@ -22,7 +22,7 @@ def feedback_form_context(request):
             client = gspread.authorize(creds)
             sheet = client.open('Feedback').sheet1
             sheet.append_row(
-                [feedback_instance.rating, feedback_instance.feedbacks])
+                [feedback_instance.rating, feedback_instance.feedbacks, feedback_instance.user.username])
             # return redirect('thank_you') feedback_instance.user, 
     else:
         form = FeedbackForm()

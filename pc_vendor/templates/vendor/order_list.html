@@ -2,7 +2,7 @@
 {% extends 'pc_app/base.html' %}
 
 {% block content %}
-    <h2>Vendor Order List</h2>
+    <h2>Order Management</h2>
     
     <a href="{% url 'vendor_completed_order' %}" class="completed-orders">Completed Orders</a>
 
@@ -16,7 +16,7 @@
         {% if purchased_items %}
             {% for order in purchased_items %}
                 <li class="order-item">
-                    <a href="{% url 'vendor_order_detail' order.id %}">Order #{{ order.id }}
+                    <a href="{% url 'vendor_order_detail' order.id %}">Order #{{ order.id }}</a>
                     <span class="order-status">
                         {% if order.ready_pickup %}
                             {% if order.is_completed %}
@@ -29,7 +29,6 @@
                         {% endif %}
                     </span>
                     <span class="order-placed">Order Placed: {{ order.order_date }}</span>
-                </a>
                 </li>
             {% endfor %}
         {% else %}

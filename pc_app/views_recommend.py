@@ -33,7 +33,10 @@ def HomePage(request):
         total_budget = request.POST.get('max_budget', 99999)
         build_type = request.POST.get('build_type', 'AMD')
 
-        total_budget = float(total_budget) / 2
+        total_budget = float(total_budget) #/ 2
+
+        if total_budget < 150:
+            total_budget = 200
 
         budget_cpu = float(float(total_budget) * 0.2)
         budget_gpu = float(float(total_budget) * 0.3)
@@ -81,8 +84,10 @@ def HomePage(request):
                         for psu in meta_psus:
                             for storage in meta_storages:
                                 for case in meta_cases:
+                                    total_price = cpu.price + gpu.price + mboard.price + ram.price + psu.price + storage.price + case.price
+                                    formatted_total_price = '{:.2f}'.format(total_price)
                                     recommended_builds.append({'cpu': cpu, 'gpu': gpu, 'mboard': mboard, 'ram': ram, 'psu':psu ,
-                                                               'storage': storage,'case': case})
+                                                               'storage': storage,'case': case, 'total_price': formatted_total_price})
             
         metadata_builds = random.sample(recommended_builds, 2)
 
@@ -190,8 +195,10 @@ def HomePage(request):
                             for storage in recommended_storages:
                                 for psu in recommended_psus:
                                     for case in recommended_cases:
+                                        total_price = cpu.price + gpu.price + mboard.price + ram.price + psu.price + storage.price + case.price
+                                        formatted_total_price = '{:.2f}'.format(total_price)
                                         recommended_build = {'cpu': cpu, 'gpu': gpu, 'mboard': mboard, 'ram': ram, 'psu':psu ,
-                                                                            'storage': storage,'case': case}
+                                                                            'storage': storage,'case': case, 'total_price': formatted_total_price}
                                         knn_recommended_builds.append(recommended_build)
 
             random.shuffle(knn_recommended_builds)
@@ -353,7 +360,7 @@ def knn_training_rating(users, components, pivot_table_entries, component_type, 
     elif component_type == 'case':
         comp_preference = component_id_to_index.get(pc.case.id)
 
-    print(component_type, 'id:', comp_preference)
+    #print(component_type, 'id:', comp_preference)
 
     # Create a Nearest Neighbors model with cosine similarity metric (you can use other metrics).
     nn_model = NearestNeighbors(metric='cosine', algorithm='brute')

@@ -17,7 +17,7 @@
     </header>
     <br>
 
-    Check your items / Select payment / Select Delivery / Before placing Order
+    <i class="fas fa-check-circle step-icon"></i> Check your items > Select payment > Select Delivery > Place Order
     <div class="checkout-container">
         <div class="checkout">
             {% for cart_item in cart_items %}
@@ -91,7 +91,7 @@
                 Grand Total: RM {{ total_price }}
             </div>
 
-            <button type="submit">Place Order</button>
+            <button class="place-order-button" type="submit" id="place-order-button">Place Order</button>
             </form>
         </div>
 
@@ -103,9 +103,9 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        var completeOrderButton = document.getElementById('place-order-button');
+        var placeOrderButton = document.getElementById('place-order-button');
 
-        completeOrderButton.addEventListener('click', function (e) {
+        placeOrderButton.addEventListener('click', function (e) {
             if (!confirm('Are you sure you want to place order?')) {
                 e.preventDefault(); // Cancel the form submission
             }
@@ -173,7 +173,7 @@
         margin-top: 20px;
     }
 
-    button {
+    .place-order-button {
         display: block;
         margin: 20px auto;
         padding: 10px 20px;

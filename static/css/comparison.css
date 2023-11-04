@@ -1,76 +1,87 @@
 .icon {
-    display: inline-block;
-    position: relative;
-  }
+  display: inline-block;
+  position: relative;
+}
 
-  .icon:hover::before {
-    content: attr(data-hover-text);
-    position: absolute;
-    background: #333;
-    color: #fff;
-    padding: 5px;
-    border-radius: 5px;
-    transform: translateX(-50%);
-    opacity: 0;
-    visibility: visible;
-    transition: opacity 0.3s, visibility 0.3s;
-    font-size: 12px;
-  }
-  
-  .icon:hover::before {
-    left: 20px;
-    opacity: 1;
-    display:inline-block;
-    visibility: visible;
-  }
+.icon:hover::before {
+  content: attr(data-hover-text);
+  position: absolute;
+  background: #333;
+  color: #fff;
+  padding: 5px;
+  border-radius: 5px;
+  transform: translateX(-50%);
+  opacity: 0;
+  visibility: visible;
+  transition: opacity 0.3s, visibility 0.3s;
+  font-size: 12px;
+}
 
-  .image-container {
-text-align: center; /* Center the content horizontally */
+.icon:hover::before {
+  left: 20px;
+  opacity: 1;
+  display: inline-block;
+  visibility: visible;
+}
+
+.image-container {
+  text-align: center;
+  /* Center the content horizontally */
+  max-width: 1100px;
+  margin-bottom: 40px;
 }
 
 .image-container img {
-display: block; /* Make the image a block element */
-margin: 0 auto; /* Center the image horizontally within its container */
+  display: block;
+  /* Make the image a block element */
+  margin: 0 auto;
+  /* Center the image horizontally within its container */
 }
 
 
-  .divider {
-height: 1px; /* Set the height of the line */
-background-color: #d5d5d5; /* Set the color of the line */
-margin: 20px 0; /* Adjust margin as needed */
-border: none; /* Remove any borders */
+.divider {
+  height: 1px;
+  /* Set the height of the line */
+  background-color: #d5d5d5;
+  /* Set the color of the line */
+  margin: 20px 0;
+  /* Adjust margin as needed */
+  border: none;
+  /* Remove any borders */
 }
 
 /* Add this CSS to your stylesheet */
 .comp-container {
-display: flex;
-justify-content: space-between;
-align-items: top;
+  display: flex;
+  justify-content: space-between;
+  align-items: top;
+  max-width: 1100px;
 }
 
 .comp-box {
-width: 45%;
-display: inline-block;
-vertical-align: top;
-background-color: #fdfbfb;
-padding: 20px;
-margin: 10px;
-border: 1px solid #ddd;
-border-radius: 5px;
+  width: 45%;
+  display: inline-block;
+  vertical-align: top;
+  background-color: #fdfbfb;
+  padding: 20px;
+  margin: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
 }
 
 .vs-divider {
-display: flex;
-align-items: center;
-justify-content: center;
-font-size: 24px;
-margin: 0 10px;
-color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  margin: 0 10px;
+  color: #333;
 }
 
 .button-container {
-text-align: center; /* Center the content horizontally */
-margin-top: 15px;
+  text-align: center;
+  /* Center the content horizontally */
+  margin-top: 15px;
 }
 
 button.select-button {

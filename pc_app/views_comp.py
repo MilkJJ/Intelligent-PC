@@ -20,8 +20,8 @@ class CPUListView(ListView):
     def get_queryset(self):
         queryset = super().get_queryset()
         search_query = self.request.GET.get('search_query')
-        min_clock_speed = self.request.GET.get('min_clock_speed')
-        min_core_count = self.request.GET.get('min_core_count')
+        # min_clock_speed = self.request.GET.get('min_clock_speed')
+        # min_core_count = self.request.GET.get('min_core_count')
         min_price = self.request.GET.get('min_price')
         max_price = self.request.GET.get('max_price')
 
@@ -30,22 +30,21 @@ class CPUListView(ListView):
             queryset = queryset.filter(name__icontains=search_query)
 
         # Filter CPUs by minimum clock speed
-        if min_clock_speed:
-            queryset = queryset.filter(core_clock__gte=float(min_clock_speed))
+        # if min_clock_speed:
+        #     queryset = queryset.filter(core_clock__gte=float(min_clock_speed))
+
+        # Filter CPUs by minimum core count
+        # if min_core_count:
+        #     queryset = queryset.filter(core_count__gte=int(min_core_count))
 
         if min_price:
             min_price = float(min_price)
-            min_price /= 4.55  # Divide by 4.55 as in your original code
+            # min_price /= 4.55
             queryset = queryset.filter(price__gte=min_price)
 
         if max_price:
             max_price = float(max_price)
-            max_price /= 4.55  # Divide by 4.55 as in your original code
             queryset = queryset.filter(price__lte=max_price)
-
-        # Filter CPUs by minimum core count
-        if min_core_count:
-            queryset = queryset.filter(core_count__gte=int(min_core_count))
 
         return queryset
 
