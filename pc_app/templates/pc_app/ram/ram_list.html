@@ -11,6 +11,9 @@
       <label for="search_query">RAM Model:</label>
       <input type="text" name="search_query" placeholder="Search RAM Model...">
 
+      <input type="number" name="min_price" id="min_price" min="1" style="width: 100px;" placeholder="Min Price">
+      <input type="number" name="max_price" id="max_price" min="1" style="width: 100px;" placeholder="Max Price">
+
       <button type="submit">Search</button>
       <button type="button" onclick="resetSearch()">Reset</button>
     </form>
@@ -47,7 +50,7 @@
             <img src="https://www.intel.com/content/dam/logos/logo-energyblue-1x1.png" width="100" height="100">
             <!-- Replace with the actual path to Intel image -->
             {% else %}
-            <img src="default-image.png"> <!-- Add a default image path if needed -->
+            <img src="https://i5.walmartimages.com/seo/CORSAIR-Vengeance-RGB-Pro-SL-16GB-2-x-8GB-288-Pin-PC-RAM-DDR4-3600-PC4-28800-Desktop-Memory-Model-CMH16GX4M2D3600C18_af4c5407-7664-43fb-86cc-c78301e1d211.5fffabeb0f109f02b95e6679d4eb69f2.jpeg" width="100" height="100"> <!-- Add a default image path if needed -->
             {% endif %}
           </div>
           <p><a href="{% url 'ram_detail' ram.pk %}">{{ ram.name }}</a></p>

@@ -151,15 +151,22 @@ class GPUListView(ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        # sort_by = self.request.GET.get(
-        #     'sort_by', 'name')  # Default sorting by name
-        # return queryset.order_by(sort_by)
         search_query = self.request.GET.get('search_query')
+        min_price = self.request.GET.get('min_price')
+        max_price = self.request.GET.get('max_price')
 
         # Check if a search query is provided
         if search_query:
             # Filter GPUs by name containing the search query (case-insensitive)
             queryset = queryset.filter(name__icontains=search_query)
+
+        if min_price:
+            min_price = float(min_price)
+            queryset = queryset.filter(price__gte=min_price)
+
+        if max_price:
+            max_price = float(max_price)
+            queryset = queryset.filter(price__lte=max_price)
 
         return queryset
 
@@ -194,13 +201,13 @@ def gpu_detail(request, pk):
                                 pivot_table.save()
                                 rates = pivot_table.ratings
                             else:
-                                print('CPU already rated!')
+                                print('GPU already rated!')
                         else:
-                            print('Purchase CPU before Rating!')
+                            print('Purchase GPU before Rating!')
                     else:
-                        print('Add to cart CPU before Rating!')
+                        print('Purchase GPU before Rating!')
                 except CartItem.DoesNotExist:
-                    print('Add to cart CPU before Rating!')
+                    print('Purchase GPU before Rating!')
 
     else:
         rating_form = GPUPivotTableForm()
@@ -263,9 +270,7 @@ class MBoardListView(ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        # sort_by = self.request.GET.get(
-        #     'sort_by', 'name')  # Default sorting by name
-        # return queryset.order_by(sort_by)
+
         search_query = self.request.GET.get('search_query')
 
         # Check if a search query is provided
@@ -478,14 +483,14 @@ class StorageListView(ListView):
     model = StorageDrive
     template_name = 'pc_app/storage/storage_list.html'
     context_object_name = 'storages'
-    paginate_by = 30  # Adjust the number of CPUs displayed per page as needed
+    paginate_by = 30  # Adjust the number of Storage displayed per page as needed
 
     def get_queryset(self):
         queryset = super().get_queryset()
         search_query = self.request.GET.get('search_query')
 
         if search_query:
-            # Filter CPUs by name containing the search query (case-insensitive)
+            # Filter Storage by name containing the search query (case-insensitive)
             queryset = queryset.filter(name__icontains=search_query)
 
         return queryset
@@ -585,13 +590,11 @@ class PSUListView(ListView):
     model = PSU
     template_name = 'pc_app/psu/psu_list.html'
     context_object_name = 'psus'
-    paginate_by = 30  # Adjust the number of CPUs displayed per page as needed
+    paginate_by = 30
 
     def get_queryset(self):
         queryset = super().get_queryset()
         search_query = self.request.GET.get('search_query')
-        min_clock_speed = self.request.GET.get('min_clock_speed')
-        min_core_count = self.request.GET.get('min_core_count')
         min_price = self.request.GET.get('min_price')
         max_price = self.request.GET.get('max_price')
 
@@ -696,14 +699,14 @@ class CaseListView(ListView):
     model = PCase
     template_name = 'pc_app/case/case_list.html'
     context_object_name = 'cases'
-    paginate_by = 30  # Adjust the number of CPUs displayed per page as needed
+    paginate_by = 30  # Adjust the number of case displayed per page as needed
 
     def get_queryset(self):
         queryset = super().get_queryset()
         search_query = self.request.GET.get('search_query')
 
         if search_query:
-            # Filter CPUs by name containing the search query (case-insensitive)
+            # Filter case by name containing the search query (case-insensitive)
             queryset = queryset.filter(name__icontains=search_query)
 
         return queryset

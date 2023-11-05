@@ -111,7 +111,7 @@ def mark_ready_pickup(request, order_id):
 
     return redirect('vendor_order_list')
 
-
+@user_passes_test(is_vendor, login_url='/login/')
 def upload_csv(request):
     # Retrieve any success messages
     success_messages = messages.get_messages(request)

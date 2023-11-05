@@ -11,6 +11,9 @@
       <label for="search_query">Storage Model:</label>
       <input type="text" name="search_query" placeholder="Search Storage Model...">
 
+      <input type="number" name="min_price" id="min_price" min="1" style="width: 100px;" placeholder="Min Price">
+      <input type="number" name="max_price" id="max_price" min="1" style="width: 100px;" placeholder="Max Price">
+
       <button type="submit">Search</button>
       <button type="button" onclick="resetSearch()">Reset</button>
     </form>
@@ -40,14 +43,14 @@
       <div class="component-box text-center">
         <a href="{% url 'storage_detail' storage.pk %}">
           <div class="coverpage">
-            {% if storage.name|lower|slice:"0:3" == "amd" %}
-            <img src="https://www.amd.com/system/files/2020-06/amd-default-social-image-1200x628.jpg" width="100"
+            {% if storage.type|lower|slice:"0:3" == "ssd" %}
+            <img src="https://www.pcworld.com/wp-content/uploads/2023/04/Crucial-P3-hero-1.jpg?quality=50&strip=all&w=1024" width="100"
               height="100"> <!-- Replace with the actual path to AMD image -->
-            {% elif storage.name|lower|slice:"0:5" == "intel" %}
+            {% elif storage.type|lower|slice:"0:5" == "intel" %}
             <img src="https://www.intel.com/content/dam/logos/logo-energyblue-1x1.png" width="100" height="100">
             <!-- Replace with the actual path to Intel image -->
             {% else %}
-            <img src="default-image.png"> <!-- Add a default image path if needed -->
+            <img src="https://pngimg.com/uploads/hard_disc/Hard%20disc%20PNG,%20hard%20drive%20PNG%20images%20free%20download,%20HDD%20PNG_PNG12048.png" width="100" height="100"> <!-- Add a default image path if needed -->
             {% endif %}
           </div>
           <p><a href="{% url 'storage_detail' storage.pk %}">{{ storage.name }}</a></p>

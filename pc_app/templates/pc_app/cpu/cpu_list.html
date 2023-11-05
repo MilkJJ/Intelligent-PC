@@ -47,7 +47,7 @@
         <a href="{% url 'cpu_detail' cpu.pk %}">
           <div class="coverpage">
             {% if cpu.name|lower|slice:"0:3" == "amd" %}
-            <img src="https://www.amd.com/system/files/2020-06/amd-default-social-image-1200x628.jpg" width="100"
+            <img src="https://www.amd.com/system/files/2020-06/amd-default-social-image-1200x628.jpg" width="110"
               height="100"> <!-- Replace with the actual path to AMD image -->
             {% elif cpu.name|lower|slice:"0:5" == "intel" %}
             <img src="https://www.intel.com/content/dam/logos/logo-energyblue-1x1.png" width="100" height="100">

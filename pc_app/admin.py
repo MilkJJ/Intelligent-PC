@@ -5,6 +5,7 @@ from .models import *
 @admin.register(CPU)
 @admin.register(InitialRec)
 @admin.register(CartItem)
+@admin.register(Profile)
 class YourModelAdmin(admin.ModelAdmin):
     search_fields = ['id']
 

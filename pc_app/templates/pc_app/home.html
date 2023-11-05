@@ -269,14 +269,17 @@ th {
 
   .profile-picture-container {
     margin-right: 10px;
-    /* Optional spacing between profile picture and username */
+    width: 200px;
+    height: 200px;
+    overflow: hidden;
+    border-radius: 50%;
+    cursor: pointer;
   }
 
   .profile-picture {
-    max-width: 50px;
-    /* Adjust the size as needed */
-    max-height: 50px;
-    /* Adjust the size as needed */
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover;
   }
 
   .username {

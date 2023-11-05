@@ -8,14 +8,14 @@ from django.utils import timezone
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
+    profile_picture = models.ImageField(upload_to='profile_pics/', default='https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png')
     phone_number = models.CharField(max_length=20, blank=True, null=True)
     forgot_password_token = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
     is_password_reset_token_used = models.BooleanField(default='False')
 
     def __str__(self) -> str:
-        return self.user.email
+        return self.user.username
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
