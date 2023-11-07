@@ -9,8 +9,11 @@
     <form method="get">
         <label for="order_id">Search for Order Number:</label>
         <input type="text" id="order_id" name="order_id" placeholder="Search Order Number">
-        <input type="submit" value="Search">
+        <button type="submit" value="Search">Search</button>
+        <button type="submit" name="desc_button" value="desc">Sort by Latest</button>
     </form>
+
+    
 
     <ul class="order-list">
         {% if purchased_items %}

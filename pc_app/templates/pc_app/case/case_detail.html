@@ -64,22 +64,14 @@
           </tr>
           <tr>
             <td>Price</td>
-            <td>RM {{ case.price|convert_to_myr }}</td>
+            <td>$ {{ case.price|convert_to_myr }}</td>
           </tr>
           <!-- Add more Case details as needed -->
         </table>
 
         <br>
         <div class="rating">
-          {% if messages %}
-          <ul class="messages">
-            {% for message in messages %}
-            <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
-            {% endfor %}
-          </ul>
-          {% endif %}
-
-
+          {% if cart_item %}
           <form method="post" name="case_rating_form">
             {% csrf_token %}
             <select type="hidden" name="caseRating" id="case_ratingInput" style="display: none;">
@@ -91,7 +83,7 @@
             </select>
 
             <div id="star-rating">
-              Re-rate:
+              Rate Chassis:<br>
               <ul class="btn btn-light list-inline rating-list">
                 <li onclick="updateRating(5)" data-order-rating="5"><i class="fa fa-star" id="star-5"
                     title="Rate 5"></i>
@@ -113,8 +105,11 @@
 
             <button type="submit" name="case_rating_form">Rate</button>
           </form>
-
-          <button class="select-button" onclick="selectComponent('case', '{{ case.id }}')">Add to Customize</button>
+          <button class="select-button" onclick="selectComponent('case', '{{ case.id }}')"><span class="fas fa-cog"></span> Select Chassis</button>
+          
+          {% else %}
+          <button class="select-button1" onclick="selectComponent('case', '{{ case.id }}')"><span class="fas fa-cog"></span> Select Chassis</button>
+          {% endif %}
 
         </div>
 

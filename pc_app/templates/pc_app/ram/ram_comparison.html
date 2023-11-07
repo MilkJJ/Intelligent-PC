@@ -30,7 +30,7 @@
               </tr>
               <tr>
                 <td>Price per GB <span class="icon" data-hover-text="The cost of RAM per gigabyte, helping you assess the value for your money" title="Hover for More Info">&#9432;</span></td>
-                <td>RM {{ ram1.price_per_gb }}</td>
+                <td>$ {{ ram1.price_per_gb }}</td>
               </tr>
               <tr>
                 <td>Color </td>
@@ -46,11 +46,11 @@
               </tr>
               <tr>
                 <td>Price</td>
-                <td>RM {{ ram1.price|convert_to_myr }}</td>
+                <td>$ {{ ram1.price|convert_to_myr }}</td>
               </tr>
         </table>
         <div class="button-container"><button class="select-button"
-                onclick="selectComponent('ram', '{{ ram1.id }}')">Select for Customization</button></div>
+                onclick="selectComponent('ram', '{{ ram1.id }}')"><span class="fas fa-cog"></span> Select to Configuration</button></div>
     </div>
 
     <div class="vs-divider">VS</div>
@@ -76,7 +76,7 @@
               </tr>
               <tr>
                 <td>Price per GB <span class="icon" data-hover-text="The cost of RAM per gigabyte, helping you assess the value for your money" title="Hover for More Info">&#9432;</span></td>
-                <td>RM {{ ram2.price_per_gb }}</td>
+                <td>$ {{ ram2.price_per_gb }}</td>
               </tr>
               <tr>
                 <td>Color </td>
@@ -92,11 +92,16 @@
               </tr>
               <tr>
                 <td>Price</td>
-                <td>RM {{ ram2.price|convert_to_myr }}</td>
+                <td>$ {{ ram2.price|convert_to_myr }}</td>
               </tr>
         </table>
         <div class="button-container"><button class="select-button"
-                onclick="selectComponent('ram', '{{ ram2.id }}')">Select for Customization</button></div>
+                onclick="selectComponent('ram', '{{ ram2.id }}')"><span class="fas fa-cog"></span> Select to Configuration</button>
+              
+                <a href="{% url 'ram_detail' ram1.pk %}">
+                  <button class="remove-comp-button"><i class="fas fa-times fa-1x"></i></button>
+              </a>
+              </div>
 
     </div>
 </div>

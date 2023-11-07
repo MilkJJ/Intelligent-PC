@@ -34,11 +34,11 @@
           </tr>
           <tr>
             <td>Price</td>
-            <td>RM {{ mboard1.price|convert_to_myr }}</td>
+            <td>$ {{ mboard1.price|convert_to_myr }}</td>
           </tr>
         </table>
         <div class="button-container"><button class="select-button"
-                onclick="selectComponent('mboard', '{{ mboard1.id }}')">Select for Customization</button></div>
+                onclick="selectComponent('mboard', '{{ mboard1.id }}')"><span class="fas fa-cog"></span> Select to Configuration</button></div>
     </div>
 
     <div class="vs-divider">VS</div>
@@ -68,11 +68,16 @@
           </tr>
           <tr>
             <td>Price</td>
-            <td>RM {{ mboard2.price|convert_to_myr }}</td>
+            <td>$ {{ mboard2.price|convert_to_myr }}</td>
           </tr>
         </table>
         <div class="button-container"><button class="select-button"
-                onclick="selectComponent('mboard', '{{ mboard2.id }}')">Select for Customization</button></div>
+                onclick="selectComponent('mboard', '{{ mboard2.id }}')"><span class="fas fa-cog"></span> Select to Configuration</button>
+              
+                <a href="{% url 'mboard_detail' mboard1.pk %}">
+                  <button class="remove-comp-button"><i class="fas fa-times fa-1x"></i></button>
+              </a>
+              </div>
     </div>
 </div>
 

@@ -13,28 +13,30 @@
 
             <!-- <div class="col-sm-3"> -->
             <!-- User Navigation -->
-            <div class="pull-right">
                 <ul class="navbar-nav" style="margin-top: 25px;">
+                    <li class="dropdown profile">
+                        <a href="{% url 'home' %}"><span class="fas fa-home"></span> Home</a>
+                    </li>
                     {% if request.user.is_authenticated %}
                     <li class="dropdown profile">
                         <a href="#">Your Orders<i class="fa fa-angle-down"></i></a>
-                        <ul role="menu" class="sub-menu">
-                            <li><a href="{% url 'ongoing_order' %}"></i>Pending</a></li>
+                        <ul role="menu" class="sub-menu" style="padding: 10px;">
+                            <li><a href="{% url 'ongoing_order' %}"></i>Pending <span class="totalcart" id="gettotalcart">[{{ pending_order_count }}]</span></a></li>
                             <li><a href="{% url 'completed_order' %}"></i>Completed</a></li>
                         </ul>
                     </li>
 
                     <li class="dropdown profile">
-                        <a href="{% url 'upgrade' %}">Upgrade <i class="fas fa-wrench"></i></a>
+                        <a href="{% url 'upgrade' %}"><i class="fas fa-wrench"></i> Upgrade</a>
                     </li>
 
                     <li class="cart">
-                        <a href="{% url 'favorited_builds' %}">Favorited Builds <i class="fa fa-heart"></i>
-                            <span class="totalcart" id="gettotalcart">[{{ favorited_builds|length }}]</span>
+                        <a href="{% url 'favorited_builds' %}"><i class="fa fa-heart"></i> Saved Builds 
+                            <span class="totalcart" id="gettotalcart">[{{ favorited_builds_count }}]</span>
                         </a>
                     </li>
                     
-                    {% if user.is_superuser %}
+                    <!-- {% if user.is_superuser %}
                     <li class="cart">
                         <a href="{% url 'vendor_order_list' %}">Manage Order</a>
                     </li>
@@ -42,7 +44,7 @@
                     <li class="cart">
                         <a href="{% url 'upload_csv' %}">Upload Component</a>
                     </li>
-                    {% endif %}
+                    {% endif %} -->
 
                     {% else %}
                     <li class="profile">
@@ -52,21 +54,25 @@
                     
                     <li class="cart">
                         <a href="{% url 'cart_items' %}"><i class="fas fa-shopping-cart"></i>
-                            <span class="totalcart" id="gettotalcart">[{{ cart_items|length }}]</span>
+                            <span class="totalcart" id="gettotalcart">[{{ cart_items_count }}]</span>
                         </a>
                     </li>
                     
                     <li class="dropdown profile">
                         <a href="#">Welcome, {{ request.user.username }} <i class="fa fa-angle-down"></i></a>
-                        <ul role="menu" class="sub-menu">
+                        <ul role="menu" class="sub-menu" style="padding: 10px;">
                             <li><a href="/profile/"><i class="fa fa-user"></i> Profile</a></li>
+                            {% if user.is_superuser %}
+                            <li><a href="{% url 'vendor_order_list' %}"><span class="fas fa-clipboard"></span> <!-- Clipboard icon for order management -->
+                                 Manage Order</a></li>
+                            <li><a href="{% url 'upload_csv' %}"><span class="fas fa-upload"></span> Components</a></li>
+                            {% endif %}
                             <li><a href="{% url 'logout' %}"><i class="fa fa-sign-out"></i> Sign Out</a></li>
                         </ul>
                     </li>
 
                 </ul>
 
-            </div>
         </div>
     </div>
 </div>

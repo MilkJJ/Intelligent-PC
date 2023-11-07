@@ -54,11 +54,11 @@
             </tr>
             <tr>
                 <td>Price</td>
-                <td>RM {{ cpu1.price|convert_to_myr }}</td>
+                <td>$ {{ cpu1.price|convert_to_myr }}</td>
             </tr>
         </table>
         <div class="button-container"><button class="select-button"
-                onclick="selectComponent('cpu', '{{ cpu1.id }}')">Select for Customization</button></div>
+                onclick="selectComponent('cpu', '{{ cpu1.id }}')"><span class="fas fa-cog"></span> Select to Configuration</button></div>
     </div>
 
     <div class="vs-divider">VS</div>
@@ -108,11 +108,15 @@
             </tr>
             <tr>
                 <td>Price</td>
-                <td>RM {{ cpu2.price|convert_to_myr }}</td>
+                <td>$ {{ cpu2.price|convert_to_myr }}</td>
             </tr>
         </table>
-        <div class="button-container"><button class="select-button"
-                onclick="selectComponent('cpu', '{{ cpu2.id }}')">Select for Customization</button></div>
+        <div class="button-container">
+            <button class="select-button" onclick="selectComponent('cpu', '{{ cpu2.id }}')"><span class="fas fa-cog"></span> Select to Configuration</button>
+            <a href="{% url 'cpu_detail' cpu1.pk %}">
+                <button class="remove-comp-button"><i class="fas fa-times fa-1x"></i></button>
+            </a>
+            </div>
 
     </div>
 </div>
@@ -121,6 +125,5 @@
 
 <h3>CPU Chart</h3>
 <div class="image-container" style="max-width: 1100px; margin-bottom: 40px;"><img src="data:image/png;base64,{{ chart }}" alt="CPU Comparison Chart"></div>
-
 
 {% endblock %}

@@ -22,9 +22,9 @@ def vendor_completed_order(request):
     purchased_items = []
 
     if order_id:
-        purchased_items = CartItem.objects.filter(is_completed=1, id=order_id)
+        purchased_items = CartItem.objects.filter(is_completed=1, id=order_id).order_by('-order_date')
     else:
-        purchased_items = CartItem.objects.filter(is_completed=1)
+        purchased_items = CartItem.objects.filter(is_completed=1).order_by('-order_date')
 
     context = {'purchased_items': purchased_items,
                'order_id': order_id}
@@ -36,16 +36,28 @@ def vendor_completed_order(request):
 def vendor_order_list(request):
     # Retrieve all CartItem objects with is_purchased=True
     order_id = request.GET.get('order_id')
+    desc_order = request.GET.get('desc_button')
     purchased_items = []
 
-    if order_id:
-        purchased_items = CartItem.objects.filter(
-            is_purchased=1, is_completed=0, id=order_id)
-        if not purchased_items:
-            purchased_items = None
+    if desc_order == 'desc':
+        if order_id:
+            purchased_items = CartItem.objects.filter(
+                is_purchased=1, is_completed=0, id=order_id).order_by('-order_date')
+            if not purchased_items:
+                purchased_items = None
+        else:
+            purchased_items = CartItem.objects.filter(
+                is_purchased=1, is_completed=0).order_by('-order_date')
+            
     else:
-        purchased_items = CartItem.objects.filter(
-            is_purchased=1, is_completed=0)
+        if order_id:
+            purchased_items = CartItem.objects.filter(
+                is_purchased=1, is_completed=0, id=order_id)
+            if not purchased_items:
+                purchased_items = None
+        else:
+            purchased_items = CartItem.objects.filter(
+                is_purchased=1, is_completed=0)
 
     # You can now use 'purchased_items' in your template to display the purchased items
     context = {'purchased_items': purchased_items,

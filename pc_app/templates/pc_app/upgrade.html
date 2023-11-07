@@ -12,13 +12,13 @@
 </head>
 
 <body>
-    <h2>PC Component Upgrade</h2>
+    <h2>CPU / GPU / RAM Upgrade</h2>
     
     <form method="post">
         {% csrf_token %}
-        <h1>Enter Your Budget</h1>
-        <input type="number" name="budget" placeholder="Enter your budget">
-        <button type="submit">Check for Upgrades</button>
+        <h1>Input Total Budget</h1>
+        <input type="number" name="budget" placeholder="$1000">
+        <button type="submit">Look for Upgrades</button>
     </form>
     <br>
 
@@ -59,7 +59,12 @@
                 <div class="hardware">
                     <h4>CPU</h4>
                     {% if cpu_upgrade %}
-                    <a href="{% url 'cpu_detail' cpu_upgrade.pk %}"><p>{{ cpu_upgrade }}</p></a>
+                    <a href="{% url 'cpu_detail' cpu_upgrade.pk %}" target="_blank"><p>{{ cpu_upgrade }}</p></a>
+                    <div class="price">${{ cpu_upgrade.price|convert_to_myr }}</div>
+                    <div style="float: right;">
+                        
+                        <button class="select-button" onclick="selectComponent('cpu', '{{ cpu_upgrade.pk }}')">Select <span class="fas fa-cog"></span></button>
+                    </div>
                     {% else %}
                     <p>No CPU found with the set budget!</p>
                     {% endif %}
@@ -67,7 +72,12 @@
                 <div class="hardware">
                     <h4>GPU</h4>
                     {% if gpu_upgrade %}
-                    <a href="{% url 'gpu_detail' gpu_upgrade.pk %}"><p>{{ gpu_upgrade }}</p></a>
+                    <a href="{% url 'gpu_detail' gpu_upgrade.pk %}" target="_blank"><p>{{ gpu_upgrade }}</p></a>
+                    <div class="price">${{ gpu_upgrade.price|convert_to_myr }}</div>
+                    <div style="float: right;">
+                        
+                        <button class="select-button" onclick="selectComponent('gpu', '{{ gpu_upgrade.pk }}')">Select <span class="fas fa-cog"></span></button>
+                    </div>
                     {% else %}
                     <p>No GPU found with the set budget!</p>
                     {% endif %}
@@ -75,10 +85,16 @@
                 <div class="hardware">
                     <h4>RAM</h4>
                     {% if ram_upgrade %}
-                    <a href="{% url 'ram_detail' ram_upgrade.pk %}">
+                    <a href="{% url 'ram_detail' ram_upgrade.pk %}" target="_blank">
                         <p>{{ ram_upgrade.name }} ({{ ram_upgrade.memory_size }}GB + {{ ram_upgrade.speed_mhz }}Mhz)
                             x{{ ram_upgrade.num_modules }}</p>
                     </a>
+                    <div class="price">${{ ram_upgrade.price|convert_to_myr }}</div>
+                    <div style="float: right;">
+
+                        <button class="select-button" onclick="selectComponent('ram', '{{ ram_upgrade.pk }}')">Select <span class="fas fa-cog"></span></button>
+                    </div>
+                    
                     {% else %}
                     <p>No RAM found with the set budget!</p>
                     {% endif %}
@@ -93,6 +109,11 @@
 </html>
 
 <style>
+      .price {
+    font-family: sans-serif;
+    font-size: 16px;
+    color: #1bb73d;
+  }
     .hardware h4 {
         font-size: 20px;
     }
@@ -110,9 +131,9 @@
     max-width: 900px;
     /* margin: auto; */
     background-color: #fff;
-    padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    border-radius: 5px;
+    /* padding: 20px; */
+    /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 5px; */
 }
 
 h1 {
@@ -128,9 +149,11 @@ h1 {
 .specs, .upgrade {
     display: inline-flex;
     flex-direction: column;
-    border: 1px solid #818181;
     padding: 20px;
     margin: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
 }
 
 .hardware {
@@ -139,8 +162,8 @@ h1 {
     border-radius: 5px;
     padding: 10px;
     margin: 10px;
-    width: 300px;
-    height: 130px;
+    /* width: 300px; */
+    height: auto;
 }
 
 p {

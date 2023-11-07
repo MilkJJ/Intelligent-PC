@@ -34,15 +34,15 @@
               </tr>
               <tr>
                 <td>Price Per GB <span class="icon" data-hover-text="The cost of the drive per gigabyte, helping you evaluate the value for your storage needs" title="Hover for More Info">&#9432;</span></td>
-                <td>RM {{ storage1.price_per_gb }}</td>
+                <td>$ {{ storage1.price_per_gb }}</td>
               </tr>
               <tr>
                 <td>Price</td>
-                <td>RM {{ storage1.price|convert_to_myr }}</td>
+                <td>$ {{ storage1.price|convert_to_myr }}</td>
               </tr>
         </table>
         <div class="button-container"><button class="select-button"
-                onclick="selectComponent('storage', '{{ storage1.id }}')">Select for Customization</button></div>
+                onclick="selectComponent('storage', '{{ storage1.id }}')"><span class="fas fa-cog"></span> Select to Configuration</button></div>
     </div>
 
     <div class="vs-divider">VS</div>
@@ -72,15 +72,20 @@
               </tr>
               <tr>
                 <td>Price Per GB <span class="icon" data-hover-text="The cost of the drive per gigabyte, helping you evaluate the value for your storage needs" title="Hover for More Info">&#9432;</span></td>
-                <td>RM {{ storage2.price_per_gb }}</td>
+                <td>$ {{ storage2.price_per_gb }}</td>
               </tr>
               <tr>
                 <td>Price</td>
-                <td>RM {{ storage2.price|convert_to_myr }}</td>
+                <td>$ {{ storage2.price|convert_to_myr }}</td>
               </tr>
         </table>
         <div class="button-container"><button class="select-button"
-                onclick="selectComponent('storage', '{{ storage2.id }}')">Select for Customization</button></div>
+                onclick="selectComponent('storage', '{{ storage2.id }}')"><span class="fas fa-cog"></span> Select to Configuration</button>
+              
+                <a href="{% url 'storage_detail' storage1.pk %}">
+                  <button class="remove-comp-button"><i class="fas fa-times fa-1x"></i></button>
+              </a>
+              </div>
 
     </div>
 </div>

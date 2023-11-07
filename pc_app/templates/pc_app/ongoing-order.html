@@ -32,7 +32,7 @@
 
         <div class="order-card">
             {% if item.ready_pickup %}
-            <p class="order-status" style="font-size: 20px;">Order #{{ item.id }}
+            <p class="order-status" style="font-size: 23px;">Order #{{ item.id }}
                 <a style="float: right;" href="https://maps.app.goo.gl/NGa7twqsRdXr4RbC7" target="_blank">
                     <img src="https://t3.ftcdn.net/jpg/03/89/41/20/360_F_389412076_Q7PfDcEUUNdxe4r6OMS9DTzAv9xNiThz.jpg"
                         width="80" height="80" />
@@ -58,42 +58,42 @@
                     <tr>
                         <td>CPU</td>
                         <td><a href="{% url 'cpu_detail' item.cpu.id %}">{{ item.cpu.name }}</a></td>
-                        <td>RM {{item.cpu.price|convert_to_myr}}</td>
+                        <td>$ {{item.cpu.price|convert_to_myr}}</td>
                     </tr>
                     <tr>
                         <td>GPU</td>
                         <td><a href="{% url 'gpu_detail' item.gpu.id %}">{{ item.gpu.name }}</a></td>
-                        <td>RM {{item.gpu.price|convert_to_myr}}</td>
+                        <td>$ {{item.gpu.price|convert_to_myr}}</td>
                     </tr>
                     <tr>
                         <td>RAM</td>
                         <td><a href="{% url 'ram_detail' item.ram.id %}">{{ item.ram.name }}</a></td>
-                        <td>RM {{item.ram.price|convert_to_myr}}</td>
+                        <td>$ {{item.ram.price|convert_to_myr}}</td>
                     </tr>
                     <tr>
                         <td>Motherboard</td>
                         <td><a href="{% url 'mboard_detail' item.ram.id %}">{{ item.mboard.name }}</a></td>
-                        <td>RM {{item.mboard.price|convert_to_myr}}</td>
+                        <td>$ {{item.mboard.price|convert_to_myr}}</td>
                     </tr>
                     <tr>
                         <td>PSU</td>
                         <td><a href="{% url 'psu_detail' item.psu.id %}">{{ item.psu.name }}</a></td>
-                        <td>RM {{item.psu.price|convert_to_myr}}</td>
+                        <td>$ {{item.psu.price|convert_to_myr}}</td>
                     </tr>
                     <tr>
                         <td>Storage</td>
                         <td><a href="{% url 'storage_detail' item.storage.id %}">{{ item.storage.name }}</a></td>
-                        <td>RM {{item.storage.price|convert_to_myr}}</td>
+                        <td>$ {{item.storage.price|convert_to_myr}}</td>
                     </tr>
                     <tr>
                         <td>Chassis</td>
                         <td><a href="{% url 'case_detail' item.case.id %}">{{ item.case.name }}</a></td>
-                        <td>RM {{item.case.price|convert_to_myr}}</td>
+                        <td>$ {{item.case.price|convert_to_myr}}</td>
                     </tr>
                     <tr>
                         <th>Total Price</th>
                         <th></th>
-                        <th>RM {{ item.total_price|convert_to_myr }}</th>
+                        <th>$ {{ item.total_price|convert_to_myr }}</th>
                     </tr>
                 </table>
 
@@ -153,7 +153,7 @@
     .order-card {
         border: 1px solid #ddd;
         margin: 1rem;
-        padding: 1rem;
+        padding: 2rem;
         border-radius: 5px;
         box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
         background-color: white;
@@ -181,10 +181,6 @@
         padding: 10px 20px;
         border-radius: 5px;
         cursor: pointer;
-    }
-
-    .rate-section {
-        float: right;
     }
 
     .rate-label {

@@ -4,9 +4,10 @@ register = template.Library()
 
 @register.filter
 def convert_to_myr(price_usd):
-    conversion_rate = 4
+    conversion_rate = 1
     price_myr = price_usd * conversion_rate
-    return float("{:.2f}".format(price_myr))
+    price_myr = float("{:.2f}".format(price_myr))
+    return price_myr
 
 @register.filter
 def multiply(value, arg):

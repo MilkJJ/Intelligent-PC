@@ -1,6 +1,20 @@
+from .models import *
 from .forms import FeedbackForm
 from oauth2client.service_account import ServiceAccountCredentials
 import gspread
+
+def cart_items_count(request):
+    if request.user.is_authenticated:
+        cart_items = CartItem.objects.filter(user=request.user, is_purchased=False)
+        favorited_builds = FavouritedPC.objects.filter(user=request.user)
+        pending_order = CartItem.objects.filter(
+        user=request.user, is_purchased=True, is_completed=False)
+
+        return {'cart_items_count': cart_items.count(),
+                'favorited_builds_count': favorited_builds.count(),
+                'pending_order_count': pending_order.count(),
+                }
+    return {}
 
 def feedback_form_context(request):
     # Feedback form

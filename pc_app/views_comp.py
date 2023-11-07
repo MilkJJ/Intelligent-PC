@@ -29,14 +29,6 @@ class CPUListView(ListView):
             # Filter CPUs by name containing the search query (case-insensitive)
             queryset = queryset.filter(name__icontains=search_query)
 
-        # Filter CPUs by minimum clock speed
-        # if min_clock_speed:
-        #     queryset = queryset.filter(core_clock__gte=float(min_clock_speed))
-
-        # Filter CPUs by minimum core count
-        # if min_core_count:
-        #     queryset = queryset.filter(core_count__gte=int(min_core_count))
-
         if min_price:
             min_price = float(min_price)
             # min_price /= 4.55
@@ -52,7 +44,7 @@ def cpu_detail(request, pk):
     cpu = CPU.objects.get(pk=pk)
     other_cpus = CPU.objects.exclude(pk=pk)
     user = request.user
-    
+    cart_item = CartItem.objects.filter(user=user, cpu=cpu, is_purchased=True).first()
     pivot_table, created = CPUPivotTable.objects.get_or_create(user=user, cpu=cpu)
 
     if(pivot_table.ratings != 0):
@@ -91,7 +83,7 @@ def cpu_detail(request, pk):
     else:
         rating_form = CPUPivotTableForm()
 
-    return render(request, 'pc_app/cpu/cpu_detail.html', {'cpu': cpu, 'other_cpus': other_cpus, 'rating_form': rating_form, 'rate': int(rates)})
+    return render(request, 'pc_app/cpu/cpu_detail.html', {'cpu': cpu, 'other_cpus': other_cpus, 'rating_form': rating_form, 'rate': int(rates), 'cart_item': cart_item})
 
 
 def cpu_comparison(request, pk1, pk2):
@@ -175,7 +167,7 @@ def gpu_detail(request, pk):
     gpu = GPU.objects.get(pk=pk)
     other_gpus = GPU.objects.exclude(pk=pk)
     user = request.user
-    
+    cart_item = CartItem.objects.filter(user=user, gpu=gpu, is_purchased=True).first()
     pivot_table, created = GPUPivotTable.objects.get_or_create(user=user, gpu=gpu)
 
     if(pivot_table.ratings != 0):
@@ -212,7 +204,7 @@ def gpu_detail(request, pk):
     else:
         rating_form = GPUPivotTableForm()
 
-    return render(request, 'pc_app/gpu/gpu_detail.html', {'gpu': gpu, 'other_gpus': other_gpus, 'rating_form': rating_form, 'rate': int(rates)})
+    return render(request, 'pc_app/gpu/gpu_detail.html', {'gpu': gpu, 'other_gpus': other_gpus, 'rating_form': rating_form, 'rate': int(rates), 'cart_item': cart_item})
 
 
 def gpu_comparison(request, pk1, pk2):
@@ -221,9 +213,9 @@ def gpu_comparison(request, pk1, pk2):
     all_gpus = GPU.objects.exclude(pk__in=[pk1, pk2])
     
 # Prepare data for the chart
-    attributes = ['CoreClock', 'BoostClock', 'Memory']
-    values_gpu1 = [gpu1.core_clock, gpu1.boost_clock, gpu1.memory]
-    values_gpu2 = [gpu2.core_clock, gpu2.boost_clock, gpu2.memory]
+    attributes = ['CoreClock', 'BoostClock']
+    values_gpu1 = [gpu1.core_clock, gpu1.boost_clock]
+    values_gpu2 = [gpu2.core_clock, gpu2.boost_clock]
 
     # Create a horizontal bar chart
     num_attributes = len(attributes)
@@ -285,7 +277,7 @@ def mboard_detail(request, pk):
     mboard = Motherboard.objects.get(pk=pk)
     other_mboards = Motherboard.objects.exclude(pk=pk)
     user = request.user
-
+    cart_item = CartItem.objects.filter(user=user, mboard=mboard, is_purchased=True).first()
     pivot_table, created = MotherboardPivotTable.objects.get_or_create(user=user, mboard=mboard)
 
     if(pivot_table.ratings != 0):
@@ -322,7 +314,7 @@ def mboard_detail(request, pk):
     else:
         rating_form = MotherboardPivotTableForm()
 
-    return render(request, 'pc_app/mboard/mboard_detail.html', {'mboard': mboard, 'other_mboards': other_mboards, 'rating_form': rating_form, 'rate': int(rates)})
+    return render(request, 'pc_app/mboard/mboard_detail.html', {'mboard': mboard, 'other_mboards': other_mboards, 'rating_form': rating_form, 'rate': int(rates), 'cart_item': cart_item})
 
 
 def mboard_comparison(request, pk1, pk2):
@@ -392,7 +384,7 @@ def ram_detail(request, pk):
     ram = Memory.objects.get(pk=pk)
     other_rams = Memory.objects.exclude(pk=pk)
     user = request.user
-
+    cart_item = CartItem.objects.filter(user=user, ram=ram, is_purchased=True).first()
     pivot_table, created = RAMPivotTable.objects.get_or_create(user=user, ram=ram)
 
     if(pivot_table.ratings != 0):
@@ -429,7 +421,7 @@ def ram_detail(request, pk):
     else:
         rating_form = RAMPivotTableForm()
 
-    return render(request, 'pc_app/ram/ram_detail.html', {'ram': ram, 'other_rams': other_rams, 'rating_form': rating_form, 'rate': int(rates)})
+    return render(request, 'pc_app/ram/ram_detail.html', {'ram': ram, 'other_rams': other_rams, 'rating_form': rating_form, 'rate': int(rates), 'cart_item': cart_item})
 
 
 def ram_comparison(request, pk1, pk2):
@@ -438,9 +430,9 @@ def ram_comparison(request, pk1, pk2):
     all_rams = Memory.objects.exclude(pk__in=[pk1, pk2])
     
 # Prepare data for the chart
-    attributes = ['Speed_Mhz', 'MemorySize']
-    values_ram1 = [ram1.speed_mhz, ram1.memory_size]
-    values_ram2 = [ram2.speed_mhz, ram2.memory_size]
+    attributes = ['Speed_Mhz']
+    values_ram1 = [ram1.speed_mhz]
+    values_ram2 = [ram2.speed_mhz]
 
     # Create a horizontal bar chart
     num_attributes = len(attributes)
@@ -499,7 +491,7 @@ def storage_detail(request, pk):
     storage = StorageDrive.objects.get(pk=pk)
     other_storages = StorageDrive.objects.exclude(pk=pk)
     user = request.user
-
+    cart_item = CartItem.objects.filter(user=user, storage=storage, is_purchased=True).first()
     pivot_table, created = StoragePivotTable.objects.get_or_create(user=user, storage=storage)
 
     if(pivot_table.ratings != 0):
@@ -536,7 +528,7 @@ def storage_detail(request, pk):
     else:
         rating_form = StoragePivotTableForm()
 
-    return render(request, 'pc_app/storage/storage_detail.html', {'storage': storage, 'other_storages': other_storages, 'rating_form': rating_form, 'rate': int(rates)})
+    return render(request, 'pc_app/storage/storage_detail.html', {'storage': storage, 'other_storages': other_storages, 'rating_form': rating_form, 'rate': int(rates), 'cart_item': cart_item})
 
 
 def storage_comparison(request, pk1, pk2):
@@ -608,7 +600,7 @@ def psu_detail(request, pk):
     psu = PSU.objects.get(pk=pk)
     other_psus = PSU.objects.exclude(pk=pk)
     user = request.user
-
+    cart_item = CartItem.objects.filter(user=user, psu=psu, is_purchased=True).first()
     pivot_table, created = PSUPivotTable.objects.get_or_create(user=user, psu=psu)
 
     if(pivot_table.ratings != 0):
@@ -645,7 +637,7 @@ def psu_detail(request, pk):
     else:
         rating_form = PSUPivotTableForm()
 
-    return render(request, 'pc_app/psu/psu_detail.html', {'psu': psu, 'other_psus': other_psus, 'rating_form': rating_form, 'rate': int(rates)})
+    return render(request, 'pc_app/psu/psu_detail.html', {'psu': psu, 'other_psus': other_psus, 'rating_form': rating_form, 'rate': int(rates), 'cart_item': cart_item})
 
 
 def psu_comparison(request, pk1, pk2):
@@ -715,7 +707,7 @@ def case_detail(request, pk):
     case = PCase.objects.get(pk=pk)
     other_cases = PCase.objects.exclude(pk=pk)
     user = request.user
-
+    cart_item = CartItem.objects.filter(user=user, case=case, is_purchased=True).first()
     pivot_table, created = PCasePivotTable.objects.get_or_create(user=user, case=case)
 
     if(pivot_table.ratings != 0):
@@ -752,7 +744,7 @@ def case_detail(request, pk):
     else:
         rating_form = PCasePivotTableForm()
 
-    return render(request, 'pc_app/case/case_detail.html', {'case': case, 'other_cases': other_cases, 'rating_form': rating_form, 'rate': int(rates)})
+    return render(request, 'pc_app/case/case_detail.html', {'case': case, 'other_cases': other_cases, 'rating_form': rating_form, 'rate': int(rates), 'cart_item': cart_item})
 
 
 def case_comparison(request, pk1, pk2):

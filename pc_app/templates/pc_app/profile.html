@@ -46,7 +46,11 @@
 <div class="profile-picture-container">
   <label for="profile-picture-input">
     {% if user.profile.profile_picture %}
+    {% if user.profile.profile_picture == 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png' %}
+    <img class="profile-picture" src="{{ user.profile.profile_picture }}" alt="PFP">
+    {% else %}
     <img class="profile-picture" src="{{ user.profile.profile_picture.url }}" alt="PFP">
+    {% endif %}
     {% else %}
     <img class="profile-picture"
       src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="Default PFP">
