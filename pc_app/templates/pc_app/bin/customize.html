@@ -4,17 +4,12 @@
     <h3 style="color:white" ;>PC Configuration</h3>
 </div>
 
-<div style="padding: 15px">
-<button onclick="clearSelections()" class="config-button">Clear <i class="fas fa-trash-alt"></i></button>
-<button onclick="toggleFavorite()" class="config-button">Save <i class="fa fa-heart"></i></button>
-<button onclick="addToCart()" class="config-button">Add to Cart <i class="fas fa-shopping-cart"></i></button>
-</div>
-
+<br> 
 <table>
     <thead>
         <tr>
-            <th>Component</th>
-            <th>Selected Model</th>
+            <th>Pick Component</th>
+            <th>Selected Component Model</th>
         </tr>
     </thead>
     <tbody>
@@ -69,6 +64,23 @@
     </tbody>
 </table>
 
+<div style="padding: 15px; float: right;">
+    <button onclick="clearSelections()" id="clear-build" class="config-button"><i class="fas fa-trash-alt"></i> Clear</button>
+    <button onclick="toggleFavorite()" class="config-button"><i class="fa fa-heart"></i> Save Build</button>
+    <button onclick="addToCart()" class="config-button"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
+    </div>
+
+<script>
+        document.addEventListener('DOMContentLoaded', function () {
+        var placeOrderButton = document.getElementById('clear-build');
+
+        placeOrderButton.addEventListener('click', function (e) {
+            if (!confirm('Are you sure to clear configuration?')) {
+                e.preventDefault(); // Cancel the form submission
+            }
+        });
+    });
+</script>
 
 <style>
     .config-button {
@@ -107,7 +119,7 @@
         background-color: #f2f2f2;
     }
 
-    a {
+    th a {
         text-decoration: none;
         color: #0073e6;
     }
@@ -128,7 +140,5 @@
                 border-radius: 5px;
             }
      */
-    button:hover {
-        background-color: #0059b3;
-    }
+
 </style>

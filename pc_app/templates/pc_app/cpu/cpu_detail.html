@@ -18,7 +18,7 @@
 
 <body>
   <header>
-    <h3>CPU #{{cpu.id}} Specifications</h3>
+    <h3>CPU #{{cpu.name}} Specifications</h3>
   </header>
 
   <main>
@@ -38,54 +38,70 @@
         <table>
           <thead>
             <tr>
-              <th>Model <span class="icon" data-hover-text="The name or model of the Central processing unit (CPU)" title="Hover for More Info">&#9432;</span></th>
+              <th>Model <span class="icon" data-hover-text="The name or model of the Central processing unit (CPU)"
+                  title="Hover for More Info">&#9432;</span></th>
               <th>{{ cpu.name }}</th>
             </tr>
           </thead>
           <tr>
-            <td>Cores <span class="icon" data-hover-text="The number of processing cores" title="Hover for More Info">&#9432;</span></td>
+            <td>Cores <span class="icon" data-hover-text="The number of processing cores"
+                title="Hover for More Info">&#9432;</span></td>
             <td>{{ cpu.core_count }}</td>
           </tr>
           <tr>
-            <td>Base Clock <span class="icon" data-hover-text="The base clock speed of the processing cores" title="Hover for More Info">&#9432;</span></td>
+            <td>Base Clock <span class="icon" data-hover-text="The base clock speed of the processing cores"
+                title="Hover for More Info">&#9432;</span></td>
             <td>{{ cpu.core_clock }} GHz</td>
           </tr>
           <tr>
-            <td>Max Turbo Clock <span class="icon" data-hover-text="The maximum clock speed the cores can reach under load" title="Hover for More Info">&#9432;</span></td>
+            <td>Max Turbo Clock <span class="icon"
+                data-hover-text="The maximum clock speed the cores can reach under load"
+                title="Hover for More Info">&#9432;</span></td>
             <td>{{ cpu.boost_clock }} GHz</td>
           </tr>
           <tr>
-            <td>Integrated Graphics <span class="icon" data-hover-text="Information about the integrated graphics processing unit (GPU)" title="Hover for More Info">&#9432;</span></td>
+            <td>Integrated Graphics <span class="icon"
+                data-hover-text="Information about the integrated graphics processing unit (GPU)"
+                title="Hover for More Info">&#9432;</span></td>
             <td>{{ cpu.graphics }}</td>
           </tr>
           <tr>
-            <td>Thermal Design Power <span class="icon" data-hover-text="The maximum amount of power the cpu is designed to consume and dissipate as heat" title="Hover for More Info">&#9432;</span></td>
+            <td>Thermal Design Power <span class="icon"
+                data-hover-text="The maximum amount of power the cpu is designed to consume and dissipate as heat"
+                title="Hover for More Info">&#9432;</span></td>
             <td>{{ cpu.tdp }}</td>
           </tr>
           <tr>
-            <td>Multithreading <span class="icon" data-hover-text="Indicates whether the cpu supports simultaneous multithreading, which can improve multitasking and performance" title="Hover for More Info">&#9432;</span></td>
+            <td>Multithreading <span class="icon"
+                data-hover-text="Indicates whether the cpu supports simultaneous multithreading, which can improve multitasking and performance"
+                title="Hover for More Info">&#9432;</span></td>
             <td>{% if cpu.smt %}Yes{% else %}No{% endif %}</td>
           </tr>
           <tr>
-            <td>Socket <span class="icon" data-hover-text="The type of CPU socket or interface used for connecting the cpu to the motherboard" title="Hover for More Info">&#9432;</span></td>
+            <td>Socket <span class="icon"
+                data-hover-text="The type of CPU socket or interface used for connecting the cpu to the motherboard"
+                title="Hover for More Info">&#9432;</span></td>
             <td>{{ cpu.socket }}</td>
           </tr>
           <tr>
             <td>Price</td>
-            <td>RM {{ cpu.price|convert_to_myr }}</td>
+            <td>$ {{ cpu.price|convert_to_myr }}</td>
           </tr>
           <!-- Add more CPU details as needed -->
         </table>
 
         <br>
+
+
         <div class="rating">
-          {% if messages %}
+          {% if cart_item %}
+          <!-- {% if messages %}
           <ul class="messages">
             {% for message in messages %}
             <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
             {% endfor %}
           </ul>
-          {% endif %}
+          {% endif %} -->
 
 
           <form method="post" name="cpu_rating_form">
@@ -99,7 +115,7 @@
             </select>
 
             <div id="star-rating">
-              Rate:
+              Rate CPU:<br>
               <ul class="btn btn-light list-inline rating-list">
                 <li onclick="updateRating(5)" data-order-rating="5"><i class="fa fa-star" id="star-5"
                     title="Rate 5"></i>
@@ -120,12 +136,14 @@
             </div>
 
             <button type="submit" id="rate-button" name="cpu_rating_form">Rate</button>
+            
           </form>
-
-          <button class="select-button" onclick="selectComponent('cpu', '{{ cpu.id }}')">Add to Customize</button>
-
+          <button class="select-button" onclick="selectComponent('cpu', '{{ cpu.id }}')"><span class="fas fa-cog"></span> Select CPU</button>
+          
+          {% else %}
+          <button class="select-button1" onclick="selectComponent('cpu', '{{ cpu.id }}')"><span class="fas fa-cog"></span> Select CPU</button>
+          {% endif %}
         </div>
-
       </section>
 
       <section class="component-comparison">
@@ -196,28 +214,28 @@
 
 <style>
   .messages {
-  padding: 10px;
-  margin: 0;
-  font-size: 14px;
-}
+    padding: 10px;
+    margin: 0;
+    font-size: 14px;
+  }
 
-/* Style each individual message item */
-.messages li {
-  padding: 5px;
-}
+  /* Style each individual message item */
+  .messages li {
+    padding: 5px;
+  }
 
-/* Style the different message tags (e.g., success, error) */
-.messages .success {
-  border-radius: 3px;
-  background-color: #4CAF50;
-  color: white;
-}
+  /* Style the different message tags (e.g., success, error) */
+  .messages .success {
+    border-radius: 3px;
+    background-color: #4CAF50;
+    color: white;
+  }
 
-.messages .error {
-  border-radius: 5px;
-  background-color: #F44336;
-  color: white;
-}
+  .messages .error {
+    border-radius: 5px;
+    background-color: #F44336;
+    color: white;
+  }
 
   .icon {
     display: inline-block;
@@ -237,11 +255,11 @@
     transition: opacity 0.3s, visibility 0.3s;
     font-size: 12px;
   }
-  
+
   .icon:hover::before {
     left: 20px;
     opacity: 1;
-    display:inline-block;
+    display: inline-block;
     visibility: visible;
   }
 
@@ -300,9 +318,16 @@
     /* Align the button with the top of the form button */
     float: right;
     /* Place it at the right of the container */
-    margin-top: 75px;
+    margin-top: 76px;
     /* Add some spacing between the buttons */
   }
+
+  
+  .select-button1 {
+    vertical-align: bottom;
+    float: right;
+  }
+
 
   .component-container {
     display: flex;

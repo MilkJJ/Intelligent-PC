@@ -6,7 +6,6 @@
 <div class="col-sm-12">
   <div class="titleheader">
     <h3 class="h2header text-center">Storage ({{ storages|length }})</h3>
-    <a href="#" id="sortToggle" onclick="toggleSorting()">Sort A to Z</a>
     <form method="get" action="{% url 'storage_list' %}">
       <label for="search_query">Storage Model:</label>
       <input type="text" name="search_query" placeholder="Search Storage Model...">
@@ -14,7 +13,7 @@
       <input type="number" name="min_price" id="min_price" min="1" style="width: 100px;" placeholder="Min Price">
       <input type="number" name="max_price" id="max_price" min="1" style="width: 100px;" placeholder="Max Price">
 
-      <button type="submit">Search</button>
+      <button type="submit"><span class="fas fa-search"></span></button>
       <button type="button" onclick="resetSearch()">Reset</button>
     </form>
   </div>
@@ -54,8 +53,8 @@
             {% endif %}
           </div>
           <p><a href="{% url 'storage_detail' storage.pk %}">{{ storage.name }}</a></p>
-          <p>RM{{ storage.price|convert_to_myr }}</p>
-          <button class="select-button" onclick="selectComponent('storage', '{{ storage.id }}')">Add</button>
+          <p>${{ storage.price|convert_to_myr }}</p>
+          <button class="select-button" onclick="selectComponent('storage', '{{ storage.id }}')"><span class="fas fa-cog"></span> Select</button>
       </div>
       {% if forloop.counter|divisibleby:5 and not forloop.last %} <!-- Create a new row after every 5 Storages -->
     </div>

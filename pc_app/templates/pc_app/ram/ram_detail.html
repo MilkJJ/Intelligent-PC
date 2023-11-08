@@ -61,7 +61,7 @@
           </tr>
           <tr>
             <td>Price per GB <span class="icon" data-hover-text="The cost of RAM per gigabyte, helping you assess the value for your money" title="Hover for More Info">&#9432;</span></td>
-            <td>RM {{ ram.price_per_gb }}</td>
+            <td>$ {{ ram.price_per_gb }}</td>
           </tr>
           <tr>
             <td>Color </td>
@@ -77,22 +77,15 @@
           </tr>
           <tr>
             <td>Price</td>
-            <td>RM {{ ram.price|convert_to_myr }}</td>
+            <td>$ {{ ram.price|convert_to_myr }}</td>
           </tr>
           <!-- Add more RAM details as needed -->
         </table>
 
         <br>
         <div class="rating">
-          {% if messages %}
-          <ul class="messages">
-            {% for message in messages %}
-            <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
-            {% endfor %}
-          </ul>
-          {% endif %}
 
-
+          {% if cart_item %}
           <form method="post" name="ram_rating_form">
             {% csrf_token %}
             <select type="hidden" name="ramRating" id="ram_ratingInput" style="display: none;">
@@ -104,7 +97,7 @@
             </select>
 
             <div id="star-rating">
-              Re-rate:
+              Rate RAM:<br>
               <ul class="btn btn-light list-inline rating-list">
                 <li onclick="updateRating(5)" data-order-rating="5"><i class="fa fa-star" id="star-5"
                     title="Rate 5"></i>
@@ -127,7 +120,11 @@
             <button type="submit" name="ram_rating_form">Rate</button>
           </form>
 
-          <button class="select-button" onclick="selectComponent('ram', '{{ ram.id }}')">Add to Customize</button>
+          <button class="select-button" onclick="selectComponent('ram', '{{ ram.id }}')"><span class="fas fa-cog"></span> Select RAM</button>
+          
+          {% else %}
+          <button class="select-button1" onclick="selectComponent('ram', '{{ ram.id }}')"><span class="fas fa-cog"></span> Select RAM</button>
+          {% endif %}
 
         </div>
 

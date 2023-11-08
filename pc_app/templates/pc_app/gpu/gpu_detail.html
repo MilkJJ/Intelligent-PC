@@ -68,22 +68,14 @@
           </tr>
           <tr>
             <td>Price</td>
-            <td>RM {{ gpu.price|convert_to_myr }}</td>
+            <td>$ {{ gpu.price|convert_to_myr }}</td>
           </tr>
           <!-- Add more GPU details as needed -->
         </table>
 
         <br>
         <div class="rating">
-          {% if messages %}
-          <ul class="messages">
-            {% for message in messages %}
-            <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
-            {% endfor %}
-          </ul>
-          {% endif %}
-
-
+          {% if cart_item %}
           <form method="post" name="gpu_rating_form">
             {% csrf_token %}
             <select type="hidden" name="gpuRating" id="gpu_ratingInput" style="display: none;">
@@ -95,7 +87,7 @@
             </select>
 
             <div id="star-rating">
-              Re-rate:
+              Rate GPU:<br>
               <ul class="btn btn-light list-inline rating-list">
                 <li onclick="updateRating(5)" data-order-rating="5"><i class="fa fa-star" id="star-5"
                     title="Rate 5"></i>
@@ -118,7 +110,11 @@
             <button type="submit" name="gpu_rating_form">Rate</button>
           </form>
 
-          <button class="select-button" onclick="selectComponent('gpu', '{{ gpu.id }}')">Add to Customize</button>
+          <button class="select-button" onclick="selectComponent('gpu', '{{ gpu.id }}')"><span class="fas fa-cog"></span> Select GPU</button>
+          
+          {% else %}
+          <button class="select-button1" onclick="selectComponent('gpu', '{{ gpu.id }}')"><span class="fas fa-cog"></span> Select GPU</button>
+          {% endif %}
 
         </div>
 

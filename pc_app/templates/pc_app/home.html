@@ -12,107 +12,277 @@
 </head>
 
 <body>
-    <h3>PC Build Recommendation</h3><br>
-  <form action="{% url 'home' %}" method="post" style="margin-left: 170px;">
+  <div class="titleheader">
+  <h3>PC Build Recommendation</h3>
+  <a href="#ratings-section" class="scroll-button">See Ratings</a>
+</div>
+  <br>
+  <div id="popupForm" class="popup-form">
+    <button id="closeFormButton" class="close-button">X</button>
+  <form action="{% url 'home' %}" method="post" class="custom-form">
     {% csrf_token %}
-    <!-- <label for="min_budget">Min Budget:</label>
-    <input type="number" id="min_budget" name="min_budget"> -->
+    
+    <label for="max_budget">Enter Your Budget:</label>
+    <div class="input-group">
+        <span class="input-prefix">$</span>
+        <input type="number" id="max_budget" name="max_budget" placeholder="2000" value="2000" required>
+    </div>
 
-    <label for="max_budget">Max Budget:</label>
-    <input type="number" id="max_budget" name="max_budget" placeholder="2000" value="2000" required>
-
-    <label for="preferred">Use Case Preference:</label>
+    <label for="preferred">Pick a Use Case</label>
     <select id="preferred" name="preferred" required>
-      <!-- <option value="">-- --</option> -->
-      <option value="gaming">Gaming</option>
-      <option value="content_creation">Content Creation</option>
-      <option value="general">General Use</option>
+        <option value="gaming">Gaming</option>
+        <option value="content_creation">Content Creation</option>
+        <option value="general">General Use</option>
     </select>
 
-    <button type="submit" name="build_type" value="AMD">AMD Build</button>
-    <button type="submit" name="build_type" value="Intel">Intel Build</button>
-  </form>
+    <label>Choose a Build</label>
+    <div class="button-group">
+        <button type="submit" name="build_type" value="AMD" class="custom-button amd-button">AMD Build</button>
+        <button type="submit" name="build_type" value="Intel" class="custom-button intel-button">Intel Build</button>
+    </div>
+</form>
+</div>
+
+<style>
+.popup-form {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 20px;
+  z-index: 1000;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.custom-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #e9921f;
+  font-weight: bold;
+  color:white;
+}
+
+/* Add any additional styling as needed */
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #777;
+}
+
+ .custom-form {
+    width: 300px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f5f5f5;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.custom-form label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.input-group {
+    display: flex;
+    align-items: center;
+}
+
+.input-prefix {
+    padding: 5px;
+    background-color: #ccc;
+    border: 1px solid #aaa;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+
+.input-group input {
+    flex: 1;
+    padding: 5px;
+    border: 1px solid #aaa;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+.custom-form select {
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #aaa;
+    border-radius: 5px;
+}
+
+.button-group {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 10px;
+}
+
+.custom-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.amd-button {
+    background-color: #ff4400;
+    color: #fff;
+}
+
+.intel-button {
+    background-color: #007bff;
+    color: #fff;
+}
+</style>
 
   <div class="recommended-builds-container">
     {% if metadata_builds %}
     <div class="recommended-build">
       <table>
+        <button id="openFormButton" class="custom-button"><i class="fas fa-sticky-note"></i>
+          Input Preference <i class="fas fa-dollar-sign"></i>
+        </button>
         <h3>Recommended Builds</h3>
         <thead>
           <tr>
             <th></th>
             <th style="text-align: center;">
               <div>
-                <img src="{% static 'images/pc_rec_image.png' %}" width="150" height="150"
+                {% if metadata_builds.0.cpu.name|lower|slice:"0:3" == "amd"%}
+                <img src="{% static 'images/amd_rec.png' %}" width="150" height="150"
                   style="display: block; margin: 0 auto;"></img>
+                {% else %}
+                <img src="{% static 'images/intel_rec.png' %}" width="150" height="150"
+                  style="display: block; margin: 0 auto;"></img>
+                  {% endif %}
                 Build 1
               </div>
             </th>
-            <th style="text-align: center;">
+            {% if knn_rating_builds %}<th style="text-align: center;">
               <div>
-                <img src="{% static 'images/pc_rec_image.png' %}" width="150" height="150"
+                {% if knn_rating_builds.0.cpu.name|lower|slice:"0:3" == "amd"%}
+                <img src="{% static 'images/amd_rec.png' %}" width="150" height="150"
                   style="display: block; margin: 0 auto;"></img>
+                {% else %}
+                <img src="{% static 'images/intel_rec.png' %}" width="150" height="150"
+                  style="display: block; margin: 0 auto;"></img>
+                  {% endif %}
                 Build 2
               </div>
-            </th>
+            </th>{% endif %}
           </tr>
         </thead>
         <tbody>
           <tr class="odd-row">
             <td style="font-weight: bold;">CPU</td>
             <td>{{ metadata_builds.0.cpu }}</td>
-            <td>{{ knn_rating_builds.0.cpu }}</td>
+            {% if knn_rating_builds %}<td>{{ knn_rating_builds.0.cpu }}</td>{% endif %}
           </tr>
           <tr class="even-row">
             <th>GPU</th>
             <td>{{ metadata_builds.0.gpu }}</td>
-            <td>{{ knn_rating_builds.0.gpu }}</td>
+            {% if knn_rating_builds %}<td>{{ knn_rating_builds.0.gpu }}</td>{% endif %}
           </tr>
           <tr class="odd-row">
             <td style="font-weight: bold;">Motherboard</td>
             <td>{{ metadata_builds.0.mboard }}</td>
-            <td>{{ knn_rating_builds.0.mboard }}</td>
+            {% if knn_rating_builds %}<td>{{ knn_rating_builds.0.mboard }}</td>{% endif %}
           </tr>
           <tr class="even-row">
             <th>RAM</th>
             <td>{{ metadata_builds.0.ram }}</td>
-            <td>{{ knn_rating_builds.0.ram }}</td>
+            {% if knn_rating_builds %}<td>{{ knn_rating_builds.0.ram }}</td>{% endif %}
           </tr>
           <tr class="odd-row">
             <td style="font-weight: bold;">Storage</td>
             <td>{{ metadata_builds.0.storage }}</td>
-            <td>{{ knn_rating_builds.0.storage }}</td>
+            {% if knn_rating_builds %}<td>{{ knn_rating_builds.0.storage }}</td>{% endif %}
           </tr>
           <tr class="even-row">
             <th>Power Supply</th>
             <td>{{ metadata_builds.0.psu }}</td>
-            <td>{{ knn_rating_builds.0.psu }}</td>
+            {% if knn_rating_builds %}<td>{{ knn_rating_builds.0.psu }}</td>{% endif %}
           </tr>
           <tr class="odd-row">
             <td style="font-weight: bold;">Chassis</td>
             <td>{{ metadata_builds.0.case }}</td>
-            <td>{{ knn_rating_builds.0.case }}</td>
+            {% if knn_rating_builds %}<td>{{ knn_rating_builds.0.case }}</td>{% endif %}
           </tr>
           <tr class="even-row">
             <th>Total Price</th>
-            <td class="price">${{ metadata_builds.0.total_price }}</td>
-            <td class="price">${{ knn_rating_builds.0.total_price }}</td>
+            <td class="price">${{ metadata_builds.0.total_price|convert_to_myr }}</td>
+            {% if knn_rating_builds %}<td class="price">$ {{ knn_rating_builds.0.total_price|convert_to_myr }}</td>{% endif %}
           </tr>
           <tr class="odd-row">
-            <td style="font-weight: bold;">Customize</t>
-            <td><button class="customize-button"
-                onclick="selectAllComponents('{{ metadata_builds.0.cpu.id }}', '{{ metadata_builds.0.gpu.id }}', '{{ metadata_builds.0.mboard.id }}', '{{ metadata_builds.0.ram.id }}', '{{ metadata_builds.0.psu.id }}', '{{ metadata_builds.0.storage.id }}', '{{ metadata_builds.0.case.id }}')"><i class="fas fa-wrench"></i>  Customize
-                this build</button></td>
-            <td><button class="customize-button"
-                onclick="selectAllComponents('{{ knn_rating_builds.0.cpu.id }}', '{{ knn_rating_builds.0.gpu.id }}', '{{ knn_rating_builds.0.mboard.id }}', '{{ knn_rating_builds.0.ram.id }}', '{{ knn_rating_builds.0.psu.id }}', '{{ knn_rating_builds.0.storage.id }}', '{{ knn_rating_builds.0.case.id }}')"><i class="fas fa-wrench"></i>  Customize
-                this build</button></td>
+            <td style="font-weight: bold;">Customize</td>
+            <td>
+              <div class="button-container">
+              <button class="customize-button"
+                onclick="selectAllComponents('{{ metadata_builds.0.cpu.id }}', '{{ metadata_builds.0.gpu.id }}', '{{ metadata_builds.0.mboard.id }}', '{{ metadata_builds.0.ram.id }}', '{{ metadata_builds.0.psu.id }}', '{{ metadata_builds.0.storage.id }}', '{{ metadata_builds.0.case.id }}')"><i
+                  class="fas fa-wrench"></i> Customize build</button>
+
+                  <br>
+                  <form method="POST" action="{% url 'add_rec_cart' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="cpu_id" value="{{ metadata_builds.0.cpu.id }}">
+                    <input type="hidden" name="gpu_id" value="{{ metadata_builds.0.gpu.id }}">
+                    <input type="hidden" name="mboard_id" value="{{ metadata_builds.0.mboard.id }}">
+                    <input type="hidden" name="ram_id" value="{{ metadata_builds.0.ram.id }}">
+                    <input type="hidden" name="psu_id" value="{{ metadata_builds.0.psu.id }}">
+                    <input type="hidden" name="storage_id" value="{{ metadata_builds.0.storage.id }}">
+                    <input type="hidden" name="case_id" value="{{ metadata_builds.0.case.id }}">
+                    <button type="submit" class="add-cart-button" id="add-to-cart-butt"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
+                </form>
+              </div>
+            </td>
+
+                {% if knn_rating_builds %}
+                
+                <td>
+                  <div class="button-container">
+                  <button class="customize-button"
+                onclick="selectAllComponents('{{ knn_rating_builds.0.cpu.id }}', '{{ knn_rating_builds.0.gpu.id }}', '{{ knn_rating_builds.0.mboard.id }}', '{{ knn_rating_builds.0.ram.id }}', '{{ knn_rating_builds.0.psu.id }}', '{{ knn_rating_builds.0.storage.id }}', '{{ knn_rating_builds.0.case.id }}')"><i
+                  class="fas fa-wrench"></i> Customize build</button>
+                
+                  <form method="POST" action="{% url 'add_rec_cart' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="cpu_id" value="{{ knn_rating_builds.0.cpu.id }}">
+                    <input type="hidden" name="gpu_id" value="{{ knn_rating_builds.0.gpu.id }}">
+                    <input type="hidden" name="mboard_id" value="{{ knn_rating_builds.0.mboard.id }}">
+                    <input type="hidden" name="ram_id" value="{{ knn_rating_builds.0.ram.id }}">
+                    <input type="hidden" name="psu_id" value="{{ knn_rating_builds.0.psu.id }}">
+                    <input type="hidden" name="storage_id" value="{{ knn_rating_builds.0.storage.id }}">
+                    <input type="hidden" name="case_id" value="{{ knn_rating_builds.0.case.id }}">
+                    <button type="submit" class="add-cart-button" id="add-to-cart-butt"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
+                </form>
+              </div>
+                </td>
+                
+                {% endif %}
           </tr>
         </tbody>
       </table>
     </div>
 
     {% else %}
-    <div class="recommended-build" style="text-align: center;">Input Budget & Use case preference to get Recommendation</div>
+    <div class="recommended-build" style="text-align: center;">Input Budget & Use case preference to get Recommendation
+    </div>
 
     {% endif %}
   </div>
@@ -120,10 +290,10 @@
 
 <br>
 
+<div class="divider" style="margin-bottom: 40px;" id="ratings-section"></div>
 
 {% if rated_items %}
-<br><br><br>
-<h3>Ratings by other users!</h3>
+<h3>Ratings by other users!</h3><br>
 <div class="rating-container">
   {% for item in rated_items|reverse_queryset %}
   <div class="rating-column">
@@ -131,11 +301,13 @@
 
       <div class="profile-picture-container">
         {% if item.user.profile.profile_picture %}
-        <img class="profile-picture" src="{{ user.profile.profile_picture.url }}" alt="PFP">
+        {% if item.user.profile.profile_picture == 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png' %}
+        <img class="profile-picture" src="{{ item.user.profile.profile_picture }}" alt="PFP">
         {% else %}
-        <img class="profile-picture"
-          src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
-          alt="Default PFP">
+        <img class="profile-picture" src="{{ item.user.profile.profile_picture.url }}" alt="PFP">
+        {% endif %}
+        {% else %}
+        <img class="profile-picture" src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="Default PFP">
         {% endif %}
       </div>
 
@@ -144,12 +316,9 @@
       </div>
 
     </div>
+    <div class="rating-date">{{ item.order_rating.date_added }}</div>
 
-    <div class="rating-total-price">RM{{ item.total_price|convert_to_myr }}</div>
-    <div class="rating-date">{{item.order_rating.date_added}}</div>
-
-
-    <a href="{% url 'item_detail' item.id %}">
+    <a style="text-align: center; display: block; font-size: 20px;" href="{% url 'item_detail' item.id %}">
       {% if 'amd' in item.cpu.name|lower %}
       AMD Build
       {% elif 'intel' in item.cpu.name|lower %}
@@ -159,6 +328,8 @@
       {% endif %}
     </a>
 
+    <div class="rating-total-price">${{ item.total_price|convert_to_myr }}</div>
+
     <div class="star-rating">
       <span class="fa fa-star {% if item.latest_rating >= 1 %}checked{% endif %}"></span>
       <span class="fa fa-star {% if item.latest_rating >= 2 %}checked{% endif %}"></span>
@@ -167,8 +338,34 @@
       <span class="fa fa-star {% if item.latest_rating >= 5 %}checked{% endif %}"></span>
     </div>
 
-    {{ item.latest_comment|default:"No comments yet" }}<br>
+    <p class="comment-text" id="comment-{{ item.id }}">
+      {{ item.latest_comment|default:"No comments yet"|truncatechars:30 }}
+      {% if item.latest_comment|length > 30 %}
+      <a href="#" class="see-more-link" data-toggle="modal" data-target="#commentModal-{{ item.id }}">See More</a>
+      <div class="modal fade" id="commentModal-{{ item.id }}" tabindex="-1" role="dialog" aria-labelledby="commentModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="commentModalLabel">Comment</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              {{ item.latest_comment }}
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% else %}
+      {{ item.latest_comment|default:"No comments yet" }}
+      {% endif %}
+    </p>
 
+    <br>
 
   </div>
   {% if forloop.counter|divisibleby:3 %} {# Close the row and start a new one after every 3 items #}
@@ -178,15 +375,33 @@
   {% endfor %}
 </div>
 </div>
-
-
 {% else %}
 <p>No rated builds yet!</p>
 {% endif %}
 
+
 </html>
 
 <script>
+  document.getElementById("openFormButton").addEventListener("click", function() {
+  document.getElementById("popupForm").style.display = "block";
+});
+
+document.getElementById("closeFormButton").addEventListener("click", function() {
+  document.getElementById("popupForm").style.display = "none";
+});
+
+// Scroll to Rating
+$(document).ready(function() {
+  $(".scroll-button").click(function(e) {
+    e.preventDefault();
+    var target = $($(this).attr("href"));
+    $("html, body").animate({
+      scrollTop: target.offset().top
+    }, 800); // You can adjust the animation duration (800 milliseconds in this example)
+  });
+});
+
   function selectAllComponents(cpuId, gpuId, mboardId, ramId, psuId, storageId, caseId) {
     selectComponent('cpu', cpuId, true);
     selectComponent('gpu', gpuId, true);
@@ -197,140 +412,82 @@
     selectComponent('case', caseId, true);
   }
 
-  function addTocart(cpuId, gpuId) {
-
-  }
+  document.getElementById('add-to-cart-butt').addEventListener('click', function () {
+    // Display an alert when the button is pressed
+    alert('PC Build added to cart successfully!');
+  });
 </script>
 
 
 <style>
+  .button-container {
+    display: inline-flex;
+}
+
   /* Define the styles for odd and even rows */
-.odd-row {
-  background-color: #ffffff;
-}
+  .odd-row {
+    background-color: #ffffff;
+  }
 
-.even-row {
-  background-color: #f2f2f2;
-}
+  .even-row {
+    background-color: #f2f2f2;
+  }
 
-/* Additional styling for table headers */
-th {
-  background-color: #333; /* Header background color */
-  text-align: center; /* Center-align header text */
-}
+  /* Additional styling for table headers */
+  th {
+    background-color: #333;
+    /* Header background color */
+    text-align: center;
+    /* Center-align header text */
+  }
 
-/* Style the customize buttons */
-.customize-button {
-  background-color: #007bff; /* Button background color */
-  color: #fff; /* Button text color */
-  border: none;
-  padding: 5px 10px;
-  cursor: pointer;
-}
+  .add-cart-button {
+    background-color: #3d28f9;
+    border: 1px solid #2860f9;
+    border-radius: 5px;
+    padding: 10px 20px;
+    color: white;
+    font-family: sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+  }
 
   /* Price font */
-.price {
-  font-family: sans-serif;
-  font-weight: 600;
-  color: #29b948;
-}
-
-/* Button style */
-.customize-button {
-  background-color: #F9C528;
-  border: 1px solid #F9C528;
-  border-radius: 5px;
-  padding: 10px 20px;
-  color: white;
-  font-family: sans-serif;
-  font-size: 16px;
-  font-weight: 500;
-  cursor: pointer;
-}
-
-.customize-button:hover {
-  background-color: #F7B916;
-  border-color: #F7B916;
-}
-
-
-  .rating-total-price {
-    float: right;
+  .price {
+    font-family: sans-serif;
+    font-weight: 600;
+    color: #29b948;
   }
 
-  .comment-bracker {
-    border: 1px solid #c2c2c2;
-  }
-
-  .profile-container {
-    display: flex;
-    align-items: center;
-  }
-
-  .profile-picture-container {
-    margin-right: 10px;
-    width: 200px;
-    height: 200px;
-    overflow: hidden;
-    border-radius: 50%;
-    cursor: pointer;
-  }
-
-  .profile-picture {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: cover;
-  }
-
-  .username {
-    font-size: 16px;
-    /* Adjust the font size as needed */
-  }
-
-  .rating-date {
-    font-size: 12px;
-    color: rgb(68, 68, 68);
-  }
-
-  .profile-picture-container {
-    display: flex;
-    width: 30px;
-    height: 30px;
-    overflow: hidden;
-    border-radius: 50%;
-    cursor: pointer;
-  }
-
-  .rating-container {
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    display: flex;
-    /* space-between;*/
-    padding: 0;
-    margin-bottom: 40px;
-  }
-
-  .rating-column {
-    flex-basis: calc(33.33% - 20px);
-    margin: 10px;
-    max-width: 350px;
-    padding: 10px;
+  /* Button style */
+  .customize-button {
+    background-color: #F9C528;
+    border: 1px solid #F9C528;
     border-radius: 5px;
-    border: 1px solid #ddd;
+    padding: 10px 20px;
+    color: white;
+    font-family: sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-right: 20px;
+  }
+
+  .customize-button:hover {
+    background-color: #F7B916;
+    border-color: #F7B916;
   }
 
   .recommended-builds-container {
-    flex-wrap: wrap;
-    width: 80%;
-    margin: 0 auto;
+    /* flex-wrap: wrap; */
+    width: 90%;
+    margin-top: -25px;
+    /* margin: 0 auto; */
     font-size: 14px;
-    /* Allow wrapping to the next line */
     gap: 20px;
-    /* Adjust the spacing between recommended builds */
-    /* Ensure the container doesn't exceed its parent's width */
     overflow-x: auto;
-    /* Enable horizontal scrolling if needed */
-    justify-content: center;
+    /* justify-content: center; */
   }
 
   .recommended-build {
@@ -339,10 +496,117 @@ th {
     padding: 20px;
     margin: 10px;
     /* flex: 0 0 calc(33.33% - 20px); */
-    max-width: 900px;
     /* Adjust the width of each build to fit three builds in a row with spacing */
     box-sizing: border-box;
   }
+</style>
+
+<style>
+  /* CSS styles for the rating container */
+.rating-container {
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 1100px;
+  justify-content: space-evenly;
+}
+
+/* Style the individual rating column */
+.rating-column {
+  width: 30%; /* Adjust as needed */
+  margin-bottom: 20px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
+
+/* Style the profile picture */
+.profile-picture-container {
+  text-align: center;
+  margin-bottom: 5px;
+}
+
+.profile-picture {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+}
+
+/* Style the username */
+.username {
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+/* Style the rating total price */
+.rating-total-price {
+  font-weight: bold;
+  text-align: center;
+  color: #29b948;
+}
+
+/* Style the rating date */
+.rating-date {
+  text-align: center;
+  margin: 10px;
+  font-size: 14px;
+  color: grey;
+}
+
+/* Style the link to item detail */
+.comment-text a {
+  text-align: center;
+  display: block;
+  margin-top: 10px;
+  text-decoration: none;
+  color: #007bff;
+}
+
+/* Style the star ratings */
+.star-rating {
+  text-align: center;
+  margin-top: 10px;
+}
+
+/* Style the comment text */
+.comment-text {
+  text-align: center;
+  margin-top: 15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Style the "See More" link */
+.see-more-link {
+  color: #007bff;
+  text-decoration: none;
+  cursor: pointer;
+  margin-left: 5px;
+}
+
+/* Modal styles */
+.modal {
+  text-align: left;
+}
+
+.modal-dialog {
+  max-width: 80%; /* Adjust modal width as needed */
+}
+
+.modal-title {
+  font-weight: bold;
+}
+
+.modal-body {
+  max-height: 300px; /* Adjust the maximum height for the modal content */
+  overflow-y: auto;
+}
+
+/* Additional styling as needed */
+
 </style>
 
 {% endblock %}

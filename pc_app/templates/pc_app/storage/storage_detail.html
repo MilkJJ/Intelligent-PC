@@ -65,26 +65,18 @@
           </tr>
           <tr>
             <td>Price Per GB <span class="icon" data-hover-text="The cost of the drive per gigabyte, helping you evaluate the value for your storage needs" title="Hover for More Info">&#9432;</span></td>
-            <td>RM {{ storage.price_per_gb }}</td>
+            <td>$ {{ storage.price_per_gb }}</td>
           </tr>
           <tr>
             <td>Price</td>
-            <td>RM {{ storage.price|convert_to_myr }}</td>
+            <td>$ {{ storage.price|convert_to_myr }}</td>
           </tr>
           <!-- Add more Storage Drive details as needed -->
         </table>
 
         <br>
         <div class="rating">
-          {% if messages %}
-          <ul class="messages">
-            {% for message in messages %}
-            <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
-            {% endfor %}
-          </ul>
-          {% endif %}
-
-
+          {% if cart_item %}
           <form method="post" name="storage_rating_form">
             {% csrf_token %}
             <select type="hidden" name="storageRating" id="storage_ratingInput" style="display: none;">
@@ -96,7 +88,7 @@
             </select>
 
             <div id="star-rating">
-              Re-rate:
+              Rate Storage:<br>
               <ul class="btn btn-light list-inline rating-list">
                 <li onclick="updateRating(5)" data-order-rating="5"><i class="fa fa-star" id="star-5"
                     title="Rate 5"></i>
@@ -119,7 +111,11 @@
             <button type="submit" name="storage_rating_form">Rate</button>
           </form>
 
-          <button class="select-button" onclick="selectComponent('storage', '{{ storage.id }}')">Add to Customize</button>
+          <button class="select-button" onclick="selectComponent('storage', '{{ storage.id }}')"><span class="fas fa-cog"></span> Select Storage</button>
+          
+          {% else %}
+          <button class="select-button1" onclick="selectComponent('storage', '{{ storage.id }}')"><span class="fas fa-cog"></span> Select Storage</button>
+          {% endif %}
 
         </div>
 

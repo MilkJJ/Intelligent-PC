@@ -1,6 +1,11 @@
+th {
+  font-weight: normal;
+}
+
 .icon {
   display: inline-block;
   position: relative;
+  color:#273cc1;
 }
 
 .icon:hover::before {
@@ -38,6 +43,10 @@
   /* Center the image horizontally within its container */
 }
 
+.remove-comp-button {
+  background-color: #920000;
+  color: #fff;
+}
 
 .divider {
   height: 1px;
@@ -91,7 +100,7 @@ button.select-button {
   cursor: pointer;
   padding: 10px 20px;
   border-radius: 5px;
-  font-weight: bold;
+  /* font-weight: bold; */
 }
 
 button.select-button:hover {

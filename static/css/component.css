@@ -31,6 +31,7 @@
     .icon {
       display: inline-block;
       position: relative;
+      color:#273cc1;
     }
   
     .icon:hover::before {
@@ -185,4 +186,33 @@
   
     button:hover {
       background-color: #555;
+    }
+
+    .select-button {
+      vertical-align: bottom;
+      /* Align the button with the top of the form button */
+      float: right;
+      /* Place it at the right of the container */
+      margin-top: 76px;
+      /* Add some spacing between the buttons */
+      background-color: #333;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+  
+    
+    .select-button1 {
+      vertical-align: bottom;
+      float: right;
+      background-color: #333;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-weight: bold;
     }

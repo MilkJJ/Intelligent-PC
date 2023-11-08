@@ -4,6 +4,8 @@
 
 {% load custom_filters %}
 
+{% load static %}
+
 <!DOCTYPE html>
 <html>
 
@@ -59,21 +61,21 @@
                         </tr>
                         <tr>
                             <th>Total</th>
-                            <th>RM {{ cart_item.total_price|floatformat:2 }}</th>
+                            <th>$ {{ cart_item.total_price|floatformat:2 }}</th>
                         </tr>
                     </table>
                 </div>
             </div>
             <div class="divider" style="height: 1px; background-color: #d5d5d5; border: none;"></div>
-                {% endfor %}
+            {% endfor %}
         </div>
 
         <br>
         <div class="place-order">
             <form method="post" action="{% url 'place_order' %}">
                 {% csrf_token %}
-            
-            <div class="payment-method">
+
+                <!-- <div class="payment-method">
                 <h4>Select Payment Method</h4>
                 <select>
                     <option value="credit-card">Tng/Cash Upon Pickup</option>
@@ -85,13 +87,34 @@
                 <select>
                     <option value="standard">Pickup</option>
                 </select>
-            </div>
+            </div> -->
 
-            <div class="total">
-                Grand Total: RM {{ total_price }}
-            </div>
 
-            <button class="place-order-button" type="submit" id="place-order-button">Place Order</button>
+            <h3>Order Information</h3>
+            <ul style="margin-top: 20px">
+                <li><strong>Order Type:</strong> 
+                     <a href="https://maps.app.goo.gl/NGa7twqsRdXr4RbC7" target="_blank">
+                    <img src="{% static 'images/pick-up-point.png' %}"
+                        width="50" height="50" />Pick Up Only</a></li><br>
+                <li><strong>Delivery Option:</strong> Not Available</li><br>
+                <li><strong>Payment Methods Accepted:</strong><br>
+                    <ul>
+                        <li>Cash on Delivery (COD)</li>
+                        <li>Touch 'n Go (TNG)</li>
+                        <li>Bank Transfer on Delivery</li>
+                    </ul>
+                </li>
+                
+                <div class='divider'></div>
+
+                <div class="grand-total">
+                    Grand Total: $ {{ total_price }}
+                </div>
+            </ul>
+
+                
+
+                <button class="place-order-button" type="submit" id="place-order-button">Place Order</button>
             </form>
         </div>
 
@@ -114,9 +137,10 @@
 </script>
 
 <style>
-    h4{
+    h4 {
         margin-bottom: 10px;
     }
+
     header {
         background-color: #333;
         color: #fff;
@@ -167,10 +191,10 @@
         margin-top: 20px;
     }
 
-    .total {
+    .grand-total {
         font-weight: bold;
         text-align: right;
-        margin-top: 20px;
+        margin-right:40px;
     }
 
     .place-order-button {

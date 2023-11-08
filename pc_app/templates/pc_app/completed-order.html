@@ -26,14 +26,16 @@
 
     <div class="complete-container">
         <p><a href="{% url 'ongoing_order' %}">Pending Orders</a></p>
+        <!-- <p style="right: 0px;"><a href="{% url 'home' %}">Home</a></p> -->
 
         {% if shipped_items %}
         {% for item in shipped_items %}
         <div class="order-card">
-            <p class="order-status" style="font-size: 20px;">Order #{{ item.id }} <span
+            <p class="order-status" style="font-size: 23px;">Order #{{ item.id }} <span
                     style="float: right; color: green;">Completed</span></p>
             <p style="font-size: 14px;">{{ item.order_date }}</p>
-
+            
+            <p style="font-size: 15px; color:rgb(208, 113, 113);">Select a component within the build to rate the component!</p>
             <div class="order-details">
                 <table>
                     <tr>
@@ -43,43 +45,51 @@
                     </tr>
                     <tr>
                         <td>CPU</td>
-                        <td><a href="{% url 'cpu_detail' item.cpu.id %}">{{ item.cpu.name }}</a></td>
-                        <td>RM {{item.cpu.price|convert_to_myr}}</td>
+                        <td><a href="{% url 'cpu_detail' item.cpu.id %}">{{ item.cpu }}</a></td>
+                        <td>$ {{item.cpu.price|convert_to_myr}}</td>
                     </tr>
                     <tr>
                         <td>GPU</td>
-                        <td><a href="{% url 'gpu_detail' item.gpu.id %}">{{ item.gpu.name }}</a></td>
-                        <td>RM {{item.gpu.price|convert_to_myr}}</td>
+                        <td><a href="{% url 'gpu_detail' item.gpu.id %}">{{ item.gpu }}</a></td>
+                        <td>$ {{item.gpu.price|convert_to_myr}}</td>
                     </tr>
                     <tr>
                         <td>RAM</td>
-                        <td><a href="{% url 'ram_detail' item.ram.id %}">{{ item.ram.name }}</a></td>
-                        <td>RM {{item.ram.price|convert_to_myr}}</td>
+                        <td><a href="{% url 'ram_detail' item.ram.id %}">{{ item.ram }}</a></td>
+                        <td>$ {{item.ram.price|convert_to_myr}}</td>
                     </tr>
                     <tr>
                         <td>Motherboard</td>
-                        <td><a href="{% url 'mboard_detail' item.ram.id %}">{{ item.mboard.name }}</a></td>
-                        <td>RM {{item.mboard.price|convert_to_myr}}</td>
+                        <td><a href="{% url 'mboard_detail' item.ram.id %}">{{ item.mboard }}</a></td>
+                        <td>$ {{item.mboard.price|convert_to_myr}}</td>
                     </tr>
                     <tr>
                         <td>PSU</td>
-                        <td><a href="{% url 'psu_detail' item.psu.id %}">{{ item.psu.name }}</a></td>
-                        <td>RM {{item.psu.price|convert_to_myr}}</td>
+                        <td><a href="{% url 'psu_detail' item.psu.id %}">{{ item.psu }}</a></td>
+                        <td>$ {{item.psu.price|convert_to_myr}}</td>
                     </tr>
                     <tr>
                         <td>Storage</td>
-                        <td><a href="{% url 'storage_detail' item.storage.id %}">{{ item.storage.name }}</a></td>
-                        <td>RM {{item.storage.price|convert_to_myr}}</td>
+                        <td><a href="{% url 'storage_detail' item.storage.id %}">{{ item.storage }}</a></td>
+                        <td>$ {{item.storage.price|convert_to_myr}}</td>
                     </tr>
                     <tr>
                         <td>Chassis</td>
-                        <td><a href="{% url 'case_detail' item.case.id %}">{{ item.case.name }}</a></td>
-                        <td>RM {{item.case.price|convert_to_myr}}</td>
+                        <td><a href="{% url 'case_detail' item.case.id %}">{{ item.case }}</a></td>
+                        <td>$ {{item.case.price|convert_to_myr}}</td>
                     </tr>
                     <tr>
                         <th>Total Price</th>
-                        <th></th>
-                        <th>RM {{ item.total_price|convert_to_myr }}</th>
+                        <th>
+                            <div class="order-actions">
+                                <form method="POST" action="{% url 'add_to_cart' item.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="repurchase-button" name="repurchase-button"
+                                        value="completed">Repurchase</button>
+                                </form>
+                            </div>
+                        </th>
+                        <th>$ {{ item.total_price|convert_to_myr }}</th>
                     </tr>
                 </table>
 
@@ -88,19 +98,11 @@
             <div class="divider"></div>
 
 
-            <div class="order-actions">
-                <form method="POST" action="{% url 'add_to_cart' item.id %}">
-                    {% csrf_token %}
-                    <button type="submit" class="repurchase-button" name="repurchase-button"
-                        value="completed">Repurchase</button>
-                </form>
-            </div>
-
-            <div class="rate-section" style="float: right;">
+            <div class="rate-section">
                 {% if not item.order_rating %}
                 <form method="post" action="{% url 'rate_order' item.id %}">
                     {% csrf_token %}
-                    <label class="rate-label" for="" style="color: black;">Rate Build: </label>
+                    <label class="rate-label" for="rating">Rate Build: </label>
                     <!-- Hidden input field to store the rating value -->
                     <input type="hidden" name="orderRating" id="order_ratingInput" size="5" />
 
@@ -112,13 +114,10 @@
                         <option value="1">1 (Terrible)</option>
                     </select>
                     <br>
-
-                    <!-- Get star rating reference from component rating -->
-
                     <label for="comment" style="color: black;">Comment:</label>
                     <textarea name="comment" id="comment"></textarea>
                     <br>
-                    <input type="submit" value="Submit Rating">
+                    <button type="submit" class="rate-button" value="Submit Rating">Submit Rating</button>
                 </form>
                 {% else %}
                 You have rated this build!
@@ -130,12 +129,39 @@
                     <span class="fa fa-star {% if item.order_rating.rating >= 5 %}checked{% endif %}"></span>
                 </div>
 
-                <strong>Comment</strong>: {{item.order_rating.comment}}
+                <p class="comment-text" id="comment-{{ item.id }}">
+                    {{ item.order_rating.comment|default:"No comments yet"|truncatechars:120 }}
+                    {% if item.order_rating.comment|length > 120 %}
+                    <a href="#" class="see-more-link" data-toggle="modal" data-target="#commentModal-{{ item.id }}">See
+                        More</a>
+                <div class="modal fade" id="commentModal-{{ item.id }}" tabindex="-1" role="dialog"
+                    aria-labelledby="commentModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="commentModalLabel">Comment</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                {{ item.order_rating.comment }}
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 {% endif %}
+                </p>
+
+
+                {% endif %}
+
             </div>
 
-
-        </div>
+        </div> <!-- Order card -->
 
         <div class="divider"></div>
         {% endfor %}
@@ -172,6 +198,62 @@
 </script>
 
 <style>
+    #comment {
+  width: 100%;
+  height: 150px; /* Adjust the height as needed */
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  resize: vertical; /* Allow vertical resizing */
+}
+
+/* Style the textarea on focus */
+#comment:focus {
+  border-color: #007BFF;
+  outline: none; /* Remove the default focus outline */
+}
+
+/* Style for placeholder text */
+#comment::placeholder {
+  color: #999; /* Adjust the color as needed */
+}
+
+    /* Style the "See More" link */
+    .see-more-link {
+        color: #007bff;
+        text-decoration: none;
+        cursor: pointer;
+        margin-left: 5px;
+    }
+
+    /* Modal styles */
+    .modal {
+        text-align: left;
+    }
+
+    .modal-dialog {
+        max-width: 80%;
+        /* Adjust modal width as needed */
+    }
+
+    .modal-title {
+        font-weight: bold;
+    }
+
+    .modal-body {
+        max-height: 300px;
+        /* Adjust the maximum height for the modal content */
+        overflow-y: auto;
+    }
+
+    .comment-text {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+
     .divider {
         height: 1px;
         /* Set the height of the line */
@@ -200,6 +282,7 @@
 
     .complete-container {
         max-width: 1100px;
+        margin-bottom: 40px;
         /* margin: 2rem auto; */
         padding: 1rem;
         background-color: #f4f3f3;
@@ -211,7 +294,7 @@
         border: 1px solid #ddd;
         background-color: white;
         margin: 1rem;
-        padding: 1rem;
+        padding: 2rem;
         border-radius: 5px;
         box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
     }
@@ -236,16 +319,22 @@
     }
 
     .repurchase-button {
-        background-color: #4CAF50;
+        background-color: #1c711f;
+        color: white;
+        border: none;
+        font-size: 14px;
+        padding: 7px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .rate-button {
+        background-color: rgb(18, 100, 208);
         color: white;
         border: none;
         padding: 10px 20px;
         border-radius: 5px;
         cursor: pointer;
-    }
-
-    .rate-label {
-        font-weight: bold;
     }
 
     .rate-select {

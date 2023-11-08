@@ -38,11 +38,11 @@
               </tr>
               <tr>
                 <th>Price</th>
-                <td>RM {{ gpu1.price|convert_to_myr }}</td>
+                <td>$ {{ gpu1.price|convert_to_myr }}</td>
               </tr>
         </table>
         <div class="button-container"><button class="select-button"
-                onclick="selectComponent('gpu', '{{ gpu1.id }}')">Select for Customization</button></div>
+                onclick="selectComponent('gpu', '{{ gpu1.id }}')"><span class="fas fa-cog"></span> Select to Configuration</button></div>
     </div>
 
     <div class="vs-divider">VS</div>
@@ -76,11 +76,17 @@
               </tr>
               <tr>
                 <th>Price</td>
-                <td>RM {{ gpu2.price|convert_to_myr }}</td>
+                <td>$ {{ gpu2.price|convert_to_myr }}</td>
               </tr>
         </table>
         <div class="button-container"><button class="select-button"
-                onclick="selectComponent('gpu', '{{ gpu2.id }}')">Select for Customization</button></div>
+                onclick="selectComponent('gpu', '{{ gpu2.id }}')"><span class="fas fa-cog"></span> Select to Configuration</button>
+              
+                <a href="{% url 'gpu_detail' gpu1.pk %}">
+                  <button class="remove-comp-button"><i class="fas fa-times fa-1x"></i></button>
+              </a>
+              </div>
+                
     </div>
 </div>
 

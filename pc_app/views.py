@@ -120,6 +120,34 @@ def cart_items(request):
     }
     return render(request, 'pc_app/cart-items.html', context)
 
+@login_required(login_url='login')
+def add_rec_cart(request):
+
+    cpu_id = request.POST.get('cpu_id')
+    gpu_id = request.POST.get('gpu_id')
+    mboard_id = request.POST.get('mboard_id')
+    ram_id = request.POST.get('ram_id')
+    psu_id = request.POST.get('psu_id')
+    storage_id = request.POST.get('storage_id')
+    case_id = request.POST.get('case_id')
+    
+    cpu = CPU.objects.get(id=cpu_id)
+    gpu = GPU.objects.get(id=gpu_id)
+    mboard = Motherboard.objects.get(id=mboard_id)
+    ram = Memory.objects.get(id=ram_id)
+    psu = PSU.objects.get(id=psu_id)
+    storage = StorageDrive.objects.get(id=storage_id)
+    case = PCase.objects.get(id=case_id)
+
+    total_price = cpu.price + gpu.price + mboard.price + \
+        ram.price + psu.price + storage.price + case.price
+
+    created = CartItem.objects.create(
+        cpu_id=cpu_id, gpu_id=gpu_id, mboard_id=mboard_id, ram_id=ram_id,
+        psu_id=psu_id, storage_id=storage_id, case_id=case_id, total_price=total_price, user=request.user)
+    
+    return redirect('cart_items')
+
 
 @login_required(login_url='login')
 def add_to_cart(request, build_id=None):
@@ -170,13 +198,12 @@ def add_to_cart(request, build_id=None):
             cpu_id=cpu_id, gpu_id=gpu_id, mboard_id=mboard_id, ram_id=ram_id,
             psu_id=psu_id, storage_id=storage_id, case_id=case_id, total_price=total_price, user=request.user)
 
-
         if created:
             response_data = {'success': True,
                              'message': "Item added to cart successfully!"}
             if build_id:
                 return redirect('cart_items')
-        
+
         else:
             response_data = {'success': False,
                              'message': "Item is already in your cart!"}
@@ -204,15 +231,16 @@ def remove_from_cart(request, cart_item_id):
     # Redirect back to the favorited_builds page
     return redirect('cart_items')
 
+
 @never_cache
 def checkout(request):
     # Get cart items for the user
     cart_items = CartItem.objects.filter(user=request.user, is_purchased=False)
-    
+
     # Calculate the total price
     total_price = sum(item.total_price for item in cart_items)
 
-    formatted_total_price = floatformat(total_price + 5, 2)
+    formatted_total_price = floatformat(total_price, 2)
 
     context = {
         'cart_items': cart_items,
@@ -220,6 +248,7 @@ def checkout(request):
     }
 
     return render(request, 'pc_app/checkout.html', context)
+
 
 @never_cache
 def place_order(request):
@@ -245,22 +274,27 @@ def place_order(request):
 
         # Add a title
         title_style = getSampleStyleSheet()['Title']
-        elements.append(Paragraph('Order Confirmation', title_style))
+        elements.append(Paragraph(f'Intelligent PC Builder', title_style))
 
         # Add a spacer
         elements.append(Spacer(1, 12))
 
         # Create a table for order summary
         for cart_item in cart_items:
-            data = [[f"Order #{cart_item.id}", 'Build', 'Price'],
-                    ['CPU', cart_item.cpu.name, f"${cart_item.cpu.price}"],
-                    ['GPU', cart_item.gpu.name, f"${cart_item.gpu.price}"],
-                    ['RAM', cart_item.ram.name, f"${cart_item.ram.price}"],
-                    ['Motherbaord', cart_item.mboard.name, f"${cart_item.mboard.price}"],
-                    ['Storage', cart_item.storage.name, f"${cart_item.storage.price}"],
-                    ['Power Supply', cart_item.psu.name, f"${cart_item.psu.price}"],
-                    ['Chassis', cart_item.case.name, f"${cart_item.case.price}"],
-                    ['Total Price', '', f"${cart_item.total_price}"]]
+            # Add a title with the order ID
+            elements.append(Paragraph(f'Order #{cart_item.id}', title_style))
+
+            data = [
+                ["Component", "Build", "Price"],
+                ["CPU", cart_item.cpu.name, f"${cart_item.cpu.price:.2f}"],
+                ["GPU", cart_item.gpu.name, f"${cart_item.gpu.price:.2f}"],
+                ["RAM", cart_item.ram.name, f"${cart_item.ram.price:.2f}"],
+                ["Motherboard", cart_item.mboard.name, f"${cart_item.mboard.price:.2f}"],
+                ["Storage", cart_item.storage.name, f"${cart_item.storage.price:.2f}"],
+                ["Power Supply", cart_item.psu.name, f"${cart_item.psu.price:.2f}"],
+                ["Chassis", cart_item.case.name, f"${cart_item.case.price:.2f}"],
+                ["Total Price", "", f"${cart_item.total_price:.2f}"],
+            ]
 
             # Create the table style
             table_style = [('BACKGROUND', (0, 0), (-1, 0), colors.grey),
@@ -293,10 +327,11 @@ def place_order(request):
 
         # return response
 
-        #Send the PDF as an email attachment
+        # Send the PDF as an email attachment
         subject = 'Purchase Confirmation'
         message = 'Thank you for your purchase. Please find your purchase confirmation attached.'
-        from_email = settings.EMAIL_HOST_USER #'your_email@example.com' Replace with your email
+        # 'your_email@example.com' Replace with your email
+        from_email = settings.EMAIL_HOST_USER
         recipient_list = [request.user.email]  # Use the user's email
 
         email = EmailMessage(subject, message, from_email, recipient_list)
@@ -305,7 +340,7 @@ def place_order(request):
         email.send()
 
         # Redirect to an order confirmation page
-        #return HttpResponseRedirect(reverse('order_confirmation'))
+        # return HttpResponseRedirect(reverse('order_confirmation'))
         return render(request, 'pc_app/order_confirmation.html')
 
 
@@ -313,7 +348,22 @@ def completed_order_view(request):
     shipped_items = CartItem.objects.filter(
         user=request.user, is_completed=True).order_by('-order_date')
     # Render the purchased_items in the purchase history template
-    return render(request, 'pc_app/completed-order.html', {'shipped_items': shipped_items})
+
+    rating_status = {}
+
+    for item in shipped_items:
+        cpu = item.cpu
+        gpu = item.gpu
+
+        cpu_rated = CPUPivotTable.objects.filter(user=request.user, cpu=cpu).first()
+        gpu_rated = GPUPivotTable.objects.filter(user=request.user, gpu=gpu).first()
+
+    context = {
+        'shipped_items': shipped_items,
+        'rating_status': rating_status,
+    }
+
+    return render(request, 'pc_app/completed-order.html', context)
 
 
 def ongoing_order_view(request):
@@ -384,11 +434,11 @@ def toggle_favorite(request):
 
         if created:
             response_data = {'success': True,
-                             'message': 'Build has been favorited.'}
+                             'message': 'Build has been saved!'}
         else:
-            pc_build.delete()
+            # pc_build.delete()
             response_data = {'success': False,
-                             'message': 'Build has been unfavorited.'}
+                             'message': 'Saved build has been removed!'}
 
         return JsonResponse(response_data)
 
@@ -628,4 +678,3 @@ def ForgotPassword(request):
         return render(request, 'pc_app/forgot-password.html', {'success_message': 'An email has been sent with instructions to reset your password.'})
 
     return render(request, 'pc_app/forgot-password.html')
-

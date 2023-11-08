@@ -65,22 +65,14 @@
           </tr>
           <tr>
             <td>Price</td>
-            <td>RM {{ psu.price|convert_to_myr }}</td>
+            <td>$ {{ psu.price|convert_to_myr }}</td>
           </tr>
           <!-- Add more Power Supply details as needed -->
         </table>
 
         <br>
         <div class="rating">
-          {% if messages %}
-          <ul class="messages">
-            {% for message in messages %}
-            <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
-            {% endfor %}
-          </ul>
-          {% endif %}
-
-
+          {% if cart_item %}
           <form method="post" name="psu_rating_form">
             {% csrf_token %}
             <select type="hidden" name="psuRating" id="psu_ratingInput" style="display: none;">
@@ -92,7 +84,7 @@
             </select>
 
             <div id="star-rating">
-              Re-rate:
+              Rate PSU:<br>
               <ul class="btn btn-light list-inline rating-list">
                 <li onclick="updateRating(5)" data-order-rating="5"><i class="fa fa-star" id="star-5"
                     title="Rate 5"></i>
@@ -114,8 +106,11 @@
 
             <button type="submit" name="psu_rating_form">Rate</button>
           </form>
-
-          <button class="select-button" onclick="selectComponent('psu', '{{ psu.id }}')">Add to Customize</button>
+          <button class="select-button" onclick="selectComponent('psu', '{{ psu.id }}')"><span class="fas fa-cog"></span> Select PSU</button>
+          
+          {% else %}
+          <button class="select-button1" onclick="selectComponent('psu', '{{ psu.id }}')"><span class="fas fa-cog"></span> Select PSU</button>
+          {% endif %}
 
         </div>
 

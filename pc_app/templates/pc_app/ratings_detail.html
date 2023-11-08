@@ -6,83 +6,88 @@
 
 <h3>Rated PC Build Specifications</h3>
 
-<div style="padding: 20px; max-width: 1100px; margin-top: 20px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 5px;">
-<div class="rating-column">
-    <div class="profile-container">
-        <div class="profile-picture-container">
-            {% if order_rating.user.profile.profile_picture %}
-            <img class="profile-picture" src="{{ user.profile.profile_picture.url }}" alt="PFP">
-            {% else %}
-            <img class="profile-picture"
-                src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
-                alt="Default PFP">
-            {% endif %}
+<div
+    style="padding: 20px; max-width: 1100px; margin-top: 20px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 5px;">
+    <div class="rating-column">
+        <div class="profile-container">
+            <div class="profile-picture-container">
+                {% if order_rating.user.profile.profile_picture %}
+                {% if order_rating.user.profile.profile_picture == 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png' %}
+                <img class="profile-picture" src="{{ order_rating.user.profile.profile_picture }}" alt="PFP">
+                {% else %}
+                <img class="profile-picture" src="{{ order_rating.user.profile.profile_picture.url }}" alt="PFP">
+                {% endif %}
+                {% else %}
+                <img class="profile-picture"
+                    src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
+                    alt="Default PFP">
+                {% endif %}
+            </div>
+            <div class="username">
+                {{ order_rating.user.username }}
+            </div>
         </div>
-        <div class="username">
-            {{ order_rating.user.username }}
+        <div class="rating-date">{{item.order_rating.date_added}}</div>
+
+        <br>
+
+        <div class="star-rating">
+            <span class="fa fa-star {% if order_rating.rating >= 1 %}checked{% endif %}"></span>
+            <span class="fa fa-star {% if order_rating.rating >= 2 %}checked{% endif %}"></span>
+            <span class="fa fa-star {% if order_rating.rating >= 3 %}checked{% endif %}"></span>
+            <span class="fa fa-star {% if order_rating.rating >= 4 %}checked{% endif %}"></span>
+            <span class="fa fa-star {% if order_rating.rating >= 5 %}checked{% endif %}"></span>
+        </div>
+
+        {{ order_rating.comment|default:"No comments yet" }}
+        <br>
+
+        <div
+            style="max-width: 800px; margin-top: 20px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 5px;">
+            <table>
+                <tr>
+                    <th>Component</th>
+                    <th>Model</th>
+                    <th> <button class="copy-button"
+                            onclick="selectAllComponents('{{ item.cpu.id }}', '{{ item.gpu.id }}', '{{ item.mboard.id }}', '{{ item.ram.id }}', '{{ item.psu.id }}', '{{ item.storage.id }}', '{{ item.case.id }}')">Select Build</button>
+                    </th>
+                </tr>
+                <tr>
+                    <td>CPU</td>
+                    <td><a href="{% url 'cpu_detail' item.cpu.id %}">{{ item.cpu }}</a></td>
+                </tr>
+                <tr>
+                    <td>GPU</td>
+                    <td><a href="{% url 'gpu_detail' item.gpu.id %}">{{ item.gpu }}</a></td>
+                </tr>
+                <tr>
+                    <td>RAM</td>
+                    <td><a href="{% url 'ram_detail' item.ram.id %}">{{ item.ram }}</a></td>
+                </tr>
+                <tr>
+                    <td>Motherboard</td>
+                    <td><a href="{% url 'mboard_detail' item.ram.id %}">{{ item.mboard }}</a></td>
+                </tr>
+                <tr>
+                    <td>PSU</td>
+                    <td><a href="{% url 'psu_detail' item.psu.id %}">{{ item.psu }}</a></td>
+                </tr>
+                <tr>
+                    <td>Storage</td>
+                    <td><a href="{% url 'storage_detail' item.storage.id %}">{{ item.storage }}</a></td>
+                </tr>
+                <tr>
+                    <td>Chassis</td>
+                    <td><a href="{% url 'case_detail' item.case.id %}">{{ item.case }}</a></td>
+                </tr>
+                <tr>
+                    <th>Total Price</th>
+                    <th></th>
+                    <th>$ {{ item.total_price|convert_to_myr }}</th>
+                </tr>
+            </table>
         </div>
     </div>
-    <div class="rating-date">{{item.order_rating.date_added}}</div>
-
-    <br>
-
-    <div class="star-rating">
-        <span class="fa fa-star {% if order_rating.rating >= 1 %}checked{% endif %}"></span>
-        <span class="fa fa-star {% if order_rating.rating >= 2 %}checked{% endif %}"></span>
-        <span class="fa fa-star {% if order_rating.rating >= 3 %}checked{% endif %}"></span>
-        <span class="fa fa-star {% if order_rating.rating >= 4 %}checked{% endif %}"></span>
-        <span class="fa fa-star {% if order_rating.rating >= 5 %}checked{% endif %}"></span>
-    </div>
-
-    {{ order_rating.comment|default:"No comments yet" }}
-    <br>
-
-    <div style="max-width: 700px; margin-top: 20px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 5px;">
-        <table>
-            <tr>
-                <th>Component</th>
-                <th>Model</th>
-                <th>    <button class="select-button"
-                    onclick="selectAllComponents('{{ item.cpu.id }}', '{{ item.gpu.id }}', '{{ item.mboard.id }}', '{{ item.ram.id }}', '{{ item.psu.id }}', '{{ item.storage.id }}', '{{ item.case.id }}')">Copy
-                    Build</button>
-                </th>
-            </tr>
-            <tr>
-                <td>CPU</td>
-                <td><a href="{% url 'cpu_detail' item.cpu.id %}">{{ item.cpu }}</a></td>
-            </tr>
-            <tr>
-                <td>GPU</td>
-                <td><a href="{% url 'gpu_detail' item.gpu.id %}">{{ item.gpu }}</a></td>
-            </tr>
-            <tr>
-                <td>RAM</td>
-                <td><a href="{% url 'ram_detail' item.ram.id %}">{{ item.ram }}</a></td>
-            </tr>
-            <tr>
-                <td>Motherboard</td>
-                <td><a href="{% url 'mboard_detail' item.ram.id %}">{{ item.mboard }}</a></td>
-            </tr>
-            <tr>
-                <td>PSU</td>
-                <td><a href="{% url 'psu_detail' item.psu.id %}">{{ item.psu }}</a></td>
-            </tr>
-            <tr>
-                <td>Storage</td>
-                <td><a href="{% url 'storage_detail' item.storage.id %}">{{ item.storage }}</a></td>
-            </tr>
-            <tr>
-                <td>Chassis</td>
-                <td><a href="{% url 'case_detail' item.case.id %}">{{ item.case }}</a></td>
-            </tr>
-            <tr>
-                <th>Total Price</th>
-                <th></th>
-                <th>RM {{ item.total_price|convert_to_myr }}</th>
-            </tr>
-        </table>
-    </div>
-</div>
 
 
     <script>

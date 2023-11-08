@@ -34,11 +34,11 @@
               </tr>
               <tr>
                 <td>Price</td>
-                <td>RM {{ case1.price|convert_to_myr }}</td>
+                <td>$ {{ case1.price|convert_to_myr }}</td>
               </tr>
         </table>
         <div class="button-container"><button class="select-button"
-                onclick="selectComponent('case', '{{ case1.id }}')">Select for Customization</button></div>
+                onclick="selectComponent('case', '{{ case1.id }}')"><span class="fas fa-cog"></span> Select to Configuration</button></div>
     </div>
 
     <div class="vs-divider">VS</div>
@@ -68,12 +68,16 @@
               </tr>
               <tr>
                 <td>Price</td>
-                <td>RM {{ case2.price|convert_to_myr }}</td>
+                <td>$ {{ case2.price|convert_to_myr }}</td>
               </tr>
         </table>
         <div class="button-container"><button class="select-button"
-                onclick="selectComponent('case', '{{ case2.id }}')">Select for Customization</button></div>
-
+                onclick="selectComponent('case', '{{ case2.id }}')"><span class="fas fa-cog"></span> Select to Configuration</button>
+                <a href="{% url 'case_detail' case1.pk %}">
+                  <button class="remove-comp-button"><i class="fas fa-times fa-1x"></i></button>
+              </a>
+              </div>
+                
     </div>
 </div>
 

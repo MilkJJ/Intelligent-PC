@@ -30,9 +30,9 @@
           style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
           <form method="POST" action="{% url 'add_to_cart' build.id %}">
             {% csrf_token %}
-            <button type="submit" id="add-to-cart-butt">Add to Cart</button>
+            <button type="submit" style="margin: 10px;" id="add-to-cart-butt">Add to Cart</button>
           </form>
-          <br>
+
           <form method="POST" action="{% url 'delete_favorited_build' build.id %}">
             {% csrf_token %}
             <button type="submit" id="unfavourite-build">Unfavourite <i class="fas fa-heart-broken"></i></button>
@@ -51,42 +51,42 @@
           <tr>
             <td>CPU</td>
             <td><a href="{% url 'cpu_detail' build.cpu.id %}">{{ build.cpu }}</a></td>
-            <td>RM {{build.cpu.price|convert_to_myr}}</td>
+            <td>$ {{build.cpu.price|convert_to_myr}}</td>
           </tr>
           <tr>
             <td>GPU</td>
             <td><a href="{% url 'gpu_detail' build.gpu.id %}">{{ build.gpu }}</a></td>
-            <td>RM {{build.gpu.price|convert_to_myr}}</td>
+            <td>$ {{build.gpu.price|convert_to_myr}}</td>
           </tr>
           <tr>
             <td>RAM</td>
             <td><a href="{% url 'ram_detail' build.ram.id %}">{{ build.ram }}</a></td>
-            <td>RM {{build.ram.price|convert_to_myr}}</td>
+            <td>$ {{build.ram.price|convert_to_myr}}</td>
           </tr>
           <tr>
             <td>Motherboard</td>
             <td><a href="{% url 'mboard_detail' build.mboard.id %}">{{ build.mboard }}</a></td>
-            <td>RM {{build.mboard.price|convert_to_myr}}</td>
+            <td>$ {{build.mboard.price|convert_to_myr}}</td>
           </tr>
           <tr>
             <td>PSU</td>
             <td><a href="{% url 'psu_detail' build.psu.id %}">{{ build.psu }}</a></td>
-            <td>RM {{build.psu.price|convert_to_myr}}</td>
+            <td>$ {{build.psu.price|convert_to_myr}}</td>
           </tr>
           <tr>
             <td>Storage</td>
             <td><a href="{% url 'storage_detail' build.storage.id %}">{{ build.storage }}</a></td>
-            <td>RM {{build.storage.price|convert_to_myr}}</td>
+            <td>$ {{build.storage.price|convert_to_myr}}</td>
           </tr>
           <tr>
             <td>Chassis</td>
             <td><a href="{% url 'case_detail' build.case.id %}">{{ build.case }}</a></td>
-            <td>RM {{build.case.price|convert_to_myr}}</td>
+            <td>$ {{build.case.price|convert_to_myr}}</td>
           </tr>
           <tr>
             <th>Total Price</th>
             <th></th>
-            <th>RM {{ build.total_price|convert_to_myr }}</th>
+            <th>$ {{ build.total_price|convert_to_myr }}</th>
           </tr>
         </table>
       </div>
@@ -120,6 +120,19 @@
 
 </script>
 <style>
+      button {
+      background-color: #333;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      padding: 10px 20px;
+      border-radius: 5px;
+    }
+  
+    button:hover {
+      background-color: #555;
+    }
+
   h1 {
     color: #333;
   }

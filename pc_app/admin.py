@@ -6,6 +6,8 @@ from .models import *
 @admin.register(InitialRec)
 @admin.register(CartItem)
 @admin.register(Profile)
+@admin.register(FavouritedPC)
+@admin.register(OrderRating)
 class YourModelAdmin(admin.ModelAdmin):
     search_fields = ['id']
 

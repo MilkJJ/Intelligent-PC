@@ -65,21 +65,14 @@
           </tr>
           <tr>
             <td>Price</td>
-            <td>RM {{ mboard.price|convert_to_myr }}</td>
+            <td>$ {{ mboard.price|convert_to_myr }}</td>
           </tr>
           <!-- Add more Motherboard details as needed -->
         </table>
 
         <br>
         <div class="rating">
-          {% if messages %}
-          <ul class="messages">
-            {% for message in messages %}
-            <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
-            {% endfor %}
-          </ul>
-          {% endif %}
-
+          {% if cart_item %}
 
           <form method="post" name="mboard_rating_form">
             {% csrf_token %}
@@ -92,7 +85,7 @@
             </select>
 
             <div id="star-rating">
-              Re-rate:
+              Rate Motherboard:<br>
               <ul class="btn btn-light list-inline rating-list">
                 <li onclick="updateRating(5)" data-order-rating="5"><i class="fa fa-star" id="star-5"
                     title="Rate 5"></i>
@@ -115,7 +108,11 @@
             <button type="submit" name="mboard_rating_form">Rate</button>
           </form>
 
-          <button class="select-button" onclick="selectComponent('mboard', '{{ mboard.id }}')">Add to Customize</button>
+          <button class="select-button" onclick="selectComponent('mboard', '{{ mboard.id }}')"><span class="fas fa-cog"></span> Select Motherboard</button>
+          
+          {% else %}
+          <button class="select-button1" onclick="selectComponent('mboard', '{{ mboard.id }}')"><span class="fas fa-cog"></span> Select Motherboard</button>
+          {% endif %}
 
         </div>
 
