@@ -18,7 +18,7 @@
                     {% if request.user.is_authenticated %}
                     <li class="dropdown profile">
                         <a href="#">Your Orders<i class="fa fa-angle-down"></i></a>
-                        <ul role="menu" class="sub-menu">
+                        <ul role="menu" class="sub-menu" style="padding: 10px;">
                             <li><a href="{% url 'ongoing_order' %}"></i>Pending</a></li>
                             <li><a href="{% url 'completed_order' %}"></i>Completed</a></li>
                         </ul>
@@ -58,7 +58,7 @@
                     
                     <li class="dropdown profile">
                         <a href="#">Welcome, {{ request.user.username }} <i class="fa fa-angle-down"></i></a>
-                        <ul role="menu" class="sub-menu">
+                        <ul role="menu" class="sub-menu" style="padding: 10px;">
                             <li><a href="/profile/"><i class="fa fa-user"></i> Profile</a></li>
                             <li><a href="{% url 'logout' %}"><i class="fa fa-sign-out"></i> Sign Out</a></li>
                         </ul>
