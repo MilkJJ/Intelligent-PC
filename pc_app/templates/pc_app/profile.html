@@ -43,7 +43,7 @@
   <p><a href="{% url 'ongoing_order' %}">Ongoing Orders</a></p>
 </div>
 
-<div class="profile-picture-container">
+<div class="profile-picture-container" style="margin-bottom: 20px;">
   <label for="profile-picture-input">
     {% if user.profile.profile_picture %}
     {% if user.profile.profile_picture == 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png' %}
@@ -65,7 +65,7 @@
   <a id="edit-phone-number" style="text-decoration: underline;"><i class="fas fa-edit"></i></a>
 </p>
 
-<form method="post" id="phone-number-update-form" style="display: none;">
+<form method="post" id="phone-number-update-form" style="display: none; margin-bottom: 20px;">
   <h4>Update Phone No.</h4>
   {% csrf_token %}
   {{ phone_number_form.as_p }}

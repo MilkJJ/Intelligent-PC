@@ -93,7 +93,7 @@ def find_cpu_upgrade(request, proc_info, cpu_budget):
         better_cpu_upgrades = CPU.objects.filter(
             name__icontains=device_cpu_brand,  # Partial string matching
             core_clock__gt=device_cpu_speed / 1000,
-            socket__icontains=device_socket,
+            #socket__icontains=device_socket, #Remove for laptop compatible
             price__lte=cpu_budget,
             # socket__icontains=device_socket,
         )  # .order_by('-core_clock')
