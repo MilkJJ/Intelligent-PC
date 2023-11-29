@@ -42,15 +42,7 @@
       <div class="component-box text-center">
         <a href="{% url 'mboard_detail' mboard.pk %}">
           <div class="coverpage">
-            {% if mboard.name|lower|slice:"0:3" == "amd" %}
-            <img src="https://www.amd.com/system/files/2020-06/amd-default-social-image-1200x628.jpg" width="100"
-              height="100"> <!-- Replace with the actual path to AMD image -->
-            {% elif mboard.name|lower|slice:"0:5" == "intel" %}
-            <img src="https://www.intel.com/content/dam/logos/logo-energyblue-1x1.png" width="100" height="100">
-            <!-- Replace with the actual path to Intel image -->
-            {% else %}
-            <img src="https://www.asus.com/media/global/gallery/bt7d7txjhkd4wfs0_setting_xxx_0_90_end_800.png" width="100" height="100"> <!-- Add a default image path if needed -->
-            {% endif %}
+            <img src="https://www.asus.com/media/global/gallery/bt7d7txjhkd4wfs0_setting_xxx_0_90_end_800.png" width="100" height="100">
           </div>
           <p><a href="{% url 'mboard_detail' mboard.pk %}">{{ mboard.name }}</a></p>
           <p>${{ mboard.price|convert_to_myr }}</p>

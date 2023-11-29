@@ -143,8 +143,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'p20012439@student.newinti.edu.my'
-EMAIL_HOST_PASSWORD = '1234'
+EMAIL_HOST_USER = 'intelligentpc.donotreply@gmail.com'
+EMAIL_HOST_PASSWORD = 'smko hazi hcib febk'
 
 
 SESSION_COOKIE_AGE = 604800  # 1 week in seconds

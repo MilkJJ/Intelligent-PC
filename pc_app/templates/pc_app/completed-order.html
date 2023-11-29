@@ -25,7 +25,7 @@
     </header>
 
     <div class="complete-container">
-        <p><a href="{% url 'ongoing_order' %}">Pending Orders</a></p>
+        <p><a href="{% url 'ongoing_order' %}"><i class="fas fa-clipboard"></i> Pending Orders</a></p>
         <!-- <p style="right: 0px;"><a href="{% url 'home' %}">Home</a></p> -->
 
         {% if shipped_items %}
@@ -198,6 +198,7 @@
 </script>
 
 <style>
+
     #comment {
   width: 100%;
   height: 150px; /* Adjust the height as needed */
@@ -265,13 +266,6 @@
         /* Remove any borders */
     }
 
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f4f4f4;
-        margin: 0;
-        padding: 0;
-    }
-
     header {
         background-color: #333;
         color: #fff;
@@ -286,7 +280,6 @@
         /* margin: 2rem auto; */
         padding: 1rem;
         background-color: #f4f3f3;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         border-radius: 5px;
     }
 
@@ -370,13 +363,6 @@
     .rating-order-list {
         display: inline-block;
         list-style: none;
-    }
-
-    body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        background-color: #f4f4f4;
     }
 
     table {

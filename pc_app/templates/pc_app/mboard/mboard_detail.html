@@ -108,10 +108,10 @@
             <button type="submit" name="mboard_rating_form">Rate</button>
           </form>
 
-          <button class="select-button" onclick="selectComponent('mboard', '{{ mboard.id }}')"><span class="fas fa-cog"></span> Select Motherboard</button>
+          <button class="select-button" onclick="selectComponent('motherboard', '{{ mboard.id }}')"><span class="fas fa-cog"></span> Select Motherboard</button>
           
           {% else %}
-          <button class="select-button1" onclick="selectComponent('mboard', '{{ mboard.id }}')"><span class="fas fa-cog"></span> Select Motherboard</button>
+          <button class="select-button1" onclick="selectComponent('motherboard', '{{ mboard.id }}')"><span class="fas fa-cog"></span> Select Motherboard</button>
           {% endif %}
 
         </div>
@@ -122,13 +122,16 @@
         <button id="chooseButton" class="compare-button">Select Motherboard to Compare</button>
         <div id="mboardList" class="component-list">
           <input type="text" id="mboardSearch" class="search-input" placeholder="Search Motherboards">
+          <div class="scrollable-list-container">
           <ul class="component-items">
             {% for other_mboard in other_mboards %}
             <li class="component-item">
+              <div class="divider"></div>
               <a href="{% url 'mboard_comparison' mboard.pk other_mboard.pk %}" class="component-link">{{ other_mboard.name }}</a>
             </li>
             {% endfor %}
           </ul>
+        </div>
         </div>
       </section>
 
@@ -136,8 +139,6 @@
 
   </main>
 </body>
-
-
 
 <script>
   // JavaScript for search functionality

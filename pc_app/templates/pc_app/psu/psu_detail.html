@@ -120,13 +120,16 @@
         <button id="chooseButton" class="compare-button">Select Power Supply to Compare</button>
         <div id="psuList" class="component-list">
           <input type="text" id="psuSearch" class="search-input" placeholder="Search Power Supplys">
+          <div class="scrollable-list-container">
           <ul class="component-items">
             {% for other_psu in other_psus %}
             <li class="component-item">
+              <div class="divider"></div>
               <a href="{% url 'psu_comparison' psu.pk other_psu.pk %}" class="component-link">{{ other_psu.name }}</a>
             </li>
             {% endfor %}
           </ul>
+        </div>
         </div>
       </section>
 

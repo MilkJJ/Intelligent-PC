@@ -1,6 +1,7 @@
 import random
 from django.shortcuts import render
 import numpy as np
+from sklearn.calibration import LabelEncoder
 from .models import *
 from django.contrib.auth.decorators import login_required
 #from sklearn.metrics.pairwise import cosine_similarity
@@ -25,11 +26,9 @@ def HomePage(request):
     )[:9] # Only get 9 ratings displayed
 
     users = User.objects.all()
-    recommended_builds = []
+    metadata_builds = []
     current_user = request.user
 
-    # KNN for component Metadata
-    # if request.method == 'POST':
     use_case = request.POST.get('preferred', 'gaming')
     total_budget = request.POST.get('max_budget', 9999)
     build_type = request.POST.get('build_type', 'AMD')
@@ -48,15 +47,18 @@ def HomePage(request):
     budget_storage = float(float(total_budget) * 0.1)
     budget_case = float(float(total_budget) * 0.1)
     
-    print('total budget', total_budget)
-    print('budget: ', budget_cpu, budget_gpu, budget_motherboard, budget_ram, budget_psu, budget_storage, budget_case)
+    print('Total budget: $', total_budget)
+    print('Each budget: $', budget_cpu, budget_gpu, budget_motherboard, budget_ram, budget_psu, budget_storage, budget_case)
 
     try:
         favourited_pc_list = FavouritedPC.objects.filter(user=current_user)
         pc_cart_list = CartItem.objects.filter(user=current_user)
         initial_list = InitialRec.objects.all()
-
-        if pc_cart_list:
+        
+        if pc_cart_list and favourited_pc_list:
+            pc_build_list = random.choice([pc_cart_list, favourited_pc_list])
+            pc = random.choice(pc_build_list)
+        elif pc_cart_list:
             pc = random.choice(pc_cart_list)
         elif favourited_pc_list:
             pc = random.choice(favourited_pc_list)
@@ -64,35 +66,14 @@ def HomePage(request):
             pc = random.choice(initial_list)
 
     except FavouritedPC.DoesNotExist:
-        print('FavouritedPC objects not found for the current user.')
+        print('FavouritedPC objects not found for the current user!')
     except CartItem.DoesNotExist:
-        print('CartItem objects not found for the current user.')
+        print('CartItem objects not found for the current user!')
+    except InitialRec.DoesNotExist:
+        print('InitialRec objects not found!')
     except Exception as e:
         print(f'An unexpected error occurred: {str(e)}')
-
-    meta_cpus = knn_metadata('cpu', budget_cpu, build_type, pc)
-    meta_gpus = knn_metadata('gpu', budget_gpu, build_type, pc)
-    meta_mboards = knn_metadata('mboard', budget_motherboard, build_type, pc)
-    meta_rams = knn_metadata('ram', budget_ram, build_type, pc)
-    meta_psus = knn_metadata('psu', budget_psu, build_type, pc)
-    meta_storages = knn_metadata('storage', budget_storage, build_type, pc)
-    meta_cases = knn_metadata('case', budget_case, build_type, pc)
-
-    # METADATA RECOMMENDATION
-    for mboard in meta_mboards:
-        for cpu in meta_cpus:
-            for gpu in meta_gpus:
-                for ram in meta_rams:
-                    for psu in meta_psus:
-                        for storage in meta_storages:
-                            for case in meta_cases:
-                                total_price = cpu.price + gpu.price + mboard.price + ram.price + psu.price + storage.price + case.price
-                                formatted_total_price = float('{:.2f}'.format(total_price))
-                                recommended_builds.append({'cpu': cpu, 'gpu': gpu, 'mboard': mboard, 'ram': ram, 'psu':psu ,
-                                                            'storage': storage,'case': case, 'total_price': formatted_total_price})
-        
-    metadata_builds = random.sample(recommended_builds, 2)
-
+    
     # USE CASE FILTERING
     if use_case == 'gaming': 
         cpu_mincores = 6
@@ -142,7 +123,50 @@ def HomePage(request):
         ram_capacity = 8
         ram_speed = 2000
 
-    # KNN RATING MATRIX 
+    # Filter compoennts before training
+    cpus = CPU.objects.values('price', 'core_count', 'core_clock', 'boost_clock', 'tdp', 'smt').filter(Q(price__lte=budget_cpu, name__icontains=build_type, 
+                                core_count__gte=cpu_mincores, core_count__lte=cpu_maxcores, 
+                                core_clock__gte=cpu_coreclock, 
+                                tdp__gte=cpu_mintdp, tdp__lte=cpu_maxtdp) | Q(id=pc.cpu.id)).exclude(graphics=cpu_integrated)
+    
+    gpus = GPU.objects.values('memory', 'core_clock', 'boost_clock', 'length').filter(Q(price__lte=budget_gpu, core_clock__gte=gpu_mincoreclock, core_clock__lte=gpu_maxcoreclock,
+                                memory__gte=gpu_vram) | Q(id=pc.gpu.id)).exclude(boost_clock=gpu_boostclock)
+    
+    rams = Memory.objects.values('speed_mhz', 'num_modules', 'memory_size').filter(Q(price__lte=budget_ram, memory_size__gte=ram_capacity, 
+                                    speed_mhz__gte=ram_speed) | Q(id=pc.ram.id))
+
+    mboards = Motherboard.objects.values('max_memory', 'memory_slots').filter(Q(price__lte=budget_motherboard) | Q(id=pc.mboard.id))
+    psus = PSU.objects.values('wattage', 'price').filter(Q(price__lte=budget_psu) | Q(id=pc.psu.id))
+    storages = StorageDrive.objects.values('capacity', 'cache').filter(Q(price__lte=budget_storage, type='SSD') | Q(id=pc.storage.id))
+    cases = PCase.objects.values('external_volume').filter(Q(price__lte=budget_case) | Q(id=pc.case.id))
+
+    # KNN for component Metadata
+    # if request.method == 'POST':
+    meta_cpus = knn_metadata('cpu', pc, cpus)
+    meta_gpus = knn_metadata('gpu', pc, gpus)
+    meta_mboards = knn_metadata('mboard', pc, mboards)
+    meta_rams = knn_metadata('ram', pc, rams)
+    meta_psus = knn_metadata('psu', pc, psus)
+    meta_storages = knn_metadata('storage', pc, storages)
+    meta_cases = knn_metadata('case', pc, cases)
+
+    # METADATA RECOMMENDATION
+    for mboard in meta_mboards:
+        for cpu in meta_cpus:
+            for gpu in meta_gpus:
+                for ram in meta_rams:
+                    for psu in meta_psus:
+                        for storage in meta_storages:
+                            for case in meta_cases:
+                                total_price = cpu.price + gpu.price + mboard.price + ram.price + psu.price + storage.price + case.price
+                                formatted_total_price = float('{:.2f}'.format(total_price))
+                                metadata_builds.append({'cpu': cpu, 'gpu': gpu, 'mboard': mboard, 'ram': ram, 'psu':psu ,
+                                                            'storage': storage,'case': case, 'total_price': formatted_total_price})
+        
+    #metadata_builds = recommended_builds #random.sample(recommended_builds, 1)
+    random.shuffle(metadata_builds)
+
+    # RATINGS MATRIX RECOMMENDATION
     cpus = CPU.objects.filter(Q(price__lte=budget_cpu, name__icontains=build_type, 
                                 core_count__gte=cpu_mincores, core_count__lte=cpu_maxcores, 
                                 core_clock__gte=cpu_coreclock, 
@@ -207,10 +231,8 @@ def HomePage(request):
 
     else:
         knn_recommended_builds = []
+        metadata_builds = []
 
-    # else:
-    #     metadata_builds = []
-    #     knn_recommended_builds = []
 
     context = {
         'rated_items': rated_items,
@@ -221,62 +243,78 @@ def HomePage(request):
     return render(request, 'pc_app/home.html', context)
 
 
-def knn_metadata(component_type, user_budget, build_type, pc):
-
+def knn_metadata(component_type, pc, components):
+    #label_encoder = LabelEncoder()
+    
     if component_type == 'cpu':
-        component_data = CPU.objects.filter(Q(price__lte=user_budget, name__icontains=build_type) | Q(id=pc.cpu.id)).values('core_count', 'core_clock', 'boost_clock', 'tdp', 'smt')
-        selected_features = ['core_count', 'core_clock', 'boost_clock', 'tdp', 'smt']
-        pc_attributes = [getattr(pc.cpu, feature) for feature in selected_features]
+        component_list = np.array([[component['core_count'], component['core_clock'], component['boost_clock'], component['tdp'], component['smt']] for component in components])
+        fav_attr = np.array([[pc.cpu.core_count, pc.cpu.core_clock, pc.cpu.boost_clock, pc.cpu.tdp, pc.cpu.smt]])
         model = CPU
 
-    elif component_type == 'gpu':
-        component_data = GPU.objects.filter(Q(price__lte=user_budget) | Q(id=pc.gpu.id)).values('memory', 'core_clock', 'boost_clock', 'length')
-        selected_features = ['memory', 'core_clock', 'boost_clock', 'length']
-        pc_attributes = [getattr(pc.gpu, feature) for feature in selected_features]
-        model = GPU
-
     elif component_type == 'mboard':
-        component_data = Motherboard.objects.filter(Q(price__lte=user_budget) | Q(id=pc.mboard.id)).values('max_memory', 'memory_slots')
-        selected_features = ['max_memory', 'memory_slots']
-        pc_attributes = [getattr(pc.mboard, feature) for feature in selected_features]  # Define relevant attributes for motherboards
+        # # Extracting 'socket' values and applying label encoding
+        # sockets = [component['socket'] for component in components]
+        # encoded_sockets = label_encoder.fit_transform(sockets)
+
+        # # Update 'socket' values in the 'components' list
+        # for i, component in enumerate(components):
+        #     component['socket'] = encoded_sockets[i]
+
+        component_list = np.array([[component['max_memory'], component['memory_slots']] for component in components])
+        fav_attr = np.array([[pc.mboard.max_memory, pc.mboard.memory_slots]])
         model = Motherboard
 
+    elif component_type == 'gpu':
+        component_list = np.array([[component['memory'], component['core_clock'], component['boost_clock'], component['length']] for component in components])
+        fav_attr = np.array([[pc.gpu.memory, pc.gpu.core_clock, pc.gpu.boost_clock, pc.gpu.length]])
+        model = GPU
+
     elif component_type == 'ram':
-        component_data = Memory.objects.filter(Q(price__lte=user_budget) | Q(id=pc.ram.id)).values('speed_mhz', 'num_modules', 'memory_size')
-        selected_features = ['speed_mhz', 'num_modules', 'memory_size']
-        pc_attributes = [getattr(pc.ram, feature) for feature in selected_features]  # Define relevant attributes for rams
+        component_list = np.array([[component['speed_mhz'], component['num_modules'], component['memory_size']] for component in components])
+        fav_attr = np.array([[pc.ram.speed_mhz, pc.ram.num_modules, pc.ram.memory_size]])
         model = Memory
 
     elif component_type == 'psu':
-        component_data = PSU.objects.filter(Q(price__lte=user_budget) | Q(id=pc.psu.id)).values('wattage', 'price')
-        selected_features = ['wattage', 'price']
-        pc_attributes = [getattr(pc.psu, feature) for feature in selected_features]  # Define relevant attributes for motherboards
+        component_list = np.array([[component['wattage'], component['price']] for component in components])
+        fav_attr = np.array([[pc.psu.wattage, pc.psu.price]])
         model = PSU
-
+    
     elif component_type == 'storage':
-        component_data = StorageDrive.objects.filter(Q(price__lte=user_budget) | Q(id=pc.storage.id)).values('capacity', 'cache')
-        selected_features = ['capacity', 'cache']
-        pc_attributes = [getattr(pc.storage, feature) for feature in selected_features]  # Define relevant attributes for motherboards
+        component_list = np.array([[component['capacity'], component['cache']] for component in components])
+        fav_attr = np.array([[pc.storage.capacity, pc.storage.cache]])
         model = StorageDrive
-
+    
     elif component_type == 'case':
-        component_data = PCase.objects.filter(Q(price__lte=user_budget) | Q(id=pc.case.id)).values('external_525_bays')
-        selected_features = ['external_525_bays']
-        pc_attributes = [getattr(pc.case, feature) for feature in selected_features]  # Define relevant attributes for motherboards
+        component_list = np.array([[component['external_volume']] for component in components])
+        fav_attr = np.array([[pc.case.external_volume]])
         model = PCase
 
-    component_matrix = np.array([list(component.values()) for component in component_data])
+    # 1) component_matrix = np.array([list(component.values()) for component in component_data])
     #cosine_sim = cosine_similarity(component_matrix, component_matrix)
-    knn = NearestNeighbors(n_neighbors=2, algorithm='auto') 
-    knn.fit(component_matrix)
 
-    user_features = np.array(pc_attributes, dtype=float).reshape(1, -1)
+    if not components:
+        # Handle the case where no components match the criteria
+        return []
+    
+    else:
+        if components.count() > 1:
+            neigh_no = 2
+        elif components.count() > 0:
+            neigh_no = 1
+            #neigh_no = components.count() - 1
 
-    distances, indices = knn.kneighbors(user_features)
+    knn = NearestNeighbors(metric='cosine', algorithm='brute') #auto
+    knn.fit(component_list)
+
+    #user_features = np.array(fav_attr, dtype=float).reshape(1, -1)
+
+    distances, indices = knn.kneighbors(fav_attr, n_neighbors=neigh_no)
 
     #print(component_type, 'metadata: ', indices[0])
 
-    recommended_components = [model.objects.get(pk=index+1) for index in indices[0]]
+    # 3) recommended_components = [model.objects.get(pk=index+1) for index in indices[0]]
+
+    recommended_components = model.objects.filter(pk__in=indices[0])
 
     return recommended_components
 
@@ -313,8 +351,7 @@ def knn_training_rating(users, components, pivot_table_entries, component_type, 
     components_count = len(components)
     ratings_matrix = np.zeros((components_count, user_count))
 
-    # Fill the ratings matrix with ratings from the PivotTable.
-    
+    # Fill the ratings matrix with ratings from the PivotTable
     for entry in pivot_table_entries:
         user_index = user_id_to_index.get(entry.user.id)
         if component_type == 'cpu':
@@ -368,8 +405,18 @@ def knn_training_rating(users, components, pivot_table_entries, component_type, 
     nn_model = NearestNeighbors(metric='cosine', algorithm='brute')
     nn_model.fit(ratings_matrix)
 
+    if not components:
+        # Handle the case where no components match the criteria
+        return []
+    
+    else:
+        if components.count() > 1:
+            neigh_no = 2
+        elif components.count() > 0:
+            neigh_no = 1
+
     try:
-        distances, indices = nn_model.kneighbors(ratings_matrix[comp_preference].reshape(1, -1), n_neighbors=4)
+        distances, indices = nn_model.kneighbors(ratings_matrix[comp_preference].reshape(1, -1), n_neighbors=neigh_no)
 
         # Retrieve the recommended CPU objects using the indices and distances
         recommended_component_indices = [

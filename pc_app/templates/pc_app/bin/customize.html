@@ -1,77 +1,93 @@
 {% load static %}
+{% block customize_styles %}
 
 <div class="header-top">
     <h3 style="color:white" ;>PC Configuration</h3>
 </div>
 
-<br> 
-<table>
+<table class="customize-table">
     <thead>
-        <tr>
-            <th>Pick Component</th>
-            <th>Selected Component Model</th>
+        <tr style="border: 1px solid #dddddd;">
+            <th>Select Component</th>
+            <th>Selected Model</th>
         </tr>
     </thead>
     <tbody>
-        <tr>
+        <col style="width:110px;">
+        <tr id="cpuRow" style="border: 1px solid #dddddd;">
             <td>
-                <a href="{% url 'cpu_list' %}"><img src="{% static 'images/component-logo/cpu.png' %}" width="50"
-                        height="50"></img>
-                    CPU</a>
+                <a href="{% url 'cpu_list' %}"><img src="{% static 'images/component-logo/cpu.png' %}" width="40"
+                        height="40"></img><br>
+                    CPU <span class="icon"
+                        title="The CPU is the primary component responsible for executing instructions in a computer, performing calculations and controlling other hardware components.">&#9432;</span></a>
             </td>
-            <td><span id="selectedCPU">Select a CPU</span></td>
+            <td><span id="selectedCPU">-</span></td>
+        </tr>
+        <tr id="gpuRow" style="border: 1px solid #dddddd;">
+            <td><a href="{% url 'gpu_list' %}"><img src="{% static 'images/component-logo/gpu.png' %}" width="40"
+                        height="40"></img><br>
+                    GPU <span class="icon"
+                        title="The GPU is specialized for rendering graphics and accelerating parallel processing tasks, often used in gaming and graphical applications.">&#9432;</span></a>
+            </td>
+            <td><span id="selectedGPU">-</span></td>
+        </tr>
+        <tr id="motherboardRow" style="border: 1px solid #dddddd;">
+            <td style="text-align: center;"><a href="{% url 'mboard_list' %}"><img
+                        src="{% static 'images/component-logo/mboard.png' %}" width="40" height="40"></img><br>
+                    Mainboard <span class="icon"
+                        title="The motherboard is the main circuit board connecting various components like CPU, RAM, GPU, and storage, providing communication and power distribution between them.">&#9432;</span></a>
+            </td>
+            <td><span id="selectedMotherboard">-</span></td>
+        </tr>
+        <tr id="ramRow" style="border: 1px solid #dddddd;">
+            <td style="text-align: center;"><a href="{% url 'ram_list' %}"><img
+                        src="{% static 'images/component-logo/ram.png' %}" width="40" height="40"></img><br>
+                    RAM <span class="icon"
+                        title="RAM provides fast, temporary storage for data that the CPU is actively using, facilitating quick access to applications and improving system performance.">&#9432;</span></a></a>
+            </td>
+            <td><span id="selectedRAM">-</span></td>
+        </tr>
+        <tr id="psuRow" style="border: 1px solid #dddddd;">
+            <td style="text-align: center;"><a href="{% url 'psu_list' %}"><img
+                        src="{% static 'images/component-logo/psu.png' %}" width="40" height="40"></img><br>
+                    PSU <span class="icon"
+                        title="The PSU converts electrical power from an outlet into a form usable by the computer components, supplying the necessary energy for the system to operate.">&#9432;</span></a></a>
+            </td>
+            <td><span id="selectedPSU">-</span></td>
+        </tr>
+        <tr id="storageRow" style="border: 1px solid #dddddd;">
+            <td style="text-align: center;"><a href="{% url 'storage_list' %}"><img
+                        src="{% static 'images/component-logo/storage.png' %}" width="40" height="40"></img><br>
+                    Storage <span class="icon"
+                        title="Storage devices, such as hard drives or SSDs, store data permanently or temporarily, enabling the retrieval of information even after the computer is powered off.">&#9432;</span></a></a>
+            </td>
+            <td><span id="selectedStorage">-</span></td>
+        </tr>
+        <tr id="caseRow" style="border: 1px solid #dddddd;">
+            <td style="text-align: center;"><a href="{% url 'case_list' %}"><img
+                        src="{% static 'images/component-logo/case.png' %}" width="40" height="40"></img><br>
+                    Chassis <span class="icon"
+                        title="The chassis, or case, houses the internal components of a computer, providing physical protection, organization, and cooling for the hardware.">&#9432;</span></a></a>
+            </td>
+            <td><span id="selectedCase">-</span></td>
         </tr>
         <tr>
-            <td><a href="{% url 'gpu_list' %}"><img src="{% static 'images/component-logo/gpu.png' %}" width="50"
-                        height="50"></img>
-                    GPU</a></td>
-            <td><span id="selectedGPU">Select a GPU</span></td>
-        </tr>
-        <tr>
-            <td><a href="{% url 'mboard_list' %}"><img src="{% static 'images/component-logo/mboard.png' %}" width="50"
-                        height="50"></img>
-                    Motherboard</a></td>
-            <td><span id="selectedMotherboard">Select a Motherboard</span></td>
-        </tr>
-        <tr>
-            <td><a href="{% url 'ram_list' %}"><img src="{% static 'images/component-logo/ram.png' %}" width="50"
-                        height="50"></img>
-                    RAM</a></td>
-            <td><span id="selectedRAM">Select a RAM</span></td>
-        </tr>
-        <tr>
-            <td><a href="{% url 'psu_list' %}"><img src="{% static 'images/component-logo/psu.png' %}" width="50"
-                        height="50"></img>
-                    PSU</a></td>
-            <td><span id="selectedPSU">Select a Power Supply</span></td>
-        </tr>
-        <tr>
-            <td><a href="{% url 'storage_list' %}"><img src="{% static 'images/component-logo/storage.png' %}"
-                        width="50" height="50"></img>
-                    Storage</a></td>
-            <td><span id="selectedStorage">Select a Storage Drive</span></td>
-        </tr>
-        <tr>
-            <td><a href="{% url 'case_list' %}"><img src="{% static 'images/component-logo/case.png' %}" width="50"
-                        height="50"></img>
-                    PC Case</a></td>
-            <td><span id="selectedCase">Select a Chassis</span></td>
-        </tr>
-        <tr>
-            <th>Total Price:</th>
-            <th><span id="totalPrice" style="font-family: sans-serif; font-weight: 600; color: #29b948;">$$</span></th>
+            <th>Total Price</th>
+            <th><span id="totalPrice"
+                    style="font-family: sans-serif; font-weight: 600; font-size: 16px; color: #29b948;">$$</span></th>
         </tr>
     </tbody>
 </table>
 
 <div style="padding: 15px; float: right;">
-    <button onclick="clearSelections()" id="clear-build" class="config-button"><i class="fas fa-trash-alt"></i> Clear</button>
+    <button onclick="clearSelections()" id="clear-build" class="config-button"><i class="fas fa-trash-alt"></i>
+        Clear</button>
     <button onclick="toggleFavorite()" class="config-button"><i class="fa fa-heart"></i> Save Build</button>
     <button onclick="addToCart()" class="config-button"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
-    </div>
+</div>
 
 <script>
-        document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function () {
         var placeOrderButton = document.getElementById('clear-build');
 
         placeOrderButton.addEventListener('click', function (e) {
@@ -83,6 +99,28 @@
 </script>
 
 <style>
+    .customize-table th,
+    .customize-table td {
+        padding: 2px;
+        text-align: center;
+    }
+
+    th,
+    td {
+        padding: 9px;
+        text-align: left;
+    }
+
+    .icon {
+        display: inline-block;
+        position: relative;
+        color: rgb(39, 72, 193);
+    }
+
+    .red-background {
+        background-color: rgb(251, 242, 216);
+    }
+
     .config-button {
         background-color: #333;
         color: #fff;
@@ -109,12 +147,6 @@
         width: 100%;
     }
 
-    th,
-    td {
-        padding: 5px;
-        text-align: left;
-    }
-
     th {
         background-color: #f2f2f2;
     }
@@ -126,6 +158,7 @@
 
     a:hover {
         text-decoration: underline;
+        color: #0073e6;
     }
 
     /*     
@@ -140,5 +173,6 @@
                 border-radius: 5px;
             }
      */
-
 </style>
+
+{% endblock %}

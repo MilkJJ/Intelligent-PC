@@ -31,7 +31,6 @@ class CPUListView(ListView):
 
         if min_price:
             min_price = float(min_price)
-            # min_price /= 4.55
             queryset = queryset.filter(price__gte=min_price)
 
         if max_price:
@@ -264,11 +263,21 @@ class MBoardListView(ListView):
         queryset = super().get_queryset()
 
         search_query = self.request.GET.get('search_query')
+        min_price = self.request.GET.get('min_price')
+        max_price = self.request.GET.get('max_price')
 
         # Check if a search query is provided
         if search_query:
             # Filter GPUs by name containing the search query (case-insensitive)
             queryset = queryset.filter(name__icontains=search_query)
+
+        if min_price:
+            min_price = float(min_price)
+            queryset = queryset.filter(price__gte=min_price)
+
+        if max_price:
+            max_price = float(max_price)
+            queryset = queryset.filter(price__lte=max_price)
 
         return queryset
 
@@ -373,10 +382,21 @@ class RAMListView(ListView):
     def get_queryset(self):
         queryset = super().get_queryset()
         search_query = self.request.GET.get('search_query')
+        min_price = self.request.GET.get('min_price')
+        max_price = self.request.GET.get('max_price')
 
+        # Check if a search query is provided
         if search_query:
-            # Filter RAM by name containing the search query (case-insensitive)
+            # Filter GPUs by name containing the search query (case-insensitive)
             queryset = queryset.filter(name__icontains=search_query)
+
+        if min_price:
+            min_price = float(min_price)
+            queryset = queryset.filter(price__gte=min_price)
+
+        if max_price:
+            max_price = float(max_price)
+            queryset = queryset.filter(price__lte=max_price)
 
         return queryset
     
@@ -481,9 +501,21 @@ class StorageListView(ListView):
         queryset = super().get_queryset()
         search_query = self.request.GET.get('search_query')
 
+        min_price = self.request.GET.get('min_price')
+        max_price = self.request.GET.get('max_price')
+
+        # Check if a search query is provided
         if search_query:
-            # Filter Storage by name containing the search query (case-insensitive)
+            # Filter GPUs by name containing the search query (case-insensitive)
             queryset = queryset.filter(name__icontains=search_query)
+
+        if min_price:
+            min_price = float(min_price)
+            queryset = queryset.filter(price__gte=min_price)
+
+        if max_price:
+            max_price = float(max_price)
+            queryset = queryset.filter(price__lte=max_price)
 
         return queryset
     
@@ -590,9 +622,18 @@ class PSUListView(ListView):
         min_price = self.request.GET.get('min_price')
         max_price = self.request.GET.get('max_price')
 
+        # Check if a search query is provided
         if search_query:
-            # Filter CPUs by name containing the search query (case-insensitive)
+            # Filter GPUs by name containing the search query (case-insensitive)
             queryset = queryset.filter(name__icontains=search_query)
+
+        if min_price:
+            min_price = float(min_price)
+            queryset = queryset.filter(price__gte=min_price)
+
+        if max_price:
+            max_price = float(max_price)
+            queryset = queryset.filter(price__lte=max_price)
 
         return queryset
     
@@ -696,10 +737,21 @@ class CaseListView(ListView):
     def get_queryset(self):
         queryset = super().get_queryset()
         search_query = self.request.GET.get('search_query')
+        min_price = self.request.GET.get('min_price')
+        max_price = self.request.GET.get('max_price')
 
+        # Check if a search query is provided
         if search_query:
-            # Filter case by name containing the search query (case-insensitive)
+            # Filter GPUs by name containing the search query (case-insensitive)
             queryset = queryset.filter(name__icontains=search_query)
+
+        if min_price:
+            min_price = float(min_price)
+            queryset = queryset.filter(price__gte=min_price)
+
+        if max_price:
+            max_price = float(max_price)
+            queryset = queryset.filter(price__lte=max_price)
 
         return queryset
     

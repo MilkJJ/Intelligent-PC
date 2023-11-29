@@ -123,22 +123,33 @@
       <section class="component-comparison">
         <button id="chooseButton" class="compare-button">Select GPU to Compare</button>
         <div id="gpuList" class="component-list">
-          <input type="text" id="gpuSearch" class="search-input" placeholder="Search GPUs">
-          <ul class="component-items">
-            {% for other_gpu in other_gpus %}
-            <li class="component-item">
-              <a href="{% url 'gpu_comparison' gpu.pk other_gpu.pk %}" class="component-link">{{ other_gpu.name }} ({{ other_gpu.chipset }})</a>
-            </li>
-            {% endfor %}
-          </ul>
+            <input type="text" id="gpuSearch" class="search-input" placeholder="Search GPUs">
+            <div class="scrollable-list-container">
+                <ul class="component-items">
+                    {% for other_gpu in other_gpus %}
+                    <li class="component-item">
+                      <div class="divider"></div>
+                        <a href="{% url 'gpu_comparison' gpu.pk other_gpu.pk %}" class="component-link">{{ other_gpu.name }} ({{ other_gpu.chipset }})</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
         </div>
-      </section>
+    </section>
+    
 
     </div>
 
   </main>
 </body>
 
+<style>
+.scrollable-list-container {
+    max-height: 350px; /* Set a fixed maximum height for the container */
+    overflow-y: auto; /* Enable vertical scrolling when the content overflows */
+}
+
+</style>
 
 
 <script>
