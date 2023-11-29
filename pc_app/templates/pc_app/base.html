@@ -18,6 +18,26 @@
                 }
             });
         });
+
+        function updateBackgroundColor(spanId, tdId) {
+            var span = document.getElementById(spanId);
+            var td = document.getElementById(tdId);
+
+            var storedCase = localStorage.getItem(spanId);
+
+            if (storedCase === null || storedCase === undefined) {
+                td.classList.add('red-background');
+            }
+            // else {
+            //     td.classList.add('green-background');
+            // }
+        }
+
+        function updateBackground(spanId, tdId) {
+            var td = document.getElementById(tdId);
+            td.classList.remove('red-background');
+        }
+
     </script>
     <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/font-awesome.min.css' %}">
@@ -31,19 +51,19 @@
 </head>
 
 <style>
-button.select-button {
-  background-color: #333;
-  color: #fff;
-  border: none;
-  cursor: pointer;
-  padding: 7px 20px;
-  border-radius: 5px;
-  /* font-weight: bold; */
-}
+    button.select-button {
+        background-color: #333;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        padding: 7px 20px;
+        border-radius: 5px;
+        /* font-weight: bold; */
+    }
 
-button.select-button:hover {
-  background-color: #252438;
-}
+    button.select-button:hover {
+        background-color: #252438;
+    }
 
     header {
         background-color: #333;
@@ -57,7 +77,6 @@ button.select-button:hover {
         display: flex;
         /* justify-content: space-between; */
         margin-bottom: 30px;
-        /* Add space between rows (adjust as needed) */
     }
 
     .component-box {
@@ -67,7 +86,6 @@ button.select-button:hover {
         /* Add spacing between CPU elements (adjust as needed) */
         border: 1px solid #ccc;
         padding: 10px;
-        
     }
 
     .component-box:hover {
@@ -164,7 +182,8 @@ button.select-button:hover {
         {% include 'pc_app/bin/customize.html' %}
     </div>
 
-    <button id="slideToggleButton" class="slide-button" onclick="toggleSlideMenu()"><span class="fas fa-bars"></span>  View Configuration</button>
+    <button id="slideToggleButton" class="slide-button" onclick="toggleSlideMenu()"><span class="fas fa-bars"></span>
+        View Configuration</button>
 
 
     <footer>{% include 'pc_app/bin/footer.html' %}</footer>
@@ -250,8 +269,10 @@ button.select-button:hover {
                 if (compXhr.readyState === XMLHttpRequest.DONE && compXhr.status === 200) {
                     var cpuInfo = JSON.parse(compXhr.responseText);
                     localStorage.setItem('selectedCPUID', componentId); //To favourite the CPU
-                    localStorage.setItem('selectedCPU', `${cpuInfo.name} - $ ${cpuInfo.price}`);
-                    document.getElementById('selectedCPU').innerText = `${cpuInfo.name} - $ ${cpuInfo.price}`;
+                    localStorage.setItem('selectedCPU', `${cpuInfo.name} - $${cpuInfo.price}`);
+                    updateBackground('selectedCPU', 'cpuRow');
+
+                    document.getElementById('selectedCPU').innerText = `${cpuInfo.name} - $${cpuInfo.price}`;
 
                     localStorage.setItem('selectedCPUPrice', parseFloat(`${cpuInfo.price}`));
                     //document.getElementById('totalPrice').innerText = `CPU Price: ${cpuPrice.toFixed(2)}`;
@@ -273,8 +294,10 @@ button.select-button:hover {
                 if (compXhr.readyState === XMLHttpRequest.DONE && compXhr.status === 200) {
                     var gpuInfo = JSON.parse(compXhr.responseText);
                     localStorage.setItem('selectedGPUID', componentId); //To favourite the GPU
-                    localStorage.setItem('selectedGPU', `${gpuInfo.name} - ${gpuInfo.chipset} - $ ${gpuInfo.price}`);
-                    document.getElementById('selectedGPU').innerText = `${gpuInfo.name} - ${gpuInfo.chipset} - $ ${gpuInfo.price}`;
+                    localStorage.setItem('selectedGPU', `${gpuInfo.name} - ${gpuInfo.chipset} - $${gpuInfo.price}`);
+                    updateBackground('selectedGPU', 'gpuRow');
+
+                    document.getElementById('selectedGPU').innerText = `${gpuInfo.name} - ${gpuInfo.chipset} - $${gpuInfo.price}`;
 
                     if (copyAll == false) {
                         alert(`GPU: ${gpuInfo.chipset} selected for customization!`);
@@ -296,8 +319,9 @@ button.select-button:hover {
                 if (compXhr.readyState === XMLHttpRequest.DONE && compXhr.status === 200) {
                     var mboard_info = JSON.parse(compXhr.responseText);
                     localStorage.setItem('selectedMotherboardID', componentId); //To favourite the GPU
-                    localStorage.setItem('selectedMotherboard', `${mboard_info.name} - $ ${mboard_info.price}`);
-                    document.getElementById('selectedMotherboard').innerText = `${mboard_info.name} - $ ${mboard_info.price}`;
+                    localStorage.setItem('selectedMotherboard', `${mboard_info.name} - $${mboard_info.price}`);
+                    document.getElementById('selectedMotherboard').innerText = `${mboard_info.name} - $${mboard_info.price}`;
+                    updateBackground('selectedMotherboard', 'motherboardRow');
 
                     if (copyAll == false) {
                         alert(`GPU: ${mboard_info.name} selected for customization!`);
@@ -321,11 +345,12 @@ button.select-button:hover {
 
                     // Store the selected RAM ID and details in local storage
                     localStorage.setItem('selectedRAMID', componentId);
-                    localStorage.setItem('selectedRAM', `${ramInfo.name} - $ ${ramInfo.price}`);
+                    localStorage.setItem('selectedRAM', `${ramInfo.name} - $${ramInfo.price}`);
+                    updateBackground('selectedRAM', 'ramRow');
 
                     // Update the displayed RAM selection
                     const selectedRAMElement = document.getElementById('selectedRAM');
-                    selectedRAMElement.innerText = `${ramInfo.name} - $ ${ramInfo.price}`;
+                    selectedRAMElement.innerText = `${ramInfo.name} - $${ramInfo.price}`;
 
                     if (!copyAll) {
                         alert(`RAM: ${ramInfo.name} selected for customization!`);
@@ -351,11 +376,12 @@ button.select-button:hover {
 
                     // Store the selected PSU ID and details in local storage
                     localStorage.setItem('selectedPSUID', componentId);
-                    localStorage.setItem('selectedPSU', `${psuInfo.name} - $ ${psuInfo.price}`);
+                    localStorage.setItem('selectedPSU', `${psuInfo.name} - $${psuInfo.price}`);
+                    updateBackground('selectedPSU', 'psuRow');
 
                     // Update the displayed PSU selection
                     const selectedPSUElement = document.getElementById('selectedPSU');
-                    selectedPSUElement.innerText = `${psuInfo.name} - $ ${psuInfo.price}`;
+                    selectedPSUElement.innerText = `${psuInfo.name} - $${psuInfo.price}`;
 
                     if (!copyAll) {
                         alert(`Power Supply: ${psuInfo.name} selected for customization!`);
@@ -381,11 +407,12 @@ button.select-button:hover {
 
                     // Store the selected storage ID and details in local storage
                     localStorage.setItem('selectedStorageID', componentId);
-                    localStorage.setItem('selectedStorage', `${storageInfo.name} - $ ${storageInfo.price}`);
+                    localStorage.setItem('selectedStorage', `${storageInfo.name} - $${storageInfo.price}`);
+                    updateBackground('selectedStorage', 'storageRow');
 
                     // Update the displayed storage selection
                     const selectedStorageElement = document.getElementById('selectedStorage');
-                    selectedStorageElement.innerText = `${storageInfo.name} - $ ${storageInfo.price}`;
+                    selectedStorageElement.innerText = `${storageInfo.name} - $${storageInfo.price}`;
 
                     if (!copyAll) {
                         alert(`Storage: ${storageInfo.name} selected for customization!`);
@@ -411,11 +438,12 @@ button.select-button:hover {
 
                     // Store the selected case ID and details in local storage
                     localStorage.setItem('selectedCaseID', componentId);
-                    localStorage.setItem('selectedCase', `${caseInfo.name} - $ ${caseInfo.price}`);
+                    localStorage.setItem('selectedCase', `${caseInfo.name} - $${caseInfo.price}`);
+                    updateBackground('selectedCase', 'caseRow');
 
                     // Update the displayed case selection
                     const selectedCaseElement = document.getElementById('selectedCase');
-                    selectedCaseElement.innerText = `${caseInfo.name} - $ ${caseInfo.price}`;
+                    selectedCaseElement.innerText = `${caseInfo.name} - $${caseInfo.price}`;
 
                     if (!copyAll) {
                         alert(`PC Case: ${caseInfo.name} selected for customization!`);
@@ -447,9 +475,10 @@ button.select-button:hover {
         displayTotalPrice()
         const storedtotalPrice = localStorage.getItem('totalPrice');
 
-        if(storedtotalPrice){
-        const totalPrice = parseFloat(storedtotalPrice);}
-        else{
+        if (storedtotalPrice) {
+            const totalPrice = parseFloat(storedtotalPrice);
+        }
+        else {
             const totalPrice = 0
         }
 
@@ -461,6 +490,15 @@ button.select-button:hover {
         document.getElementById('selectedStorage').innerText = storedStorage || '-';
         document.getElementById('selectedCase').innerText = storedCase || '-';
         document.getElementById('totalPrice').innerText = `$${totalPrice}` || '$$';
+
+
+        updateBackgroundColor('selectedCPU', 'cpuRow');
+        updateBackgroundColor('selectedGPU', 'gpuRow');
+        updateBackgroundColor('selectedMotherboard', 'motherboardRow');
+        updateBackgroundColor('selectedRAM', 'ramRow');
+        updateBackgroundColor('selectedPSU', 'psuRow');
+        updateBackgroundColor('selectedStorage', 'storageRow');
+        updateBackgroundColor('selectedCase', 'caseRow');
 
     };
 
@@ -494,6 +532,14 @@ button.select-button:hover {
         document.getElementById('selectedStorage').innerText = '-';
         document.getElementById('selectedCase').innerText = '-';
         document.getElementById('totalPrice').innerText = '$$';
+
+        updateBackgroundColor('selectedCPU', 'cpuRow');
+        updateBackgroundColor('selectedGPU', 'gpuRow');
+        updateBackgroundColor('selectedMotherboard', 'motherboardRow');
+        updateBackgroundColor('selectedRAM', 'ramRow');
+        updateBackgroundColor('selectedPSU', 'psuRow');
+        updateBackgroundColor('selectedStorage', 'storageRow');
+        updateBackgroundColor('selectedCase', 'caseRow');
     }
 
     //Storing to database
@@ -518,7 +564,6 @@ button.select-button:hover {
                         alert('PC build has been saved successfully!');
                         window.location.href = '/favorited_builds/';
                     } else {
-                        alert('PC build was already saved!');
                         window.location.href = '/favorited_builds/';
                     }
                 }
@@ -560,7 +605,7 @@ button.select-button:hover {
                             alert('PC Build added to cart successfully!');
                             window.location.href = '/cart_items/';
                         } else {
-                            alert('Failed to add components to cart!');
+                            alert('Incompatible Components Detected: CPU & Motherboard!');
                         }
                     } else {
                         alert('Request failed with status: ' + xhr.status);

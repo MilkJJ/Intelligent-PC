@@ -11,7 +11,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pending Order History</title>
+    <title>Pending Order</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <meta charset="UTF-8">
@@ -21,11 +21,11 @@
 
 <body>
     <header>
-        <h2>Pending PC Build Order History</h2>
+        <h2>Pending PC Build Order</h2>
     </header>
 
     <div class="complete-container">
-        <p><a href="{% url 'completed_order' %}">Completed Orders</a></p>
+        <p><a href="{% url 'completed_order' %}"><i class="fas fa-check"></i> Completed Orders</a></p>
         
         {% if purchased_items %}
         {% for item in purchased_items %}
@@ -43,7 +43,7 @@
 
             {% else %}
             <p class="order-status" style="font-size: 20px;">Order #{{ item.id }} <span
-                    style="float: right; color: rgb(207, 197, 0);">Pending</span></p>
+                    style="float: right; color: rgb(207, 197, 0);">Preparing</span></p>
             <p style="font-size: 14px;">{{ item.order_date }}</p>
             {% endif %}
 
@@ -127,12 +127,6 @@
         /* Remove any borders */
     }
 
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f4f4f4;
-        margin: 0;
-        padding: 0;
-    }
 
     header {
         background-color: #333;
@@ -146,7 +140,6 @@
         max-width: 1100px;
         padding: 1rem;
         background-color: #f4f3f3;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         border-radius: 5px;
     }
 
@@ -222,12 +215,6 @@
         list-style: none;
     }
 
-    body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        background-color: #f4f4f4;
-    }
 
     table {
         width: 80%;

@@ -150,14 +150,17 @@
         <button id="chooseButton" class="compare-button">Select CPU to Compare</button>
         <div id="cpuList" class="component-list">
           <input type="text" id="cpuSearch" class="search-input" placeholder="Search CPUs">
+          <div class="scrollable-list-container">
           <ul class="component-items">
             {% for other_cpu in other_cpus %}
             <li class="component-item">
+              <div class="divider"></div>
               <a href="{% url 'cpu_comparison' cpu.pk other_cpu.pk %}" class="component-link">{{ other_cpu.name }}</a>
             </li>
             {% endfor %}
           </ul>
         </div>
+      </div>
       </section>
 
     </div>

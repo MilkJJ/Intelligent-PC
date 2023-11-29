@@ -42,7 +42,7 @@ class CPU(models.Model):
     socket = models.CharField(max_length=200, default='Unknown')
     
     def __str__(self):
-        return f"{self.name} - {self.graphics} @ {self.core_clock}GHz"
+        return f"{self.name} @{self.core_clock}GHz - {self.boost_clock}GHz"
 
 
 class GPU(models.Model):
@@ -56,7 +56,7 @@ class GPU(models.Model):
     length = models.DecimalField(decimal_places=2, max_digits=5)
 
     def __str__(self):
-        return f"{self.name} - {self.chipset} - {self.memory}GB"
+        return f"{self.name} ({self.chipset} + {self.memory}GB)"
 
 
 class Memory(models.Model):
@@ -72,7 +72,7 @@ class Memory(models.Model):
     cas_latency = models.PositiveIntegerField()
 
     def __str__(self):
-        return f"{self.name} ({self.memory_size}GB + {self.speed_mhz}Mhz)"
+        return f"{self.name} - {self.speed_mhz}Mhz ({self.memory_size}GB x{self.num_modules})"
 
 class Motherboard(models.Model):
     name = models.CharField(max_length=255)
@@ -84,7 +84,7 @@ class Motherboard(models.Model):
     color = models.CharField(max_length=50)
 
     def __str__(self):
-        return self.name
+        return f"{self.name} - {self.form_factor}"
     
 class PSU(models.Model):
     name = models.CharField(max_length=255)
@@ -97,7 +97,7 @@ class PSU(models.Model):
     color = models.CharField(max_length=50)
 
     def __str__(self):
-        return self.name
+        return f"{self.name} - {self.type} ({self.wattage}W)"
     
 
 class StorageDrive(models.Model):
@@ -112,7 +112,7 @@ class StorageDrive(models.Model):
     interface = models.CharField(max_length=50)
 
     def __str__(self):
-        return self.name
+        return f"{self.name} - {self.type} ({self.capacity}Gb)"
     
 class PCase(models.Model):
     name = models.CharField(max_length=255)
@@ -122,11 +122,11 @@ class PCase(models.Model):
     color = models.CharField(max_length=50)
     psu = models.IntegerField()
     side_panel = models.CharField(max_length=100)
-    external_525_bays = models.IntegerField()
+    external_volume= models.DecimalField(max_digits=5, decimal_places=1, null=True)
     internal_35_bays = models.IntegerField()
 
     def __str__(self):
-        return self.name
+        return f"{self.name} {self.type} ({self.color})"
 
 class InitialRec(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)

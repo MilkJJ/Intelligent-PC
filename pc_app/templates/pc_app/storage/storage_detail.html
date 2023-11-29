@@ -125,13 +125,16 @@
         <button id="chooseButton" class="compare-button">Select Storage Drive to Compare</button>
         <div id="storageList" class="component-list">
           <input type="text" id="storageSearch" class="search-input" placeholder="Search Storage Drives">
+          <div class="scrollable-list-container">
           <ul class="component-items">
             {% for other_storage in other_storages %}
             <li class="component-item">
+              <div class="divider"></div>
               <a href="{% url 'storage_comparison' storage.pk other_storage.pk %}" class="component-link">{{ other_storage.name }}</a>
             </li>
             {% endfor %}
           </ul>
+        </div>
         </div>
       </section>
 

@@ -111,7 +111,7 @@ def mark_ready_pickup(request, order_id):
         # Inform user order is ready to be picked up through Email
         if order.user.email:
             subject = f'Your Order #{order.id} is Ready for Pickup'
-            message = f'Hello {order.user.username},\n\nYour order is now ready for pickup.\n\nThank you for shopping with us!'
+            message = f'Hello {order.user.username},\n\nYour order is now ready for pickup:\nhttps://maps.app.goo.gl/2etmTj1pSr42aJCW8\n\nThank you for shopping with us!'
             from_email = settings.EMAIL_HOST_USER
             recipient_list = [order.user.email]
 
@@ -156,7 +156,7 @@ def upload_csv(request):
                            'efficiency', 'wattage', 'modular', 'color']
 
             case_columns = ['name', 'price', 'type', 'color', 'psu',
-                            'side_panel', 'external_525_bays', 'internal_35_bays']
+                            'side_panel', 'external_volume', 'internal_35_bays']
 
             # Cooler Columns
 
@@ -263,7 +263,7 @@ def upload_csv(request):
                                 color=row[3],
                                 psu=row[4],
                                 side_panel=row[5],
-                                external_525_bays=int(row[6]),
+                                external_volume=int(row[6]),
                                 internal_35_bays=int(row[7])
                             )
 

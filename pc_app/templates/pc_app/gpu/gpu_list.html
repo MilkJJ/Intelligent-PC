@@ -42,7 +42,7 @@
       <div class="component-box text-center">
         <a href="{% url 'gpu_detail' gpu.pk %}">
           <div class="coverpage">
-            {% if gpu.chipset|lower|slice:"0:7" == "geforce" %}
+            {% if gpu.chipset|lower|slice:"0:7" == "geforce" or gpu.chipset|lower|slice:"0:3" == "rtx" %}
             <img src="https://yt3.googleusercontent.com/ytc/APkrFKZIF_w8I7JTU072wsWefvaTBMmzkiuJfOKlOAfcOs0=s900-c-k-c0x00ffffff-no-rj" width="100"
               height="100"> <!-- Replace with the actual path to AMD image -->
               {% elif gpu.chipset|lower|slice:"0:6" == "radeon" %}

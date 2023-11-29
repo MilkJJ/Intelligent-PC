@@ -110,7 +110,7 @@ def get_case_info(request, case_id):
     }
     return JsonResponse(case_info)
 
-
+@login_required(login_url='login')
 def cart_items(request):
     # Get the favorited PC Builds for the current user
     cart_items = CartItem.objects.filter(user=request.user, is_purchased=False)
@@ -139,12 +139,21 @@ def add_rec_cart(request):
     storage = StorageDrive.objects.get(id=storage_id)
     case = PCase.objects.get(id=case_id)
 
-    total_price = cpu.price + gpu.price + mboard.price + \
-        ram.price + psu.price + storage.price + case.price
+    if cpu.socket == mboard.socket:
+        total_price = cpu.price + gpu.price + mboard.price + \
+            ram.price + psu.price + storage.price + case.price
 
-    created = CartItem.objects.create(
-        cpu_id=cpu_id, gpu_id=gpu_id, mboard_id=mboard_id, ram_id=ram_id,
-        psu_id=psu_id, storage_id=storage_id, case_id=case_id, total_price=total_price, user=request.user)
+        created = CartItem.objects.create(
+            cpu_id=cpu_id, gpu_id=gpu_id, mboard_id=mboard_id, ram_id=ram_id,
+            psu_id=psu_id, storage_id=storage_id, case_id=case_id, total_price=total_price, user=request.user)
+        
+    else:
+        notification_message = "CPU and Motherboard is incompatible!"
+
+        # Create a ToastNotifier instance and send the notification
+        toaster = ToastNotifier()
+        toaster.show_toast("INCOMPATIBLE COMPONENTS",
+                        notification_message, duration=1)
     
     return redirect('cart_items')
 
@@ -191,28 +200,36 @@ def add_to_cart(request, build_id=None):
         storage = StorageDrive.objects.get(id=storage_id)
         case = PCase.objects.get(id=case_id)
 
-        total_price = cpu.price + gpu.price + mboard.price + \
-            ram.price + psu.price + storage.price + case.price
+        if cpu.socket == mboard.socket:
+            total_price = cpu.price + gpu.price + mboard.price + ram.price + psu.price + storage.price + case.price
 
-        created = CartItem.objects.create(
-            cpu_id=cpu_id, gpu_id=gpu_id, mboard_id=mboard_id, ram_id=ram_id,
-            psu_id=psu_id, storage_id=storage_id, case_id=case_id, total_price=total_price, user=request.user)
+            created = CartItem.objects.create(
+                cpu_id=cpu_id, gpu_id=gpu_id, mboard_id=mboard_id, ram_id=ram_id,
+                psu_id=psu_id, storage_id=storage_id, case_id=case_id, total_price=total_price, user=request.user)
 
-        if created:
-            response_data = {'success': True,
-                             'message': "Item added to cart successfully!"}
-            if build_id:
-                return redirect('cart_items')
+            if created:
+                response_data = {'success': True,
+                                'message': "Item added to cart successfully!"}
+                if build_id:
+                    return redirect('cart_items')
 
+            else:
+                response_data = {'success': False,
+                                'message': "Item is already in your cart!"}
+
+            return JsonResponse(response_data)
+        
         else:
-            response_data = {'success': False,
-                             'message': "Item is already in your cart!"}
+            notification_message = "Selected CPU and Motherboard is incompatible!"
 
-        return JsonResponse(response_data)
+            # Create a ToastNotifier instance and send the notification
+            toaster = ToastNotifier()
+            toaster.show_toast("INCOMPATIBLE COMPONENTS",
+                            notification_message, duration=1)
 
     return JsonResponse({'success': False})
 
-
+@login_required(login_url='login')
 def remove_from_cart(request, cart_item_id):
     try:
         cart_item = CartItem.objects.get(id=cart_item_id, user=request.user)
@@ -231,7 +248,7 @@ def remove_from_cart(request, cart_item_id):
     # Redirect back to the favorited_builds page
     return redirect('cart_items')
 
-
+@login_required(login_url='login')
 @never_cache
 def checkout(request):
     # Get cart items for the user
@@ -249,7 +266,7 @@ def checkout(request):
 
     return render(request, 'pc_app/checkout.html', context)
 
-
+@login_required(login_url='login')
 @never_cache
 def place_order(request):
     if request.method == 'POST':
@@ -343,7 +360,7 @@ def place_order(request):
         # return HttpResponseRedirect(reverse('order_confirmation'))
         return render(request, 'pc_app/order_confirmation.html')
 
-
+@login_required(login_url='login')
 def completed_order_view(request):
     shipped_items = CartItem.objects.filter(
         user=request.user, is_completed=True).order_by('-order_date')
@@ -365,7 +382,7 @@ def completed_order_view(request):
 
     return render(request, 'pc_app/completed-order.html', context)
 
-
+@login_required(login_url='login')
 def ongoing_order_view(request):
     purchased_items = CartItem.objects.filter(
         user=request.user, is_purchased=True, is_completed=False).order_by('-order_date')
@@ -383,7 +400,7 @@ def ongoing_order_view(request):
 
     return render(request, 'pc_app/ongoing-order.html', {'purchased_items': purchased_items})
 
-
+@login_required(login_url='login')
 def rate_order(request, item_id):
     item = CartItem.objects.get(id=item_id)
 
@@ -425,26 +442,35 @@ def toggle_favorite(request):
         storage = StorageDrive.objects.get(id=storage_id)
         case = PCase.objects.get(id=case_id)
 
-        total_price = cpu.price + gpu.price + mboard.price + \
-            ram.price + psu.price + storage.price + case.price
+        if cpu.socket == mboard.socket:
+            total_price = cpu.price + gpu.price + mboard.price + \
+                ram.price + psu.price + storage.price + case.price
 
-        pc_build, created = FavouritedPC.objects.get_or_create(
-            cpu_id=cpu_id, gpu_id=gpu_id, mboard_id=mboard_id, ram_id=ram_id,
-            psu_id=psu_id, storage_id=storage_id, case_id=case_id, total_price=total_price, user=request.user)
+            pc_build, created = FavouritedPC.objects.get_or_create(
+                cpu_id=cpu_id, gpu_id=gpu_id, mboard_id=mboard_id, ram_id=ram_id,
+                psu_id=psu_id, storage_id=storage_id, case_id=case_id, total_price=total_price, user=request.user)
 
-        if created:
-            response_data = {'success': True,
-                             'message': 'Build has been saved!'}
+            if created:
+                response_data = {'success': True,
+                                'message': 'Build has been saved!'}
+            else:
+                # pc_build.delete()
+                response_data = {'success': False,
+                                'message': 'Saved build has been removed!'}
+
+            return JsonResponse(response_data)
+        
         else:
-            # pc_build.delete()
-            response_data = {'success': False,
-                             'message': 'Saved build has been removed!'}
+            notification_message = "Please select other CPU or Motherboard!"
 
-        return JsonResponse(response_data)
+            # Create a ToastNotifier instance and send the notification
+            toaster = ToastNotifier()
+            toaster.show_toast("INCOMPATIBLE CPU & MOTHERBOARD",
+                            notification_message, duration=1)
 
     return JsonResponse({'success': False})
 
-
+@login_required(login_url='login')
 def favorited_builds(request):
     # Get the favorited PC Builds for the current user
     favorited_builds = FavouritedPC.objects.filter(user=request.user)
@@ -454,7 +480,7 @@ def favorited_builds(request):
     }
     return render(request, 'pc_app/favorited_builds.html', context)
 
-
+@login_required(login_url='login')
 def delete_favorited_build(request, build_id):
     try:
         # Get the favorited build to delete
@@ -484,18 +510,47 @@ def SignupPage(request):
         email = request.POST.get('email')
         pass1 = request.POST.get('password1')
         pass2 = request.POST.get('password2')
+        pass_strength = 1
 
         if not uname or not email or not pass1 or not pass2:
             messages.error(request, "Please fill in all the fields!")
         else:
-            if pass1 != pass2:
-                messages.error(request, "Password does not match!")
+            # Check if username is already taken
+            if User.objects.filter(username=uname).exists():
+                messages.error(request, "Username is already taken. Please choose a different one.")
+                
+            # Check if email is already taken
+            elif User.objects.filter(email=email).exists():
+                messages.error(request, "Email is already taken. Please use a different one.")
+                
+            # Check if password length is at least 6 characters
+            elif len(pass1) < 6:
+                messages.error(request, "Password must be at least 6 characters.")
+
             else:
-                my_user = User.objects.create_user(uname, email, pass1)
-                my_user.save()
-                return redirect('login')
+                if not any(char.isdigit() for char in pass1):
+                    pass_strength = 0
+                    messages.error(request, 'Password must contain at least one number.')
+
+                elif not any(char.isupper() for char in pass1):
+                    pass_strength = 0
+                    messages.error(request, 'Password must contain at least one uppercase letter.')
+
+                elif not any(char in "!@#$%^&*()-_=+[]{}|;:'\"<>,.?/" for char in pass1):
+                    pass_strength = 0
+                    messages.error(request, 'Password must contain at least one symbol (!@#$%^&*()-_=+[]{}|;:\'\"<>,.?/).')
+
+                if pass1 != pass2:
+                    messages.error(request, "Password does not match!")
+
+                elif pass_strength == 1:
+                    my_user = User.objects.create_user(uname, email, pass1)
+                    my_user.save()
+                    return redirect('login')
 
     return render(request, 'pc_app/signup.html')
+
+
 
 
 def LoginPage(request):
@@ -544,7 +599,7 @@ def LogoutPage(request):
     logout(request)
     return redirect('login')
 
-
+@login_required(login_url='login')
 def update_profile_picture(request):
     if request.method == "POST":
         profile = request.user.profile
